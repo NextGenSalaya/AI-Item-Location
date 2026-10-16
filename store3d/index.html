@@ -1,0 +1,1544 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Makro AI Item Location | ศาลายา</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#e60012;--red-dark:#b3000e;--red-soft:#fff0f1;--ink:#1d2330;--muted:#6b7280;--line:#ececf0;
+  --bg:#f6f6f8;--card:#fff;--shadow:0 6px 24px rgba(20,24,40,.10);--panel-w:440px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
+  font-family:"IBM Plex Sans Thai",system-ui,sans-serif;font-size:14px;overflow:hidden}
+body{display:flex;flex-direction:column}
+button{font:inherit;cursor:pointer;color:inherit}
+/* ---- header (white, red brand, pill search) ---- */
+header{background:#fff;position:relative;z-index:6;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.hrow{display:flex;align-items:center;gap:14px;padding:10px 20px}
+.brand{display:flex;flex-direction:column;align-items:flex-start;line-height:1;flex:none;border:0;background:none;padding:0 4px 0 0}
+.brand-word{font:bold 36px/1 Arial,sans-serif;letter-spacing:-2px;color:var(--red)}
+.brand-sub{font:700 9px/1.8 Arial,sans-serif;letter-spacing:1.2px;color:#555960;margin-top:2px}
+.store-chip{display:flex;align-items:center;gap:6px;border:1px solid #d9d9df;border-radius:22px;padding:0 14px;height:44px;background:#fff;white-space:nowrap;font-weight:500;flex:none}
+.store-chip svg{color:var(--red)}
+.search{flex:1;position:relative;min-width:0}
+.search input{width:100%;height:44px;border-radius:22px;border:1px solid transparent;background:#f1f1f4;padding:0 118px 0 46px;font:inherit;font-size:15px;outline:none}
+.search input:focus{border-color:var(--red);background:#fff}
+.search > svg{position:absolute;left:16px;top:13px;color:var(--ink)}
+.search .clear{width:28px;height:28px;border:0;border-radius:50%;background:transparent;color:var(--muted);display:none}
+.hicon{position:relative;width:44px;height:44px;border:0;background:none;display:grid;place-items:center;border-radius:50%;flex:none}
+.hicon:hover{background:#f4f4f6}
+.badge{position:absolute;top:3px;right:1px;min-width:18px;height:18px;border-radius:9px;background:var(--red);color:#fff;font-size:11px;font-weight:600;display:grid;place-items:center;padding:0 5px;border:2px solid #fff}
+.badge:empty,.badge[data-n="0"]{display:none}
+.navrow{display:flex;gap:6px;padding:0 20px;border-top:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.navrow button{border:0;background:none;padding:11px 12px;font-size:15px;font-weight:500;color:#3b3f4a;border-bottom:3px solid transparent;white-space:nowrap;display:flex;gap:6px;align-items:center}
+.navrow button.on{color:var(--red);border-bottom-color:var(--red)}
+/* ---- layout ---- */
+.layout{display:flex;flex:1;min-height:0;position:relative}
+aside{width:var(--panel-w);flex:none;background:var(--bg);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0;z-index:4}
+.panel-body{flex:1;overflow:auto;padding:16px}
+.hint{color:var(--muted);font-size:13px;line-height:1.6}
+h2.sec{font-size:17px;margin:20px 0 10px;display:flex;justify-content:space-between;align-items:baseline}
+h2.sec:first-child{margin-top:4px}
+h2.sec small{font-size:12.5px;color:var(--muted);font-weight:400}
+h2.sec .more{border:0;background:none;color:var(--red);font-size:13px;font-weight:600;padding:0}
+/* home */
+.hero{background:radial-gradient(120% 140% at 100% 0,#ff4d5a 0,var(--red) 45%,#c4000f 100%);color:#fff;border-radius:20px;padding:20px;position:relative;overflow:hidden;display:flex;gap:10px;align-items:center;box-shadow:0 10px 24px rgba(230,0,18,.22)}
+.hero-txt{flex:1;min-width:0;position:relative;z-index:1}
+.hero .tag{display:inline-block;background:rgba(255,255,255,.2);border-radius:20px;padding:3px 10px;font-size:11.5px;font-weight:600;margin-bottom:8px}
+.hero-art{position:relative;width:104px;height:110px;flex:none;z-index:1}
+.hero-art span{position:absolute;width:52px;height:52px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:27px;box-shadow:0 6px 14px rgba(0,0,0,.18)}
+.hero-art span:nth-child(1){left:0;top:4px}.hero-art span:nth-child(2){right:0;top:28px;width:60px;height:60px;font-size:31px}.hero-art span:nth-child(3){left:16px;bottom:0;width:44px;height:44px;font-size:22px}
+.hero h3{margin:0 0 6px;font-size:22px;line-height:1.25}
+.hero p{margin:0 0 12px;opacity:.92;font-size:13px;line-height:1.5}
+.hero .btn{background:#fff;color:var(--red);border:0}
+.hero:after{content:"";position:absolute;right:-40px;bottom:-60px;width:190px;height:190px;border-radius:50%;background:rgba(255,255,255,.10)}
+.hero .btn{box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.quick button{border:0;background:#fff;border-radius:16px;padding:12px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;font-size:12px;font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.quick button:hover{box-shadow:0 0 0 2px var(--red)}
+.quick i{width:42px;height:42px;border-radius:14px;background:var(--red-soft);color:var(--red);display:grid;place-items:center}
+.kits{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px}
+.kit{background:var(--tint,#fff);border:0;border-radius:18px;padding:14px 8px 12px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.05);transition:transform .15s}
+.kit:hover{transform:translateY(-2px)}
+.kit small{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+.kit:hover{box-shadow:0 0 0 2px var(--red)}
+.kit .em{font-size:28px;width:54px;height:54px;border-radius:50%;background:#fff;display:grid;place-items:center;margin:0 auto 8px;box-shadow:0 3px 8px rgba(0,0,0,.08)}
+.kit b{font-size:13.5px;font-weight:600}
+.cats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px 6px}
+.cat{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12.5px;padding:0}
+.cat .em{width:62px;height:62px;border-radius:50%;background:#fff;border:3px solid #fff;outline:1px solid #f0d6d8;display:grid;place-items:center;font-size:27px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.cat:hover .em{box-shadow:0 0 0 2px var(--red)}
+.cat .em{overflow:hidden}
+.cat .em img{width:78%;height:78%;object-fit:contain}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat div{background:#fff;border-radius:14px;padding:12px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.stat b{display:block;font-size:18px;color:var(--red)}
+.stat span{font-size:11.5px;color:var(--muted)}
+/* product cards (2-col grid) */
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.pcard{background:#fff;border-radius:16px;transition:box-shadow .15s;padding:10px;display:flex;flex-direction:column;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.05);min-width:0}
+.pcard:hover{box-shadow:0 6px 18px rgba(20,24,40,.10)}
+.pcard.sel{box-shadow:0 0 0 2px var(--red)}
+.pimg{position:relative;aspect-ratio:1;border-radius:10px;background:#f7f7f9;margin-bottom:8px;overflow:hidden}
+.pimg img{width:100%;height:100%;object-fit:contain}
+.pimg .ph{position:absolute;inset:0;display:grid;place-items:center;font-size:34px;opacity:.35}
+.padd{position:absolute;right:6px;bottom:6px;width:36px;height:36px;border-radius:50%;border:0;background:var(--red);color:#fff;font-size:22px;line-height:1;display:grid;place-items:center;box-shadow:0 2px 6px rgba(230,0,18,.35)}
+.padd.in{background:#fff;color:var(--red);box-shadow:0 0 0 2px var(--red)}
+.pname{font-size:13.5px;line-height:1.4;height:2.8em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-bottom:8px}
+.ploc{margin-top:auto;display:flex;border-radius:10px;overflow:hidden;color:#fff;background:var(--red)}
+.ploc b{flex:1;padding:6px 9px;font-size:15px;line-height:1.15}
+.ploc b small{display:block;font-size:10.5px;font-weight:400;opacity:.85}
+.ploc span{background:var(--red-dark);padding:6px 9px;font-size:12.5px;font-weight:600;display:grid;place-items:center;clip-path:polygon(9px 0,100% 0,100% 100%,0 100%);padding-left:15px}
+.ploc.none{background:#e9e9ee;color:var(--muted)}
+.ploc.none b{font-size:12px;font-weight:500}
+/* list rows (cart-like) */
+.item{display:flex;gap:10px;padding:10px;border-radius:14px;margin-bottom:8px;background:#fff;cursor:pointer;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.item.sel{box-shadow:0 0 0 2px var(--red)}
+.thumb{width:56px;height:56px;border-radius:10px;background:#f7f7f9;flex:none;object-fit:contain}
+.item .t{flex:1;min-width:0}
+.item .n{font-weight:500;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.loc{display:inline-flex;gap:6px;align-items:center;font-size:12px;color:var(--muted);margin-top:4px}
+.loc b{background:var(--red);color:#fff;font-weight:600;border-radius:6px;padding:1px 7px}
+.loc.none b{background:#e9e9ee;color:var(--muted)}
+.add{width:34px;height:34px;border-radius:50%;border:0;background:var(--red);color:#fff;flex:none;display:grid;place-items:center;font-size:18px}
+.add.in{background:#fff;color:var(--red);box-shadow:0 0 0 2px var(--red)}
+.stopno{width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;font-size:12px;font-weight:600;display:grid;place-items:center;flex:none}
+/* product detail */
+.detail{background:#fff;border-radius:16px;padding:14px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.detail .big{aspect-ratio:16/10;border-radius:12px;background:#f7f7f9;display:grid;place-items:center;overflow:hidden;margin-bottom:12px}
+.detail .big img{width:100%;height:100%;object-fit:contain}
+.detail h4{margin:0 0 10px;font-size:16px;line-height:1.4}
+.detail .ploc{margin-bottom:10px}
+.detail .ploc b{font-size:18px;padding:9px 12px}
+.detail .ploc span{font-size:14px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:12.5px;color:var(--muted)}
+.kv b{color:var(--ink);font-weight:500}
+.shelf-viz{display:flex;flex-direction:column-reverse;gap:3px;width:52px;flex:none}
+.shelf-viz i{height:9px;border-radius:2px;background:#e9e9ee}
+.shelf-viz i.on{background:var(--red)}
+.btns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn{border:1px solid #d9d9df;background:#fff;border-radius:22px;padding:9px 16px;font-weight:600;display:inline-flex;gap:6px;align-items:center;justify-content:center}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn.wide{flex:1}
+.btn:disabled{opacity:.5;cursor:default}
+.back{border:0;background:none;color:var(--muted);padding:0;margin-bottom:10px;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.chip{border:1px solid #d9d9df;background:#fff;border-radius:18px;padding:6px 13px;font-size:13px}
+.chip:hover{border-color:var(--red);color:var(--red)}
+.res-head{display:flex;justify-content:space-between;align-items:baseline;margin:2px 0 10px}
+.res-head h3{margin:0;font-size:16px}
+.res-head span{color:var(--muted);font-size:12.5px}
+.bay-group h5{margin:14px 0 8px;font-size:13px;color:var(--muted);font-weight:600}
+.route-sum{background:#fff;border-radius:14px;padding:12px 14px;margin-bottom:10px;font-size:13.5px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.route-sum b{color:var(--red)}
+.sticky-cta{position:sticky;bottom:-16px;margin:12px -16px -16px;padding:12px 16px;background:linear-gradient(transparent,var(--bg) 30%)}
+.ai-input{width:100%;min-height:64px;resize:vertical;border:1px solid transparent;border-radius:14px;padding:12px 14px;font:inherit;outline:none;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.ai-input:focus{border-color:var(--red)}
+.ai-box{border-radius:14px;padding:12px 14px;margin:12px 0;font-size:13.5px;line-height:1.6}
+.ai-box.err{background:#fff4f4;border:1px solid #f6c7c9;color:#9b1c22}
+.ai-box.sum{background:var(--red-soft)}
+.ai-box.plain{background:#fff}
+.ai-box code{background:#fff;border-radius:4px;padding:1px 5px;font-size:12px}
+.ai-why{font-size:12.5px;color:var(--muted);margin:-4px 6px 12px 12px;line-height:1.5}
+.ai-why b{color:var(--ink);font-weight:500}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid #f3a6a9;border-top-color:var(--red);border-radius:50%;animation:sp .8s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.modal{position:fixed;inset:0;background:rgba(20,22,30,.5);z-index:20;display:grid;place-items:center;padding:16px}
+.modal[hidden]{display:none}
+.modal .sheet{background:var(--bg);border-radius:18px;padding:16px;width:min(440px,100%)}
+#scanVideo{width:100%;aspect-ratio:4/3;background:#111;border-radius:12px;object-fit:cover;display:block}
+.sacts{position:absolute;right:6px;top:4px;display:flex;gap:2px;align-items:center}
+.sacts .clear{position:static}
+.sbtn{width:36px;height:36px;border:0;border-radius:50%;background:transparent;color:var(--ink);display:grid;place-items:center}
+.sbtn:hover{background:#e6e6ea}
+.sbtn.live{background:var(--red);color:#fff;animation:pulse 1s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(230,0,18,.2)}}
+.fav-btn{width:44px;height:44px;border-radius:50%;border:1px solid #d9d9df;background:#fff;display:grid;place-items:center;flex:none}
+.fav-btn.on{color:var(--red);border-color:var(--red)}
+.fav-btn.on svg{fill:var(--red)}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:12.5px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.facts span{color:var(--muted)}
+.src{display:inline-block;margin-top:10px;font-size:12.5px;color:var(--red);font-weight:500;text-decoration:none}
+.filter{display:flex;gap:6px;margin:-2px 0 12px}
+.filter .chip.on{background:var(--red);border-color:var(--red);color:#fff}
+.note{font-size:12px;color:var(--muted);line-height:1.6;margin-top:18px;padding:12px;background:#fff;border-radius:12px}
+
+/* ---- splash, skeletons, motion ---- */
+.splash{position:fixed;inset:0;z-index:50;background:radial-gradient(circle at 50% 35%,#ff3341,#e60012 55%,#b3000e);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;transition:opacity .45s}
+.splash.hide{opacity:0;pointer-events:none}
+.splash .brand-word{color:#fff;font-size:64px}
+.splash .brand-sub{color:rgba(255,255,255,.85);font-size:13px;letter-spacing:2.5px}
+.splash p{margin-top:28px;font-size:14px;opacity:.9}
+.splash .spin{border-color:rgba(255,255,255,.35);border-top-color:#fff}
+.pimg,.thumb,.detail .big{background:linear-gradient(100deg,#f2f2f5 30%,#e8e8ee 50%,#f2f2f5 70%);background-size:300% 100%;animation:shimmer 1.3s linear infinite}
+@keyframes shimmer{from{background-position:100% 0}to{background-position:-100% 0}}
+.pimg img,.detail .big img,.cat .em img,img.thumb{animation:fadein .35s ease both}
+@keyframes fadein{from{opacity:0}}
+.panel-body.enter>*{animation:rise .32s ease both}
+.panel-body.enter>*:nth-child(2){animation-delay:.04s}.panel-body.enter>*:nth-child(3){animation-delay:.08s}
+.panel-body.enter>*:nth-child(4){animation-delay:.12s}.panel-body.enter>*:nth-child(n+5){animation-delay:.16s}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+.badge.bump{animation:bump .45s cubic-bezier(.3,1.8,.5,1)}
+@keyframes bump{40%{transform:scale(1.45)}}
+.padd,.add,.btn,.kit,.cat,.quick button{transition:transform .12s}
+.padd:active,.add:active,.btn:active,.kit:active,.cat:active,.quick button:active{transform:scale(.93)}
+/* ---- walk mode card ---- */
+.walk{display:none;position:absolute;left:50%;bottom:16px;transform:translateX(-50%);width:min(440px,calc(100% - 24px));background:#fff;border-radius:20px;box-shadow:0 12px 32px rgba(20,24,40,.22);padding:14px;z-index:4;animation:rise .3s ease both}
+.walk.on{display:block}
+.walk-top{display:flex;align-items:baseline;gap:10px}
+.walk-top b{font-size:18px}.walk-top b small{font-size:13px;color:var(--muted);font-weight:500}
+.walk-top span{color:var(--red);font-weight:600;font-size:13px}
+.walk-x{margin-left:auto;border:0;background:#f1f1f4;width:30px;height:30px;border-radius:50%}
+.walk-bar{height:6px;border-radius:3px;background:#f1f1f4;margin:10px 0 12px;overflow:hidden}
+.walk-bar i{display:block;height:100%;background:var(--red);border-radius:3px;transition:width .4s}
+.witem{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.witem .thumb{width:50px;height:50px}
+.witem b{display:block;font-size:14px;line-height:1.35}
+.witem span{font-size:12.5px;color:var(--muted)}
+.witem em{font-style:normal;background:var(--red);color:#fff;border-radius:6px;padding:1px 7px;font-weight:600;margin-right:4px}
+.walk-done{text-align:center;padding:6px 4px}
+.walk-done span{font-size:42px}.walk-done b{display:block;font-size:19px;margin:4px 0}
+.walk-done p{color:var(--muted);margin:0 0 12px}
+@media (max-width:760px){ .walk{bottom:12px} }
+
+/* ---- shop starter page ---- */
+.secbar{border-left:4px solid var(--red);padding-left:8px}
+.shopmode{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.shopmode button{border:2px solid transparent;background:#fff;border-radius:16px;padding:12px;text-align:left;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.shopmode button b{display:block;font-size:14.5px}
+.shopmode button small{color:var(--muted);font-size:12px}
+.shopmode button.on{border-color:var(--red);background:var(--red-soft)}
+.need{background:#fff;border-radius:16px;padding:12px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.need.off{opacity:.55;background:#f1f1f4;box-shadow:none}
+.need.off .need-top b{text-decoration:line-through}
+.need-top{display:flex;align-items:center;gap:8px}
+.need-top b{font-size:15px}
+.need-top .qty{background:var(--bg);border-radius:10px;padding:2px 9px;font-size:12px;font-weight:600;color:#3b3f4a}
+.need-x{margin-left:auto;border:1px solid #d9d9df;background:#fff;border-radius:16px;padding:3px 11px;font-size:12px;color:var(--muted)}
+.need-pick{display:flex;gap:10px;align-items:center;margin-top:10px}
+.need-pick .t{flex:1;min-width:0}
+.need-pick .n{font-weight:500;line-height:1.35}
+.own{display:inline-block;background:var(--red);color:#fff;font-size:10.5px;font-weight:700;border-radius:5px;padding:0 6px;margin-right:6px;vertical-align:1px;letter-spacing:.2px}
+.need-why{font-size:12.5px;color:var(--muted);margin-top:6px}
+.need-more{border:0;background:none;color:var(--red);font-weight:600;font-size:13px;padding:6px 0 0}
+.need-opts{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1px solid var(--line);background:#fff;border-radius:12px;padding:9px 10px;font-size:13px}
+.opt i{width:16px;height:16px;border-radius:50%;border:2px solid #c9ccd3;flex:none;margin-top:2px}
+.opt.on{border-color:var(--red);background:var(--red-soft)}
+.opt.on i{border-color:var(--red);box-shadow:inset 0 0 0 3px #fff;background:var(--red)}
+.opt small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+
+/* ---- categories ---- */
+.cats{grid-template-columns:repeat(4,1fr)}
+.catchips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:2px -16px 10px;padding:0 16px}
+.catchips .chip{white-space:nowrap;flex:none}
+.catchips .chip.on,.filter .chip.on{background:var(--red);border-color:var(--red);color:#fff}
+.cathead{display:flex;align-items:center;gap:12px;margin:4px 0 12px}
+.cathead .em{width:58px;height:58px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:26px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06);flex:none}
+.cathead .em img{width:78%;height:78%;object-fit:contain}
+.cathead h3{margin:0;font-size:18px}
+.cathead span{color:var(--muted);font-size:12.5px}
+.catlink{color:var(--red);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+
+/* ---- sub-categories (Makro PRO style circles) ---- */
+.subs{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:12px 6px;margin:4px 0 14px}
+.subc{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12.5px;line-height:1.3;text-align:center;padding:0;color:var(--ink)}
+.subc .em{width:66px;height:66px;border-radius:50%;background:#e8f5e4;display:grid;place-items:center;overflow:hidden;font-size:26px;transition:box-shadow .15s}
+.subc .em img{width:80%;height:80%;object-fit:contain;mix-blend-mode:multiply}
+.subc.on .em{box-shadow:0 0 0 3px var(--red)}
+.subc.on{color:var(--red);font-weight:600}
+
+/* ---- third level (Makro PRO red-label tiles) ---- */
+.sub2s{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;margin:-4px 0 14px}
+.sub2{border:0;padding:0;box-shadow:0 1px 4px rgba(0,0,0,.06);border-radius:10px;overflow:hidden;background:var(--t-bg);display:flex;flex-direction:column;cursor:pointer;transition:box-shadow .15s,transform .15s}
+.sub2:hover{transform:translateY(-1px)}
+.sub2 .ph{height:76px;display:grid;place-items:center}
+.sub2 .ph img{max-width:78%;max-height:68px;object-fit:contain;mix-blend-mode:multiply}
+.sub2 .lb{background:var(--t-fg);color:var(--t-tx,#fff);font-size:12px;line-height:1.25;padding:6px 4px;min-height:40px;display:grid;place-items:center;text-align:center}
+.sub2.on{box-shadow:0 0 0 3px #1b1b1b}
+.sub2c{border-top:1px solid var(--line,#e6e6e6);padding-top:12px}
+/* ---- map ---- */
+.view{position:relative;flex:1;min-width:0}
+#c{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.ctrl{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:6px}
+.seg{display:flex;background:#fff;border-radius:22px;box-shadow:var(--shadow);padding:4px}
+.seg button{border:0;background:none;padding:7px 13px;border-radius:18px;color:var(--muted);font-weight:500}
+.seg button.on{background:var(--red);color:#fff}
+#lookSeg{align-self:flex-end}
+.iconbtn{width:42px;height:42px;border:0;border-radius:50%;background:#fff;box-shadow:var(--shadow);display:grid;place-items:center;color:var(--ink);align-self:flex-end}
+.legend{position:absolute;left:12px;bottom:12px;background:rgba(255,255,255,.95);border-radius:14px;box-shadow:var(--shadow);padding:10px 12px;font-size:12px;display:flex;flex-direction:column;gap:5px}
+.legend span{display:flex;align-items:center;gap:8px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:#fff;padding:6px 10px;border-radius:8px;font-size:12px;white-space:nowrap;transform:translate(-50%,-130%);display:none}
+.toast{position:absolute;left:50%;top:14px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:22px;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:5;white-space:nowrap}
+.toast.show{opacity:1}
+.maplabel{position:absolute;top:12px;left:12px;background:#fff;border-radius:22px;box-shadow:var(--shadow);padding:7px 14px 7px 10px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.maplabel i{width:10px;height:10px;border-radius:50%;background:var(--red);box-shadow:0 0 0 4px var(--red-soft)}
+.loading{position:absolute;inset:0;display:grid;place-items:center;background:var(--bg);z-index:3;color:var(--muted)}
+.mapcard{display:none}
+.bottomnav{display:none}
+/* ---- phone: full-screen pages, map as its own page, bottom navigation ---- */
+@media (max-width:760px){
+  .hrow{padding:8px 12px;gap:8px;flex-wrap:wrap}
+    .hrow .search{order:3;flex-basis:100%}
+  .store-chip{display:none}
+  .brand-word{font-size:30px}
+  .brand-sub{font-size:8px}
+  .hero-art{width:84px}
+  .brand{margin-right:auto}
+  .navrow{display:none}
+  aside{width:100%;border-right:0}
+  .view{position:absolute;inset:0;visibility:hidden}
+  body.show-map .view{visibility:visible;z-index:5}
+  body.show-map aside{visibility:hidden}
+  .legend,.maplabel{display:none}
+  .seg button{padding:6px 10px}
+  .cats{grid-template-columns:repeat(4,1fr)}
+  .mapcard{position:absolute;left:12px;right:12px;bottom:12px;background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:12px;gap:10px;align-items:center}
+  body.show-map .mapcard.on{display:flex}
+  .mapcard .t{flex:1;min-width:0;font-size:13px}
+  .mapcard .t b{display:block;font-size:14px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .bottomnav{display:flex;flex:none;height:62px;background:#fff;box-shadow:0 -2px 10px rgba(0,0,0,.07);z-index:7;padding-bottom:env(safe-area-inset-bottom)}
+  .bottomnav button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11px;color:var(--muted);position:relative}
+  .bottomnav button.on{color:var(--red);font-weight:600}
+  .bottomnav .badge{top:4px;right:calc(50% - 22px)}
+}
+</style>
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+</head>
+<body>
+<div class="splash" id="loading"><span class="brand-word">makro</span><span class="brand-sub">AI ITEM LOCATION</span><p><span class="spin"></span>กำลังสร้างผังร้าน 3D…</p></div>
+<header>
+  <div class="hrow">
+    <button class="brand" data-nav="home" aria-label="Makro AI Item Location หน้าแรก"><span class="brand-word">makro</span><span class="brand-sub">AI ITEM LOCATION</span></button>
+    <div class="search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" placeholder="ค้นหาสินค้า ชื่อ รหัส บาร์โค้ด หรือช่อง" autocomplete="off" enterkeyhint="search">
+      <div class="sacts"><button class="clear" id="qclear" aria-label="ล้าง">✕</button><button class="sbtn" id="micBtn" title="ค้นหาด้วยเสียง" aria-label="ค้นหาด้วยเสียง"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button class="sbtn" id="scanBtn" title="สแกนบาร์โค้ด" aria-label="สแกนบาร์โค้ด"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2"/><path d="M8 8v8M11 8v8M14 8v8M17 8v8"/></svg></button></div>
+    </div>
+    <div class="store-chip" title="สาขาที่ใช้ข้อมูล"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></svg>สาขาศาลายา</div>
+    <button class="hicon" data-nav="fav" title="รายการโปรด"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20s-7-4.4-9.2-9A5 5 0 0 1 12 6a5 5 0 0 1 9.2 5c-2.2 4.6-9.2 9-9.2 9Z"/></svg><span class="badge" id="favCount" data-n="0"></span></button>
+    <button class="hicon" data-nav="list" title="รายการซื้อ"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 4h2l2.4 10.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 7H6.2"/><circle cx="9" cy="19" r="1.6"/><circle cx="17" cy="19" r="1.6"/></svg><span class="badge" id="listCount" data-n="0"></span></button>
+  </div>
+  <nav class="navrow">
+    <button data-nav="home">หน้าแรก</button>
+    <button data-nav="search">หมวดหมู่สินค้า</button>
+    <button data-nav="ai">✦ จัดของเปิดร้าน</button>
+    <button data-nav="list">รายการซื้อ</button><button data-nav="fav">รายการโปรด</button>
+  </nav>
+</header>
+<div class="layout">
+  <aside id="panel">
+    <div class="panel-body" id="body"></div>
+  </aside>
+  <div class="view">
+    <canvas id="c"></canvas>
+    <div class="ctrl">
+      <div class="seg" id="viewSeg">
+        <button data-v="3d" class="on">3D</button>
+        <button data-v="top">มุมบน</button>
+        <button data-v="eye">ระดับสายตา</button>
+      </div>
+      <div class="seg" id="lookSeg"><button data-look="plan">ผัง</button><button data-look="real">สมจริง</button></div>
+      <button class="iconbtn" id="reset" title="กลับมุมเริ่มต้น"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
+    </div>
+    <div class="legend"><span><i style="background:#c9b48a"></i>ชั้นวางสินค้าแห้ง / ของใช้</span><span><i style="background:#7fb7d9"></i>แช่เย็น / แช่แข็ง (5xx)</span><span><i style="background:#8cc9a0"></i>ของสด / อื่นๆ (6xx)</span><span><i style="background:#e60012"></i>ตำแหน่ง &amp; เส้นทาง</span></div>
+    <div class="maplabel"><i></i>แม็คโคร ศาลายา · ผังร้าน 3D</div>
+    <div class="mapcard" id="mapCard"></div>
+    <div class="walk" id="walkCard"></div>
+    <div class="tip" id="tip"></div>
+    <div class="toast" id="toast"></div>
+    
+  </div>
+</div>
+<div class="modal" id="scanModal" hidden>
+  <div class="sheet">
+    <div class="res-head"><h3>สแกนบาร์โค้ด</h3><button class="back" id="scanClose" style="margin:0">ปิด ✕</button></div>
+    <video id="scanVideo" playsinline muted></video>
+    <p class="hint" id="scanMsg">เล็งกล้องไปที่บาร์โค้ดของสินค้า</p>
+    <div class="btns"><input id="scanInput" class="ai-input" style="min-height:0;height:44px;flex:1" inputmode="numeric" placeholder="หรือพิมพ์เลขบาร์โค้ด / รหัสสินค้า">
+      <button class="btn primary" id="scanGo">ค้นหา</button></div>
+  </div>
+</div>
+<nav class="bottomnav">
+  <button data-nav="home"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 11 9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1Z"/></svg>หน้าแรก</button>
+  <button data-nav="search"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>หมวดหมู่</button>
+  <button data-nav="ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h16l-1 10H5Z"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>เปิดร้าน</button>
+  <button data-nav="map"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3Z"/><path d="M9 3v15M15 6v15"/></svg>แผนที่</button>
+  <button data-nav="list"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h2l2.4 10.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 7H6.2"/><circle cx="9" cy="19" r="1.6"/><circle cx="17" cy="19" r="1.6"/></svg>รายการ<span class="badge" id="listCount2" data-n="0"></span></button>
+</nav>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const store = { get(k, d){ try{ return JSON.parse(localStorage.getItem(k)) ?? d }catch{ return d } },
+                set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)) }catch{} } };
+
+// ---------- data ----------
+const data = await fetch('data/store.json', { cache: 'no-cache' }).then(r => r.json());
+const [MW, MH] = data.size;
+const CX = 700, CY = 870;                       // centre of the sales floor (map units)
+const norm = s => s.toLowerCase().replace(/[็-์]/g, '').replace(/\s+/g, ' ');   // Thai tone-mark order varies in the data
+const W = (x, y) => new THREE.Vector3(x - CX, 0, y - CY);
+const items = data.items.map(([no, desc, bc, loc, bay, shelf, cat, sub, sub2], i) =>
+  ({ i, no, desc, bc, loc, bay, shelf, cat, sub, sub2, lc: norm(desc) }));
+const bayKeys = Object.keys(data.bays);
+const bayItems = new Map();
+for (const it of items) if (it.bay) (bayItems.get(it.bay) || bayItems.set(it.bay, []).get(it.bay)).push(it);
+let thumbs = {};
+
+// fixture pieces: [cx, cy, ang, len, depth, bayKey|""] — gondola bays, or cells traced from the drawing
+const pieces = data.pieces;
+const bayPieces = new Map();
+pieces.forEach((pc, i) => { if (pc[5]) (bayPieces.get(pc[5]) || bayPieces.set(pc[5], []).get(pc[5])).push(i); });
+const bayCenter = k => {
+  const ids = bayPieces.get(k);
+  if (!ids) return data.bays[k].slice(0, 2);
+  return [ids.reduce((s, i) => s + pieces[i][0], 0) / ids.length, ids.reduce((s, i) => s + pieces[i][1], 0) / ids.length];
+};
+
+const aisleOf = k => k.split('-')[0];
+const zone = a => { const n = +a; return n >= 500 && n < 600 ? 'cold' : n >= 600 && n < 700 ? 'fresh' : 'dry'; };
+const bayH = k => ({ cold: 12, fresh: 9, dry: 18 })[zone(aisleOf(k))];
+const pieceH = pc => pc[5] ? bayH(pc[5]) : 8;
+const LEVELS = 6;
+
+// ---------- scene ----------
+const canvas = $('#c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#eef0f4');
+scene.fog = new THREE.Fog('#eef0f4', 1400, 2600);
+const camera = new THREE.PerspectiveCamera(45, 1, 1, 5000);
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.maxPolarAngle = Math.PI * 0.47;
+controls.minDistance = 25; controls.maxDistance = 1600;
+controls.screenSpacePanning = false;
+
+scene.add(new THREE.HemisphereLight('#ffffff', '#c9cdd6', 1.6));
+const sun = new THREE.DirectionalLight('#ffffff', 1.4);
+sun.position.set(-300, 600, 250);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -520, right: 520, top: 520, bottom: -520, near: 100, far: 1500 });
+sun.shadow.bias = -0.0005;
+scene.add(sun);
+
+// floor = the real floor-plan drawing
+const tex = await new THREE.TextureLoader().loadAsync(`data/floor.png?v=${data.version}`);
+tex.colorSpace = THREE.SRGBColorSpace;
+tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(MW, MH),
+  new THREE.MeshStandardMaterial({ map: tex, roughness: 1 }));
+floor.rotation.x = -Math.PI / 2;
+floor.position.set(MW / 2 - CX, 0, MH / 2 - CY);
+floor.receiveShadow = true;
+scene.add(floor);
+
+// shelves: one instanced box per fixture piece
+const tmpM = new THREE.Matrix4(), tmpQ = new THREE.Quaternion(), tmpS = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
+function pieceTransform(i, h, grow = 0) {
+  const [x, y, ang, len, depth] = pieces[i];
+  const p = W(x, y); p.y = h / 2;
+  tmpQ.setFromAxisAngle(up, -ang);
+  tmpS.set(len + grow, h, depth + grow);
+  return { p, q: tmpQ.clone(), s: tmpS.clone() };
+}
+const aisleColor = a => {
+  const z = zone(a), n = +a;
+  if (z === 'cold') return new THREE.Color().setHSL(0.56 + (n % 7) * 0.006, 0.5, 0.66);
+  if (z === 'fresh') return new THREE.Color().setHSL(0.38, 0.35, 0.66);
+  return new THREE.Color().setHSL(0.08 + (n % 9) * 0.012, 0.36, 0.70);
+};
+const shelfMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1),
+  new THREE.MeshStandardMaterial({ roughness: 0.75 }), pieces.length);
+shelfMesh.castShadow = shelfMesh.receiveShadow = true;
+const baseColors = [];
+pieces.forEach((pc, i) => {
+  const { p, q, s } = pieceTransform(i, pieceH(pc));
+  shelfMesh.setMatrixAt(i, tmpM.compose(p, q, s));
+  const k = pc[5], c = k ? aisleColor(aisleOf(k)) : new THREE.Color('#c9ccd3');   // grey = no location code
+  if (k && !bayItems.has(k)) c.offsetHSL(0, -0.25, 0.08);                         // empty bays look washed out
+  baseColors.push(c); shelfMesh.setColorAt(i, c);
+});
+scene.add(shelfMesh);
+
+let levelLines;
+const aisleSprites = [], signSprites = [];
+// shelf levels: thin lines around each piece so the 6 shelves read in 3D
+{
+  const pos = [];
+  pieces.forEach(pc => {
+    if (!pc[5]) return;
+    const h = pieceH(pc), [x, y, ang, len, depth] = pc, c = W(x, y);
+    const ax = Math.cos(ang), az = Math.sin(ang), hl = len / 2 + 0.05, hd = depth / 2 + 0.05;
+    const corner = (a, b) => [c.x + ax * a * hl - az * b * hd, c.z + az * a * hl + ax * b * hd];
+    const ring = [corner(-1, -1), corner(1, -1), corner(1, 1), corner(-1, 1)];
+    for (let l = 1; l < LEVELS; l++) {
+      const yy = h * l / LEVELS;
+      for (let e = 0; e < 4; e++) { const a = ring[e], b = ring[(e + 1) % 4]; pos.push(a[0], yy, a[1], b[0], yy, b[1]); }
+    }
+  });
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  levelLines = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: '#000', transparent: true, opacity: 0.13 }));
+  scene.add(levelLines);
+}
+
+// aisle number labels
+await document.fonts.ready;
+function textSprite(text, { bg = '#ffffff', fg = '#1d2330', scale = 1, bold = 600, onTop = true } = {}) {
+  const c = document.createElement('canvas'), ctx = c.getContext('2d'), f = 44;
+  ctx.font = `${bold} ${f}px "IBM Plex Sans Thai"`;
+  const w = Math.ceil(ctx.measureText(text).width) + 36;
+  c.width = w; c.height = 72;
+  ctx.font = `${bold} ${f}px "IBM Plex Sans Thai"`;
+  ctx.fillStyle = bg; ctx.beginPath(); ctx.roundRect(2, 2, w - 4, 68, 18); ctx.fill();
+  ctx.fillStyle = fg; ctx.textBaseline = 'middle'; ctx.textAlign = 'center'; ctx.fillText(text, w / 2, 38);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, depthTest: !onTop, transparent: true }));
+  s.scale.set(w / 72 * 9 * scale, 9 * scale, 1); s.renderOrder = 10;
+  return s;
+}
+{
+  const groups = {};
+  bayKeys.forEach(k => (groups[aisleOf(k)] ||= []).push(data.bays[k]));
+  for (const [a, pts] of Object.entries(groups)) {
+    const top = pts.reduce((m, p) => p[1] < m[1] ? p : m);           // north end of the aisle
+    const s = textSprite(a, { scale: 0.8, onTop: false });
+    const p = W(top[0], top[1]); s.position.set(p.x, bayH(a + '-1') + 7, p.z - 6);
+    scene.add(s); aisleSprites.push(s);
+    // realistic look: red Makro-style aisle sign hanging over the head of the aisle
+    const sign = textSprite(a, { bg: '#e60012', fg: '#ffffff', scale: 1.25, bold: 700, onTop: false });
+    sign.position.set(p.x, bayH(a + '-1') + 15, p.z - 4); sign.visible = false;
+    scene.add(sign); signSprites.push(sign);
+  }
+  const e = W(...data.entrance), ent = textSprite('ทางเข้า', { bg: '#1d2330', fg: '#fff', scale: 1.3 });
+  ent.position.set(e.x, 16, e.z); scene.add(ent);
+  const ring = new THREE.Mesh(new THREE.RingGeometry(6, 9, 40), new THREE.MeshBasicMaterial({ color: '#1d2330' }));
+  ring.rotation.x = -Math.PI / 2; ring.position.set(e.x, 0.3, e.z); scene.add(ring);
+}
+
+// ---------- realistic look: steel racking with stock, freezers, pallets, concrete floor ----------
+let realGroup = null, concreteTex = null;
+async function buildReal() {
+  let seed = 7;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const PROD = ['#d94b3f', '#f2c14e', '#3f7fbf', '#f7f7f2', '#4caf6a', '#e98a3c', '#8e5ea2', '#efe6d2', '#2f3e57', '#c0392b', '#5aa9d6', '#f5d9a8', '#7a4b2a', '#e8eef2'];
+  const CARTON = ['#c79d6b', '#b98d5c', '#d2ab7c', '#a97e50', '#cfa577'];
+  const L = { post: [], beam: [], deck: [], back: [], prod: [], white: [], glass: [], pallet: [], grey: [] };
+  const m = new THREE.Matrix4(), q = new THREE.Quaternion(), v3 = new THREE.Vector3(), sc = new THREE.Vector3();
+  // u: along the fixture, v: across it, y: up (all relative to the fixture centre c)
+  const add = (list, c, ang, u, y, v, sx, sy, sz, color) => {
+    const ca = Math.cos(ang), sa = Math.sin(ang);
+    v3.set(c.x + ca * u - sa * v, y, c.z + sa * u + ca * v); q.setFromAxisAngle(up, -ang); sc.set(sx, sy, sz);
+    list.push([m.compose(v3, q, sc).clone(), color]);
+  };
+  pieces.forEach(pc => {
+    const [x, y, ang, len, dep, k] = pc, c = W(x, y), h = pieceH(pc);
+    if (!k) return add(L.grey, c, ang, 0, h / 2, 0, len, h, dep);
+    const z = zone(aisleOf(k));
+    if (z === 'dry') {                       // gondola / pallet racking: blue uprights, orange beams, stock on every level
+      const lh = h / LEVELS;
+      for (const su of [-1, 1]) for (const sv of [-1, 1]) add(L.post, c, ang, su * (len / 2 - 0.25), h / 2, sv * (dep / 2 - 0.25), 0.5, h, 0.5);
+      add(L.back, c, ang, 0, h / 2, 0, Math.max(0.5, len - 0.5), h, 0.25);
+      for (let l = 0; l < LEVELS; l++) {
+        const yb = l * lh + 0.2, top = l === LEVELS - 1;
+        add(L.deck, c, ang, 0, yb, 0, Math.max(0.5, len - 0.4), 0.18, Math.max(0.5, dep - 0.4));
+        for (const sv of [-1, 1]) {
+          if (l) add(L.beam, c, ang, 0, yb + 0.1, sv * (dep / 2 - 0.15), Math.max(0.5, len - 0.6), 0.45, 0.3);
+          let u = -len / 2 + 0.55;
+          while (true) {
+            const w = top ? 2.4 + rnd() * 1.4 : 1.1 + rnd() * 1.6;
+            if (u + w > len / 2 - 0.5) break;
+            const ph = top ? lh * 0.88 : lh * (0.45 + rnd() * 0.38);
+            const col = top ? CARTON[(rnd() * CARTON.length) | 0] : PROD[(rnd() * PROD.length) | 0];
+            add(L.prod, c, ang, u + w / 2, yb + 0.1 + ph / 2, sv * (dep / 4 + 0.05), w - 0.15, ph, Math.max(0.6, dep / 2 - 0.9), col);
+            u += w;
+          }
+        }
+      }
+    } else if (z === 'cold') {               // white chest freezer / chiller with a glass top and stock inside
+      const bh = Math.min(h * 0.62, 8);
+      add(L.white, c, ang, 0, bh / 2, 0, len, bh, dep);
+      add(L.glass, c, ang, 0, bh + 0.7, 0, Math.max(0.5, len - 0.3), 1.4, Math.max(0.5, dep - 0.3));
+      let u = -len / 2 + 0.6;
+      while (true) {
+        const w = 1 + rnd() * 1.3;
+        if (u + w > len / 2 - 0.5) break;
+        for (const sv of [-1, 1]) if (dep > 5 || sv > 0)
+          add(L.prod, c, ang, u + w / 2, bh - 0.1, dep > 5 ? sv * dep / 4 : 0, w - 0.2, 1.1, Math.max(0.6, dep / 2 - 0.8), PROD[(rnd() * PROD.length) | 0]);
+        u += w;
+      }
+    } else {                                 // promo / fresh: wooden pallet with stacked cartons
+      add(L.pallet, c, ang, 0, 0.45, 0, Math.max(0.5, len - 0.3), 0.9, Math.max(0.5, dep - 0.3));
+      const nu = Math.max(1, Math.round(len / 4.5)), nv = Math.max(1, Math.round(dep / 4.5)), layers = Math.max(1, Math.round(h * 0.7 / 2.6));
+      const bw = (len - 0.6) / nu, bd = (dep - 0.6) / nv;
+      for (let a = 0; a < nu; a++) for (let b = 0; b < nv; b++) for (let l = 0; l < layers; l++) {
+        if (l === layers - 1 && rnd() < 0.3) continue;
+        add(L.prod, c, ang, -len / 2 + 0.3 + bw * (a + 0.5), 0.9 + 1.3 + l * 2.6, -dep / 2 + 0.3 + bd * (b + 0.5),
+          bw - 0.15, 2.5, bd - 0.15, CARTON[(rnd() * CARTON.length) | 0]);
+      }
+    }
+  });
+  const grp = new THREE.Group(), box = new THREE.BoxGeometry(1, 1, 1);
+  const mats = {
+    post: new THREE.MeshStandardMaterial({ color: '#1f5ea8', metalness: 0.35, roughness: 0.45 }),
+    beam: new THREE.MeshStandardMaterial({ color: '#f07f1d', metalness: 0.25, roughness: 0.5 }),
+    deck: new THREE.MeshStandardMaterial({ color: '#b7bcc4', metalness: 0.3, roughness: 0.6 }),
+    back: new THREE.MeshStandardMaterial({ color: '#dfe2e6', roughness: 0.9 }),
+    prod: new THREE.MeshStandardMaterial({ roughness: 0.8 }),
+    white: new THREE.MeshStandardMaterial({ color: '#f3f5f7', roughness: 0.4 }),
+    glass: new THREE.MeshStandardMaterial({ color: '#cfeaf7', transparent: true, opacity: 0.38, roughness: 0.05, metalness: 0.1 }),
+    pallet: new THREE.MeshStandardMaterial({ color: '#a8794b', roughness: 0.95 }),
+    grey: new THREE.MeshStandardMaterial({ color: '#cfd2d8', roughness: 0.8 }),
+  };
+  for (const [name, list] of Object.entries(L)) {
+    if (!list.length) continue;
+    const im = new THREE.InstancedMesh(box, mats[name], list.length);
+    list.forEach(([mat, col], i) => { im.setMatrixAt(i, mat); if (col) im.setColorAt(i, new THREE.Color(col)); });
+    im.castShadow = ['back', 'white', 'grey', 'pallet'].includes(name);
+    im.receiveShadow = name !== 'glass';
+    grp.add(im);
+  }
+  // polished concrete floor inside the building
+  const img = await new THREE.ImageLoader().loadAsync(`data/footprint.png?v=${data.version}`);
+  const cw = 1190, ch = 1684, cv = document.createElement('canvas'); cv.width = cw; cv.height = ch;
+  const cx = cv.getContext('2d'); cx.drawImage(img, 0, 0, cw, ch);
+  const mask = cx.getImageData(0, 0, cw, ch), out = cx.createImageData(cw, ch);
+  for (let yy = 0; yy < ch; yy++) for (let xx = 0; xx < cw; xx++) {
+    const i = (yy * cw + xx) * 4;
+    if (mask.data[i] > 127) {
+      const n = (Math.random() - 0.5) * 10, seam = (xx % 30 === 0 || yy % 30 === 0) ? -9 : 0;
+      out.data[i] = 205 + n + seam; out.data[i + 1] = 203 + n + seam; out.data[i + 2] = 198 + n + seam;
+    } else { out.data[i] = 238; out.data[i + 1] = 240; out.data[i + 2] = 244; }
+    out.data[i + 3] = 255;
+  }
+  cx.putImageData(out, 0, 0);
+  concreteTex = new THREE.CanvasTexture(cv); concreteTex.colorSpace = THREE.SRGBColorSpace;
+  concreteTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  scene.add(grp);
+  return grp;
+}
+async function setLook(real) {
+  document.querySelectorAll('#lookSeg button').forEach(b => b.classList.toggle('on', (b.dataset.look === 'real') === real));
+  store.set('store3d-look', real ? 'real' : 'plan');
+  if (real && !realGroup) realGroup = await buildReal();
+  if (realGroup) realGroup.visible = real;
+  shelfMesh.material.visible = !real;        // stays in the scene (invisible) so shelves can still be clicked
+  levelLines.visible = !real;
+  aisleSprites.forEach(s => s.visible = !real);
+  signSprites.forEach(s => s.visible = real);
+  floor.material.map = real ? concreteTex : tex; floor.material.needsUpdate = true;
+  $('.legend').style.display = real ? 'none' : '';
+}
+$('#lookSeg').onclick = e => { const b = e.target.closest('[data-look]'); if (b) setLook(b.dataset.look === 'real'); };
+
+// ---------- walkable grid + A* ----------
+const G = { x0: 60, y0: 400, cell: 3 };
+G.w = Math.ceil((1110 - G.x0) / G.cell); G.h = Math.ceil((1540 - G.y0) / G.cell);
+G.block = new Uint8Array(G.w * G.h);
+{
+  const pad = 2.5;
+  for (const [x, y, ang, len, depth] of pieces) {
+    const ca = Math.cos(ang), sa = Math.sin(ang);
+    const hl = len / 2 + pad, hd = depth / 2 + pad, r = Math.hypot(hl, hd);
+    for (let gy = Math.floor((y - r - G.y0) / G.cell); gy <= Math.ceil((y + r - G.y0) / G.cell); gy++)
+      for (let gx = Math.floor((x - r - G.x0) / G.cell); gx <= Math.ceil((x + r - G.x0) / G.cell); gx++) {
+        if (gx < 0 || gy < 0 || gx >= G.w || gy >= G.h) continue;
+        const px = G.x0 + (gx + .5) * G.cell - x, py = G.y0 + (gy + .5) * G.cell - y;
+        if (Math.abs(px * ca + py * sa) <= hl && Math.abs(-px * sa + py * ca) <= hd) G.block[gy * G.w + gx] = 1;
+      }
+  }
+}
+// building footprint: cells outside are not walkable, and its edge is drawn as a low wall
+{
+  const img = await new THREE.ImageLoader().loadAsync(`data/footprint.png?v=${data.version}`);
+  const cv = document.createElement('canvas'); cv.width = img.width; cv.height = img.height;
+  const cx = cv.getContext('2d'); cx.drawImage(img, 0, 0);
+  const px = cx.getImageData(0, 0, img.width, img.height).data;
+  const isIn = (x, y) => { x = Math.floor(x); y = Math.floor(y); return x >= 0 && y >= 0 && x < img.width && y < img.height && px[(y * img.width + x) * 4] > 127; };
+  const inGrid = new Uint8Array(G.w * G.h);
+  for (let gy = 0; gy < G.h; gy++) for (let gx = 0; gx < G.w; gx++) {
+    const i = gy * G.w + gx;
+    inGrid[i] = isIn(G.x0 + (gx + .5) * G.cell, G.y0 + (gy + .5) * G.cell) ? 1 : 0;
+    if (!inGrid[i]) G.block[i] = 1;
+  }
+  // wall: one short box per footprint pixel-run on the boundary (sampled at 2 map units)
+  const st = 2, walls = [];
+  for (let y = 0; y < img.height; y += st) for (let x = 0; x < img.width; x += st) {
+    if (!isIn(x, y)) continue;
+    if (Math.hypot(x - data.entrance[0], y - data.entrance[1]) < 18) continue;   // doorway
+    if (!isIn(x - st, y) || !isIn(x + st, y) || !isIn(x, y - st) || !isIn(x, y + st)) walls.push([x, y]);
+  }
+  const WALL_H = 7;
+  const wall = new THREE.InstancedMesh(new THREE.BoxGeometry(st, WALL_H, st),
+    new THREE.MeshStandardMaterial({ color: '#8d96a8', roughness: 0.9 }), walls.length);
+  const m = new THREE.Matrix4();
+  walls.forEach(([x, y], i) => { const p = W(x, y); wall.setMatrixAt(i, m.makeTranslation(p.x, WALL_H / 2, p.z)); });
+  wall.castShadow = true;
+  scene.add(wall);
+}
+const toCell = (x, y) => [Math.max(0, Math.min(G.w - 1, Math.floor((x - G.x0) / G.cell))), Math.max(0, Math.min(G.h - 1, Math.floor((y - G.y0) / G.cell)))];
+const cellXY = (gx, gy) => [G.x0 + (gx + .5) * G.cell, G.y0 + (gy + .5) * G.cell];
+function nearestFree(x, y) {
+  const [cx, cy] = toCell(x, y);
+  for (let r = 0; r < 40; r++)
+    for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
+      if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+      const gx = cx + dx, gy = cy + dy;
+      if (gx >= 0 && gy >= 0 && gx < G.w && gy < G.h && !G.block[gy * G.w + gx]) return [gx, gy];
+    }
+  return [cx, cy];
+}
+// Routing follows the main walkways: moves are straight (4 directions), every turn costs extra,
+// and cells close to fixtures cost more, so the route keeps to the middle of wide aisles and only
+// enters a narrow gap for the last stretch to the shelf.
+const ROUTE = { wide: 7, narrowCost: 3, turnCost: 6 };   // wide: clearance (cells) that counts as a main walkway
+let clearance = null;
+function buildClearance() {          // grid distance (cells, 4-neighbour) to the nearest fixture / wall
+  const N = G.w * G.h, d = new Uint16Array(N).fill(0xffff), q = new Int32Array(N);
+  let h = 0, t = 0;
+  for (let i = 0; i < N; i++) if (G.block[i]) { d[i] = 0; q[t++] = i; }
+  while (h < t) {
+    const u = q[h++], ux = u % G.w, uy = u / G.w | 0;
+    for (const [vx, vy] of [[ux + 1, uy], [ux - 1, uy], [ux, uy + 1], [ux, uy - 1]]) {
+      if (vx < 0 || vy < 0 || vx >= G.w || vy >= G.h) continue;
+      const v = vy * G.w + vx;
+      if (d[v] > d[u] + 1) { d[v] = d[u] + 1; q[t++] = v; }
+    }
+  }
+  return d;
+}
+const DIRS = [[1, 0], [0, 1], [-1, 0], [0, -1]];
+function astar(a, b) {
+  clearance ||= buildClearance();
+  const N = G.w * G.h, S = N * 4;
+  const gs = new Float32Array(S).fill(Infinity), from = new Int32Array(S).fill(-1), closed = new Uint8Array(S);
+  const s = a[1] * G.w + a[0], t = b[1] * G.w + b[0];
+  const hfn = i => Math.abs(i % G.w - b[0]) + Math.abs((i / G.w | 0) - b[1]);
+  const step = v => 1 + ROUTE.narrowCost * Math.max(0, ROUTE.wide - clearance[v]) / ROUTE.wide;
+  const heap = [];
+  const push = e => { heap.push(e); let i = heap.length - 1; while (i) { const p = (i - 1) >> 1; if (heap[p][0] <= e[0]) break; heap[i] = heap[p]; i = p; } heap[i] = e; };
+  const pop = () => { const top = heap[0], last = heap.pop(); if (heap.length) { let i = 0; for (;;) { let c = 2 * i + 1; if (c >= heap.length) break; if (c + 1 < heap.length && heap[c + 1][0] < heap[c][0]) c++; if (heap[c][0] >= last[0]) break; heap[i] = heap[c]; i = c; } heap[i] = last; } return top; };
+  for (let d = 0; d < 4; d++) { gs[s * 4 + d] = 0; push([hfn(s), s * 4 + d]); }
+  let end = -1;
+  while (heap.length) {
+    const [, us] = pop(); if (closed[us]) continue; closed[us] = 1;
+    const u = us >> 2, ud = us & 3;
+    if (u === t) { end = us; break; }
+    const ux = u % G.w, uy = u / G.w | 0;
+    for (let d = 0; d < 4; d++) {
+      if (d === (ud + 2) % 4) continue;                       // no U-turns
+      const vx = ux + DIRS[d][0], vy = uy + DIRS[d][1];
+      if (vx < 0 || vy < 0 || vx >= G.w || vy >= G.h) continue;
+      const v = vy * G.w + vx; if (G.block[v] && v !== t) continue;
+      const vs = v * 4 + d; if (closed[vs]) continue;
+      const ng = gs[us] + step(v) + (d !== ud ? ROUTE.turnCost : 0);
+      if (ng < gs[vs]) { gs[vs] = ng; from[vs] = us; push([ng + hfn(v), vs]); }
+    }
+  }
+  if (end < 0) return s === t ? [a] : null;
+  const path = []; for (let i = end; i >= 0; i = from[i]) path.push([(i >> 2) % G.w, (i >> 2) / G.w | 0]);
+  return path.reverse();
+}
+function corners(p) {                // keep only the points where the route turns
+  const out = [p[0]];
+  for (let i = 1; i < p.length - 1; i++) {
+    const d1 = [p[i][0] - p[i - 1][0], p[i][1] - p[i - 1][1]], d2 = [p[i + 1][0] - p[i][0], p[i + 1][1] - p[i][1]];
+    if (d1[0] !== d2[0] || d1[1] !== d2[1]) out.push(p[i]);
+  }
+  if (p.length > 1) out.push(p[p.length - 1]);
+  return out;
+}
+function roundedPath(v, r = 5) {     // straight segments joined by small rounded corners
+  const path = new THREE.CurvePath();
+  let prev = v[0];
+  for (let i = 1; i < v.length - 1; i++) {
+    const a = v[i].clone().sub(v[i - 1]), b = v[i + 1].clone().sub(v[i]);
+    const ra = Math.min(r, a.length() / 2), rb = Math.min(r, b.length() / 2);
+    const p1 = v[i].clone().sub(a.normalize().multiplyScalar(ra)), p2 = v[i].clone().add(b.normalize().multiplyScalar(rb));
+    if (prev.distanceTo(p1) > 0.01) path.add(new THREE.LineCurve3(prev, p1));
+    path.add(new THREE.QuadraticBezierCurve3(p1, v[i].clone(), p2));
+    prev = p2;
+  }
+  path.add(new THREE.LineCurve3(prev, v[v.length - 1]));
+  return path;
+}
+const bayGoal = k => nearestFree(...bayCenter(k));
+const PX_PER_M = 7.6;   // rough scale of the drawing (map units per metre)
+
+// ---------- route + markers ----------
+const routeGroup = new THREE.Group(); scene.add(routeGroup);
+const markGroup = new THREE.Group(); scene.add(markGroup);
+let ants = null, antCurve = null;
+const redMat = new THREE.MeshStandardMaterial({ color: '#d71920', emissive: '#d71920', emissiveIntensity: 0.35 });
+function clearGroup(g) { g.children.slice().forEach(o => { g.remove(o); o.geometry?.dispose(); o.material?.map?.dispose?.(); }); }
+
+function drawRoute(stops) {        // stops: bay keys in visiting order
+  clearGroup(routeGroup); ants = null; antCurve = null;
+  if (!stops.length) return null;
+  let cur = nearestFree(...data.entrance), pts = [], total = 0;
+  for (const k of stops) {
+    const goal = bayGoal(k), raw = astar(cur, goal);
+    if (!raw) continue;
+    raw.forEach((c, i) => { if (pts.length && i === 0) return; pts.push(c); });
+    total += (raw.length - 1) * G.cell;
+    cur = goal;
+  }
+  if (pts.length < 2) return null;
+  const v = corners(pts).map(c => { const [x, y] = cellXY(...c); const p = W(x, y); p.y = 1.6; return p; });
+  if (v.length < 2) return null;
+  const curve = roundedPath(v);
+  const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, Math.min(2000, Math.round(curve.getLength() / 2)), 1.5, 8, false), redMat);
+  routeGroup.add(tube);
+  const n = Math.max(12, Math.round(curve.getLength() / 22));
+  ants = new THREE.InstancedMesh(new THREE.SphereGeometry(1.5, 12, 8), new THREE.MeshBasicMaterial({ color: '#ffffff' }), n);
+  antCurve = curve; routeGroup.add(ants);
+  return { metres: total / PX_PER_M };
+}
+
+function pin(k, label, shelf) {
+  const h = bayH(k), p = W(...bayCenter(k));
+  for (const i of bayPieces.get(k) || []) {
+    const { p: pp, q, s } = pieceTransform(i, h, 1.2);
+    // bay outline
+    const box = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 1)), new THREE.LineBasicMaterial({ color: '#d71920' }));
+    box.position.copy(pp); box.quaternion.copy(q); box.scale.copy(s); markGroup.add(box);
+    // glowing slab at the shelf level
+    if (shelf) {
+      const lh = h / LEVELS, slab = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1),
+        new THREE.MeshBasicMaterial({ color: '#ff2a33', transparent: true, opacity: 0.75 }));
+      slab.position.set(pp.x, lh * (Math.min(shelf, LEVELS) - 0.5), pp.z); slab.quaternion.copy(q);
+      slab.scale.set(s.x + 0.4, lh * 0.8, s.z + 0.4); slab.userData.pulse = true; markGroup.add(slab);
+    }
+  }
+  // floating pin
+  const g = new THREE.Group();
+  const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 14, 8), redMat); stick.position.y = 7; g.add(stick);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(4, 24, 16), redMat); head.position.y = 16; g.add(head);
+  const t = textSprite(label, { bg: '#d71920', fg: '#fff', scale: 1.05 }); t.position.y = 27; g.add(t);
+  g.position.set(p.x, h, p.z); g.userData.bob = Math.random() * 6; g.userData.drop = performance.now() + markGroup.children.length * 12; markGroup.add(g);
+}
+
+// ---------- camera ----------
+let fly = null;
+function flyTo(target, offset, ms = 900) {
+  fly = { t0: performance.now(), ms, fromT: controls.target.clone(), toT: target.clone(),
+          fromP: camera.position.clone(), toP: target.clone().add(offset) };
+}
+const HOME_T = new THREE.Vector3(0, 0, 10);
+function home() { setSeg('3d'); flyTo(HOME_T, new THREE.Vector3(-120, 620, 640)); }
+function focusBay(k, mode = 'near') {
+  const p = W(...bayCenter(k));
+  if (mode === 'eye') {                                          // stand in the aisle, look at the shelf
+    const [fx, fy] = cellXY(...bayGoal(k)), e = W(fx, fy);
+    const dir = new THREE.Vector3(e.x - p.x, 0, e.z - p.z).normalize();
+    const look = p.clone(); look.y = bayH(k) * 0.45;
+    controls.maxPolarAngle = Math.PI * 0.6;
+    flyTo(look, dir.multiplyScalar(48).add(new THREE.Vector3(0, 1, 0)), 1100);
+    return;
+  }
+  controls.maxPolarAngle = Math.PI * 0.47;
+  const off = camera.position.clone().sub(controls.target).setY(0).normalize().multiplyScalar(140);
+  flyTo(p, off.setY(150));
+}
+function setSeg(v) { document.querySelectorAll('#viewSeg button').forEach(b => b.classList.toggle('on', b.dataset.v === v)); }
+$('#viewSeg').onclick = e => {
+  const v = e.target.dataset.v; if (!v) return; setSeg(v);
+  if (v === 'top') { controls.maxPolarAngle = Math.PI * 0.47; flyTo(controls.target.clone().setY(0), new THREE.Vector3(0, 900, 1)); }
+  else if (v === '3d') home();
+  else { const k = state.sel?.bay || state.route?.[0]; if (k) focusBay(k, 'eye'); else toast('เลือกสินค้าก่อน แล้วกดระดับสายตา'); }
+};
+$('#reset').onclick = home;
+
+// ---------- picking ----------
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+let hoverIds = [], downAt = null;
+function pick(ev) {           // -> piece index under the pointer, or -1
+  const r = canvas.getBoundingClientRect();
+  ndc.set((ev.clientX - r.left) / r.width * 2 - 1, -(ev.clientY - r.top) / r.height * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  const hit = ray.intersectObject(shelfMesh)[0];
+  return hit ? hit.instanceId : -1;
+}
+function setHover(id) {       // highlight every piece of the hovered bay
+  const k = id >= 0 ? pieces[id][5] : '';
+  const ids = k ? bayPieces.get(k) : id >= 0 ? [id] : [];
+  if (ids.length === hoverIds.length && ids.every((v, i) => v === hoverIds[i])) return;
+  hoverIds.forEach(i => shelfMesh.setColorAt(i, baseColors[i]));
+  hoverIds = ids;
+  hoverIds.forEach(i => shelfMesh.setColorAt(i, baseColors[i].clone().offsetHSL(0, 0.1, -0.15)));
+  shelfMesh.instanceColor.needsUpdate = true;
+}
+canvas.addEventListener('pointermove', ev => {
+  if (ev.pointerType !== 'mouse' || ev.buttons) return;
+  const id = pick(ev), tip = $('#tip'); setHover(id);
+  const k = id >= 0 ? pieces[id][5] : '';
+  canvas.style.cursor = k ? 'pointer' : '';
+  if (id >= 0) {
+    const r = canvas.getBoundingClientRect();
+    tip.textContent = k ? `ช่อง ${k} · ${bayItems.get(k)?.length || 0} สินค้า` : 'ชั้นวาง (ไม่มีรหัสช่องในข้อมูล)';
+    tip.style.left = ev.clientX - r.left + 'px'; tip.style.top = ev.clientY - r.top + 'px'; tip.style.display = 'block';
+  } else tip.style.display = 'none';
+});
+canvas.addEventListener('pointerleave', () => { setHover(-1); $('#tip').style.display = 'none'; });
+canvas.addEventListener('pointerdown', ev => downAt = [ev.clientX, ev.clientY]);
+canvas.addEventListener('pointerup', ev => {
+  if (!downAt || Math.hypot(ev.clientX - downAt[0], ev.clientY - downAt[1]) > 6) return;
+  const id = pick(ev); if (id >= 0 && pieces[id][5]) openBay(pieces[id][5]);
+});
+
+// ---------- app state + UI ----------
+const state = { tab: 'home', q: '', sel: null, bay: null, list: store.get('store3d-list', []), route: null };
+const byNo = new Map(); items.forEach(it => { if (!byNo.has(it.no + '|' + it.loc)) byNo.set(it.no + '|' + it.loc, it); });
+const keyOf = it => it.no + '|' + it.loc;
+const inList = it => state.list.includes(keyOf(it));
+let toastT;
+function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 1800); }
+
+function search(q) {
+  q = norm(q.trim()); if (!q) return [];
+  let res;
+  if (/^\d{3}-\d*$/.test(q)) res = items.filter(it => it.loc.startsWith(q));
+  else if (/^\d+$/.test(q)) res = items.filter(it => it.no.startsWith(q) || it.bc.includes(q) || it.loc.replace('-', '').startsWith(q));
+  else {
+    const toks = q.split(/\s+/);
+    res = items.filter(it => { const s = it.lc + ' ' + norm(thumbs[it.no]?.[0] || ''); return toks.every(t => s.includes(t)); });
+  }
+  return res.sort((a, b) => (!!b.bay - !!a.bay) || (b.lc.startsWith(q) - a.lc.startsWith(q)) || a.desc.length - b.desc.length);
+}
+const KITS = [['ร้านก๋วยเตี๋ยว', '🍜', '#fff3e6'], ['ร้านหมูกระทะ', '🥓', '#ffeef0'], ['ร้านชาบู สุกี้', '🍲', '#fff1ec'],
+  ['ร้านส้มตำ', '🌶', '#f1f8ea'], ['ร้านข้าวมันไก่', '🍗', '#fff8e1'], ['ร้านอาหารตามสั่ง', '🍳', '#eef7ee'],
+  ['ร้านข้าวแกง', '🍛', '#fff4e0'], ['ร้านกาแฟ', '☕', '#f6efe9'], ['ร้านชานม น้ำปั่น', '🍵', '#f3eefa'],
+  ['ร้านเบเกอรี่', '🍰', '#fdeff4'], ['ร้านโชห่วย', '🏪', '#eef3fb']];
+const CATS = data.categories.map((name, i) => ({ name, i,
+  pic: ['สันคอหมู', 'ซอสหอยนางรม', 'น้ำดื่ม', 'มันฝรั่ง', 'หม้อหุงข้าว', 'น้ำยาล้างจาน', 'แชมพู', 'อาหารแมว'][i],
+  em: ['🍖', '🍳', '🍹', '🍪', '📺', '🏠', '💄', '🐶'][i] }));
+const catItems = CATS.map(c => items.filter(it => it.cat === c.i)
+  .sort((a, b) => (!b.bay - !a.bay) * -1 || (/aro|เอโร่|savepak|เซพแพ็ค/i.test(b.desc) - /aro|เอโร่|savepak|เซพแพ็ค/i.test(a.desc))));
+const POPULAR = ['น้ำปลา', 'น้ำมันพืช', 'ไข่ไก่', 'ข้าวสาร', 'กาแฟ', 'ถุงร้อน', 'ตะเกียบ', 'น้ำตาลทราย'];
+const isPhone = () => matchMedia('(max-width:760px)').matches;
+state.fav = store.get('store3d-fav', []); state.onlyMapped = false;
+const isFav = it => state.fav.includes(keyOf(it));
+const details = {}, detailShards = {};          // brand, pack size, Makro PRO link, facts - one small file per 2 digits
+async function loadDetails(no) {
+  const s = no.slice(-2).padStart(2, '0');
+  detailShards[s] ||= fetch(`data/details/${s}.json`).then(r => r.ok ? r.json() : {}).catch(() => ({}));
+  Object.assign(details, await detailShards[s]);
+  details[no] ||= null;
+}
+function detailsHtml(it) {
+  if (!(it.no in details)) { loadDetails(it.no).then(() => { if (state.sel === it) render(); }); return ''; }
+  const d = details[it.no];
+  if (!d) return '';
+  const [brand, pack, url, facts] = d;
+  const rows = [['ยี่ห้อ', brand], ['ขนาดบรรจุ', pack], ...facts].filter(r => r[1]);
+  return `${rows.length ? `<div class="facts">${rows.map(([k, v]) => `<span>${esc(k)}</span><b>${esc(v)}</b>`).join('')}</div>` : ''}
+    ${url ? `<a class="src" href="${esc(url)}" target="_blank" rel="noopener">ดูสินค้านี้ใน Makro PRO ↗</a>` : ''}`;
+}
+const mapShown = () => document.body.classList.contains('show-map');
+
+const thumbUrl = it => thumbs[it.no]?.[1];
+const img = it => { const u = thumbUrl(it); return u ? `<img class="thumb" loading="lazy" src="${esc(u)}" alt="">` : `<div class="thumb"></div>`; };
+const locHtml = it => it.bay
+  ? `<span class="loc"><b>${esc(it.loc)}</b> ช่อง ${esc(aisleOf(it.bay))} · ชั้น ${it.shelf}</span>`
+  : `<span class="loc none"><b>${esc(it.loc || '—')}</b> ยังไม่มีพิกัดบนผัง</span>`;
+const plocHtml = it => it.bay
+  ? `<div class="ploc"><b><small>ตำแหน่ง · ช่อง ${esc(aisleOf(it.bay))}</small>${esc(it.loc)}</b><span>ชั้น ${it.shelf}</span></div>`
+  : `<div class="ploc none"><b>ยังไม่มีพิกัดบนผัง</b></div>`;
+function pcard(it) {
+  const k = esc(keyOf(it)), u = thumbUrl(it), on = inList(it);
+  return `<div class="pcard ${state.sel === it ? 'sel' : ''}" data-k="${k}">
+    <div class="pimg">${u ? `<img loading="lazy" src="${esc(u)}" alt="">` : '<div class="ph">🛒</div>'}
+      <button class="padd ${on ? 'in' : ''}" data-add="${k}" title="รายการซื้อ">${on ? '✓' : '+'}</button></div>
+    <div class="pname">${esc(it.desc)}</div>${plocHtml(it)}</div>`;
+}
+function itemRow(it, extra = '') {
+  const on = inList(it);
+  return `<div class="item ${state.sel === it ? 'sel' : ''}" data-k="${esc(keyOf(it))}">${extra}${img(it)}
+    <div class="t"><div class="n">${esc(it.desc)}</div>${locHtml(it)}</div>
+    <button class="add ${on ? 'in' : ''}" data-add="${esc(keyOf(it))}" title="รายการซื้อ">${on ? '✓' : '+'}</button></div>`;
+}
+function detailCard(it) {
+  const t = thumbs[it.no], u = thumbUrl(it), on = inList(it);
+  return `<div class="detail">
+    <div class="big">${u ? `<img src="${esc(u)}" alt="">` : '<span style="font-size:48px;opacity:.3">🛒</span>'}</div>
+    <h4>${esc(t?.[0] || it.desc)}</h4>${plocHtml(it)}
+    <div style="display:flex;gap:14px;align-items:flex-end;justify-content:space-between">
+      <div class="kv"><span>หมวดหมู่</span><b><a class="catlink" data-cat="${it.cat}">${esc(CATS[it.cat].name)}</a></b><span>รหัสสินค้า</span><b>${esc(it.no)}</b><span>บาร์โค้ด</span><b>${esc(it.bc)}</b></div>
+      ${it.bay ? `<div class="shelf-viz" title="ชั้น ${it.shelf} นับจากล่าง">${Array.from({ length: LEVELS }, (_, i) => `<i class="${i + 1 === it.shelf ? 'on' : ''}"></i>`).join('')}</div>` : ''}</div>
+    <div class="btns">
+      <button class="btn primary wide" data-act="route" ${it.bay ? '' : 'disabled'}>นำทางไปที่ชั้นวาง</button>
+      <button class="btn" data-add="${esc(keyOf(it))}">${on ? '✓ อยู่ในรายการ' : '+ เพิ่มลงรายการ'}</button><button class="fav-btn ${isFav(it) ? 'on' : ''}" data-fav="${esc(keyOf(it))}" title="รายการโปรด"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20s-7-4.4-9.2-9A5 5 0 0 1 12 6a5 5 0 0 1 9.2 5c-2.2 4.6-9.2 9-9.2 9Z"/></svg></button></div>
+    <div class="btns">
+      ${isPhone() ? `<button class="btn" data-act="showmap" ${it.bay ? '' : 'disabled'}>ดูบนแผนที่</button>` : ''}
+      <button class="btn" data-act="eye" ${it.bay ? '' : 'disabled'}>ระดับสายตา</button>
+      <button class="btn" data-act="bay" ${it.bay ? '' : 'disabled'}>สินค้าในช่องนี้</button></div>${detailsHtml(it)}</div>`;
+}
+const kitsHtml = () => `<div class="kits">${KITS.map(([n, em, tint]) => `<button class="kit" style="--tint:${tint}" data-kit="${n}"><span class="em">${em}</span><b>${n}</b></button>`).join('')}</div>`;
+// category icon = photo of a real item from that category (emoji only until photos load: older Windows lacks many emoji)
+// category icon = photo of a real item of that category (emoji only until photos load)
+const catImg = {};
+function catIcon(c) {
+  if (!(c.i in catImg) && Object.keys(thumbs).length)
+    catImg[c.i] = search(c.pic).filter(it => it.cat === c.i).map(thumbUrl).find(Boolean) || catItems[c.i].map(thumbUrl).find(Boolean) || '';
+  return catImg[c.i] ? `<img src="${esc(catImg[c.i])}" alt="" loading="lazy">` : c.em;
+}
+const catsHtml = () => `<div class="cats">${CATS.map(c => `<button class="cat" data-cat="${c.i}"><span class="em">${catIcon(c)}</span>${c.name}</button>`).join('')}</div>`;
+// sub-categories (Makro PRO), where defined: [name, keyword for the icon photo]
+const SUBS = data.subcategories || {};
+const subImg = {};
+function subIcon(ci, si) {
+  const key = ci + '-' + si, [, pic] = SUBS[ci][si];
+  if (!(key in subImg) && Object.keys(thumbs).length) {
+    const mine = it => it.cat === ci && it.sub === si;
+    subImg[key] = search(pic).filter(mine).map(thumbUrl).find(Boolean) || catItems[ci].filter(mine).map(thumbUrl).find(Boolean) || '';
+  }
+  return subImg[key] ? `<img src="${esc(subImg[key])}" alt="" loading="lazy">` : '';
+}
+const subsHtml = c => SUBS[c.i] ? `<div class="subs">
+    <button class="subc ${state.sub == null ? 'on' : ''}" data-sub=""><span class="em">${catIcon(c)}</span>ทั้งหมด</button>
+    ${SUBS[c.i].map(([name, , color], si) => !catItems[c.i].some(it => it.sub === si) ? '' : `<button class="subc ${state.sub === si ? 'on' : ''}" data-sub="${si}"><span class="em" style="background:${color || '#e8f5e4'}">${subIcon(c.i, si)}</span>${esc(name)}</button>`).join('')}</div>` : '';
+// third level (Makro PRO red-label tiles), keyed "cat-sub": [name, keyword for the photo]
+const SUBSUB = data.subsub || {};
+const inSub2 = (it, ti) => (it.sub2 >> ti) & 1;
+const sub2Img = {};
+function sub2Icon(ci, si, ti) {
+  const key = ci + '-' + si + '-' + ti, [, pic] = SUBSUB[ci + '-' + si].groups[ti];
+  if (!(key in sub2Img) && Object.keys(thumbs).length) {
+    const mine = it => it.cat === ci && it.sub === si && inSub2(it, ti);
+    sub2Img[key] = search(pic).filter(mine).map(thumbUrl).find(Boolean) || catItems[ci].filter(mine).map(thumbUrl).find(Boolean) || '';
+  }
+  return sub2Img[key] ? `<img src="${esc(sub2Img[key])}" alt="" loading="lazy">` : '';
+}
+const sub2Html = c => {
+  const S = state.sub != null && SUBSUB[c.i + '-' + state.sub];
+  if (!S) return '';
+  const [bg, fg, tx = '#fff'] = S.style, L = S.groups, has = ti => catItems[c.i].some(it => it.sub === state.sub && inSub2(it, ti));
+  if (S.shape === 'circle') return `<div class="subs sub2c">${L.map(([name], ti) => !has(ti) ? '' : `<button class="subc ${state.sub2 === ti ? 'on' : ''}" data-sub2="${ti}">
+    <span class="em" style="background:${bg}">${sub2Icon(c.i, state.sub, ti)}</span>${esc(name)}</button>`).join('')}</div>`;
+  return `<div class="sub2s" style="--t-bg:${bg};--t-fg:${fg};--t-tx:${tx}">${L.map(([name], ti) => !has(ti) ? '' : `<button class="sub2 ${state.sub2 === ti ? 'on' : ''}" data-sub2="${ti}">
+    <span class="ph">${sub2Icon(c.i, state.sub, ti)}</span><span class="lb">${esc(name)}</span></button>`).join('')}</div>`;
+};
+const catChips = (sel, counts) => `<div class="catchips">${counts ? `<button class="chip ${sel == null ? 'on' : ''}" data-qcat="">ทั้งหมด ${counts.all}</button>` : ''}
+  ${CATS.map(c => (!counts || counts[c.i]) ? `<button class="chip ${sel === c.i ? 'on' : ''}" ${counts ? `data-qcat="${c.i}"` : `data-cat="${c.i}"`}>${c.name}${counts ? ` ${counts[c.i]}` : ''}</button>` : '').join('')}</div>`;
+const chipsHtml = () => `<div class="chips">${POPULAR.map(c => `<button class="chip" data-q="${c}">${c}</button>`).join('')}</div>`;
+
+function render() {
+  const n = state.list.length;
+  for (const b of [$('#listCount'), $('#listCount2')]) {
+    if (b.dataset.n !== String(n)) { b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); }
+    b.textContent = n || ''; b.dataset.n = n;
+  }
+  $('#favCount').textContent = state.fav.length || ''; $('#favCount').dataset.n = state.fav.length;
+  document.querySelectorAll('.navrow [data-nav], .bottomnav [data-nav]').forEach(b =>
+    b.classList.toggle('on', b.dataset.nav === 'map' ? mapShown() : !mapShown() && b.dataset.nav === state.tab));
+  const body = $('#body');
+  if (state.tab === 'home') {
+    body.innerHTML = `<div class="hero"><div class="hero-txt"><span class="tag">ต้นแบบ · สาขาศาลายา</span>
+        <h3>จะเปิดร้านอะไรดี?</h3>
+        <p>เลือกประเภทร้าน ระบบจัดของหลักที่ต้องใช้ พร้อมเส้นทางเดินไปหยิบให้ครบในสาขา</p>
+        <button class="btn" data-nav="ai">จัดของเปิดร้าน →</button></div>
+        <div class="hero-art"><span>🍜</span><span>🛒</span><span>☕</span></div></div>
+      <div class="quick">
+        <button data-quick="scan"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2"/><path d="M8 8v8M11 8v8M14 8v8M17 8v8"/></svg></i>สแกนบาร์โค้ด</button>
+        <button data-quick="mic"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></i>ค้นด้วยเสียง</button>
+        <button data-nav="fav"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20s-7-4.4-9.2-9A5 5 0 0 1 12 6a5 5 0 0 1 9.2 5c-2.2 4.6-9.2 9-9.2 9Z"/></svg></i>รายการโปรด</button>
+        <button data-quick="map"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3Z"/><path d="M9 3v15M15 6v15"/></svg></i>แผนผังร้าน</button></div>
+      <h2 class="sec">เปิดร้านแบบไหน <small>แตะเพื่อจัดรายการ</small></h2>${kitsHtml()}
+      <h2 class="sec">หมวดหมู่สินค้า <button class="more" data-nav="search">ดูทั้งหมด ›</button></h2>${catsHtml()}
+      <h2 class="sec">ค้นหายอดนิยม</h2>${chipsHtml()}
+      <h2 class="sec">ข้อมูลสาขาศาลายา</h2>
+      <div class="stat"><div><b>${data.stats.items.toLocaleString()}</b><span>รายการสินค้า</span></div>
+      <div><b>${Math.round(data.stats.mapped / data.stats.items * 100)}%</b><span>มีพิกัดบนผัง</span></div>
+      <div><b>${data.stats.bays.toLocaleString()}</b><span>ช่องวาง</span></div></div>
+      <div class="note">ตำแหน่งสินค้าจากข้อมูลสาขา ณ 1 ก.ย. 2569 · รูปและรายละเอียดจาก Makro PRO เฉพาะสินค้าที่จับคู่รหัสได้ · ยังไม่มีราคาและสต็อกของสาขา · รายการซื้อและรายการโปรดเก็บไว้ในเครื่องนี้เท่านั้น</div>`;
+  } else if (state.tab === 'fav') {
+    const favs = state.fav.map(k => byNo.get(k)).filter(Boolean);
+    body.innerHTML = `<h2 class="sec">รายการโปรด <small>${favs.length} รายการ</small></h2>
+      ${favs.length ? `<div class="grid">${favs.map(pcard).join('')}</div>
+        <div class="btns"><button class="btn primary wide" data-act="favToList">ใส่ทั้งหมดลงรายการซื้อ</button></div>`
+        : `<div class="ai-box plain">ยังไม่มีรายการโปรด เปิดหน้าสินค้าแล้วกด ♡ เพื่อเก็บสินค้าที่ซื้อประจำไว้ที่นี่</div>`}`;
+  } else if (state.tab === 'ai') renderAI(body);
+  else if (state.tab === 'list') renderList(body);
+  else if (state.bay) {
+    const list = bayItems.get(state.bay) || [];
+    const groups = {}; list.forEach(it => (groups[it.shelf] ||= []).push(it));
+    body.innerHTML = `<button class="back" data-act="back">← กลับ</button>
+      <div class="res-head"><h3>ช่อง ${esc(state.bay)}</h3><span>${list.length} สินค้า</span></div>
+      <div class="btns" style="margin:0 0 6px"><button class="btn primary wide" data-act="routeBay">นำทางมาที่ช่องนี้</button></div>
+      ${list.length ? Object.keys(groups).sort((a, b) => b - a).map(s => `<div class="bay-group"><h5>ชั้น ${s}</h5><div class="grid">${groups[s].map(pcard).join('')}</div></div>`).join('')
+        : '<p class="hint">ไม่มีข้อมูลสินค้าในช่องนี้</p>'}`;
+  } else if (state.sel) {
+    const same = (bayItems.get(state.sel.bay) || []).filter(it => it !== state.sel).slice(0, 6);
+    body.innerHTML = `<button class="back" data-act="unsel">← ${state.q ? `ผลการค้นหา “${esc(state.q)}”` : 'กลับ'}</button>${detailCard(state.sel)}
+      ${same.length ? `<h2 class="sec">สินค้าอื่นในช่องเดียวกัน</h2><div class="grid">${same.map(pcard).join('')}</div>` : ''}`;
+  } else if (state.cat != null && !state.q) {
+    const c = CATS[state.cat], inSub = state.sub == null ? catItems[c.i]
+      : catItems[c.i].filter(it => it.sub === state.sub && (state.sub2 == null || inSub2(it, state.sub2)));
+    const list = state.onlyMapped ? inSub.filter(it => it.bay) : inSub;
+    const n = state.catN || 40, shown = list.slice(0, n);
+    body.innerHTML = `<button class="back" data-nav="search">← หมวดหมู่ทั้งหมด</button>
+      <div class="cathead"><span class="em">${catIcon(c)}</span><div><h3>${state.sub == null ? c.name : state.sub2 != null ? esc(SUBSUB[c.i + '-' + state.sub].groups[state.sub2][0]) : esc(SUBS[c.i][state.sub][0])}</h3>
+        <span>${state.sub == null ? '' : c.name + ' · '}${state.sub2 == null ? '' : esc(SUBS[c.i][state.sub][0]) + ' · '}${list.length.toLocaleString()} รายการในสาขาศาลายา</span></div></div>
+      ${SUBS[c.i] ? subsHtml(c) : catChips(c.i)}
+      ${sub2Html(c)}
+      <div class="filter"><button class="chip ${state.onlyMapped ? '' : 'on'}" data-filter="0">ทั้งหมด</button><button class="chip ${state.onlyMapped ? 'on' : ''}" data-filter="1">มีตำแหน่งบนผัง</button></div>
+      <div class="grid">${shown.map(pcard).join('')}</div>
+      ${list.length > n ? `<div class="btns"><button class="btn wide" data-act="more">ดูเพิ่มอีก ${Math.min(40, list.length - n)} รายการ (เหลือ ${(list.length - n).toLocaleString()})</button></div>` : ''}`;
+  } else if (state.q) {
+    const found = search(state.q), counts = { all: found.length };
+    CATS.forEach(c => counts[c.i] = found.filter(it => it.cat === c.i).length);
+    const all = state.qcat != null ? found.filter(it => it.cat === state.qcat) : found;
+    const res = state.onlyMapped ? all.filter(it => it.bay) : all, shown = res.slice(0, 60);
+    body.innerHTML = `<div class="res-head"><h3>ผลการค้นหา “${esc(state.q)}”</h3><span>${res.length.toLocaleString()} รายการ</span></div>
+      ${catChips(state.qcat, counts)}
+      <div class="filter"><button class="chip ${state.onlyMapped ? '' : 'on'}" data-filter="0">ทั้งหมด ${all.length}</button><button class="chip ${state.onlyMapped ? 'on' : ''}" data-filter="1">มีตำแหน่งบนผัง ${all.filter(it => it.bay).length}</button></div>
+      ${shown.length ? `<div class="grid">${shown.map(pcard).join('')}</div>` : '<p class="hint">ไม่พบสินค้า ลองคำค้นอื่น หรือพิมพ์รหัสช่อง เช่น 014-</p>'}
+      ${res.length > shown.length ? `<p class="hint">แสดง ${shown.length} รายการแรก พิมพ์คำค้นให้เจาะจงขึ้นเพื่อดูเพิ่ม</p>` : ''}`;
+  } else {
+    body.innerHTML = `<h2 class="sec">หมวดหมู่สินค้า <small>ตาม Makro PRO</small></h2>${catsHtml()}<h2 class="sec">ค้นหายอดนิยม</h2>${chipsHtml()}
+      <p class="hint">พิมพ์ชื่อสินค้า รหัสสินค้า บาร์โค้ด หรือรหัสช่อง (เช่น 014-) ในช่องค้นหาด้านบน</p>`;
+  }
+  updateMapCard();
+}
+function renderList(body) {
+  const its = state.list.map(k => byNo.get(k)).filter(Boolean);
+  if (!its.length) {
+    body.innerHTML = `<h2 class="sec">รายการซื้อ</h2><div class="ai-box plain">ยังไม่มีสินค้าในรายการ กด <b style="color:var(--red)">+</b> ที่สินค้าเพื่อเพิ่ม
+      หรือให้ระบบจัดของเปิดร้านให้ แล้วระบบจะวางเส้นทางเดินให้</div>
+      <div class="btns"><button class="btn primary" data-nav="ai">✦ จัดของเปิดร้าน</button><button class="btn" data-nav="search">เลือกจากหมวดหมู่</button></div>`;
+    return;
+  }
+  const order = state.routeInfo ? state.routeOrder : null;
+  const rows = order ? order.flatMap((k, i) => its.filter(it => it.bay === k).map(it => itemRow(it, `<div class="stopno">${i + 1}</div>`)))
+    .concat(its.filter(it => !it.bay).map(it => itemRow(it))) : its.map(it => itemRow(it));
+  body.innerHTML = `<h2 class="sec">รายการซื้อ <small>${its.length} รายการ</small></h2>
+    ${state.routeInfo ? `<div class="route-sum">เส้นทาง <b>${order.length} จุดแวะ</b> · ระยะเดินประมาณ <b>${Math.round(state.routeInfo.metres)} ม.</b> · เรียงตามลำดับเดิน</div>` : ''}
+    ${rows.join('')}
+    <div class="sticky-cta btns"><button class="btn primary wide" data-walk="start">🚶 เริ่มเดินทีละจุด</button>
+      <button class="btn" data-act="routeAll">${state.routeInfo ? 'ดูเส้นทาง' : 'จัดเส้นทาง'}</button>
+      <button class="btn" data-act="clearList">ล้าง</button></div>`;
+}
+
+// ---------- shop starter list (POST /api/plan: starter kit, or Claude when an API key is set up) ----------
+const ai = { text: '', shop: 'new', loading: false, t0: 0, result: null, error: null, setup: false, open: null };
+const KIND = { food: ['วัตถุดิบ'], supply: ['ของใช้สิ้นเปลือง'], equip: ['อุปกรณ์เปิดร้าน'] };
+const optKey = o => o.item_no + '|' + o.location;
+function applyPlan() {                       // chosen options -> shopping list -> walking route
+  const needs = ai.result?.needs || [];
+  state.walk = null; walkRing.visible = false;
+  state.list = [...new Set(needs.filter(n => !n.off).map(n => optKey(n.options[n.sel])).filter(k => byNo.has(k)))];
+  store.set('store3d-list', state.list);
+  state.routeInfo = null; clearGroup(routeGroup); clearGroup(markGroup); ants = null;
+  if (state.list.some(k => byNo.get(k)?.bay)) routeList();
+}
+function needCard(n, i) {
+  const o = n.options[n.sel], it = byNo.get(optKey(o)), others = n.options.length - 1;
+  const open = ai.open === i;
+  return `<div class="need ${n.off ? 'off' : ''}">
+    <div class="need-top"><b>${esc(n.what)}</b><span class="qty">${esc(n.quantity)}</span>
+      <button class="need-x" data-need-off="${i}">${n.off ? '+ เอากลับ' : 'ไม่เอา'}</button></div>
+    ${n.off ? '' : `<div class="need-pick">${it ? img(it) : ''}<div class="t"><div class="n">${o.own ? '<span class="own">Own Brand</span>' : ''}${esc(o.name)}</div>
+        ${it ? locHtml(it) : ''}</div></div>
+      <div class="need-why">${esc(n.reason)}</div>
+      ${others ? `<button class="need-more" data-need-open="${i}">${open ? 'ซ่อนตัวเลือก ▴' : `ตัวเลือกอื่น ${others} ▾`}</button>` : ''}
+      ${open ? `<div class="need-opts">${n.options.map((x, j) => `<button class="opt ${j === n.sel ? 'on' : ''}" data-need="${i}" data-opt="${j}">
+          <i></i><span>${x.own ? '<span class="own">Own Brand</span>' : ''}${esc(x.name)}<small>${esc(x.location)}${x.bay ? '' : ' · ยังไม่มีพิกัด'}</small></span></button>`).join('')}</div>` : ''}`}
+  </div>`;
+}
+function renderAI(body) {
+  const focused = document.activeElement?.id === 'aiText';
+  let html = `<h2 class="sec">จัดของเปิดร้าน</h2>
+    <div class="shopmode">
+      <button class="${ai.shop === 'new' ? 'on' : ''}" data-shop="new"><b>🏪 เปิดร้านใหม่</b><small>วัตถุดิบ + ของใช้ + อุปกรณ์</small></button>
+      <button class="${ai.shop === 'restock' ? 'on' : ''}" data-shop="restock"><b>🔄 ร้านเดิม · เติมของ</b><small>เฉพาะของที่ใช้หมดไป</small></button></div>
+    <p class="hint" style="margin:10px 0 8px">เลือกประเภทร้าน ระบบจะจัดรายการให้ โดยเลือกสินค้า <b style="color:var(--red)">Own Brand ARO / Savepak</b> ก่อน แล้ววางเส้นทางเดินให้</p>
+    ${kitsHtml()}
+    <h2 class="sec">หรือพิมพ์เอง</h2>
+    <textarea id="aiText" class="ai-input" placeholder="เช่น เปิดร้านก๋วยเตี๋ยว 100 ที่นั่ง" ${ai.loading ? 'disabled' : ''}>${esc(ai.text)}</textarea>
+    <div class="btns"><button class="btn primary wide" data-act="aiRun" ${ai.loading ? 'disabled' : ''}>✦ จัดรายการ</button></div>`;
+  if (ai.loading) html += `<div class="ai-box sum"><span class="spin"></span>กำลังจัดรายการ… <span id="aiSec">${Math.round((performance.now() - ai.t0) / 1000)}</span> วินาที</div>`;
+  if (ai.error) html += `<div class="ai-box err">${esc(ai.error)}${ai.setup ? `<br>ตั้งค่า API key บนเครื่องนี้ แล้วเปิดตัวเปิดเว็บใหม่ ดูวิธีใน <code>store3d/ai_planner.py</code>` : ''}</div>`;
+  const r = ai.result;
+  if (r) {
+    const on = r.needs.filter(n => !n.off), own = on.filter(n => n.options[n.sel].own).length;
+    html += `<div class="ai-box sum" id="aiResult"><b>${esc(r.summary.split(' (')[0])}</b><br>
+        เลือกไว้ <b>${on.length}</b> จาก ${r.needs.length} รายการ · Own Brand <b>${own}</b> รายการ
+        ${state.routeInfo ? `<br>เส้นทาง <b>${state.routeOrder.length} จุดแวะ</b> · ระยะเดินประมาณ <b>${Math.round(state.routeInfo.metres)} ม.</b>` : ''}
+        ${state.routeInfo ? `<div class="btns"><button class="btn primary" data-walk="start">🚶 เริ่มเดินทีละจุด</button>${isPhone() ? `<button class="btn" data-act="showmap">ดูเส้นทาง</button>` : ''}</div>` : ''}</div>`;
+    for (const kind of ['food', 'supply', 'equip']) {
+      const idx = r.needs.map((n, i) => [n, i]).filter(([n]) => n.kind === kind);
+      if (!idx.length) continue;
+      html += `<h2 class="sec"><span class="secbar">${KIND[kind][0]}</span> <small>${idx.filter(([n]) => !n.off).length} รายการ</small></h2>
+        ${idx.map(([n, i]) => needCard(n, i)).join('')}`;
+    }
+    if (r.missing.length) html += `<div class="ai-box plain"><b>หาไม่พบในสาขานี้:</b> ${r.missing.map(esc).join(', ')}</div>`;
+  }
+  body.innerHTML = html;
+  const ta = $('#aiText');
+  ta.oninput = () => { ai.text = ta.value; };
+  ta.onkeydown = e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) runAI(); };
+  if (focused) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+}
+async function runAI() {
+  const text = ai.text.trim();
+  if (!text || ai.loading) return toast('เลือกหรือพิมพ์ประเภทร้านก่อน');
+  Object.assign(ai, { loading: true, t0: performance.now(), result: null, error: null, setup: false, open: null });
+  render();
+  const tick = setInterval(() => { const s = $('#aiSec'); if (s) s.textContent = Math.round((performance.now() - ai.t0) / 1000); }, 1000);
+  try {
+    const res = await fetch('/api/plan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ request: text, shop: ai.shop }) });
+    const out = await res.json().catch(() => ({ error: 'เซิร์ฟเวอร์ตอบกลับผิดรูปแบบ' }));
+    if (!res.ok) { ai.error = out.error || `ผิดพลาด (${res.status})`; ai.setup = !!out.setup; return; }
+    out.needs.forEach(n => { n.sel = 0; n.off = false; });
+    ai.result = out;
+    applyPlan();
+    if (!out.needs.length) ai.error = 'ไม่พบสินค้าที่ตรงกับคำขอในสาขานี้';
+  } catch {
+    ai.error = 'ติดต่อเซิร์ฟเวอร์ไม่ได้ ตรวจว่าเปิดด้วย python store3d/serve.py';
+  } finally {
+    clearInterval(tick); ai.loading = false; state.tab = 'ai'; render();
+    $('#aiResult')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+function routeList() {
+  const its = state.list.map(k => byNo.get(k)).filter(it => it?.bay);
+  if (!its.length) return toast('ไม่มีสินค้าที่มีพิกัดบนผัง');
+  const order = orderStops(its.map(it => it.bay));
+  clearGroup(markGroup);
+  order.forEach((k, i) => pin(k, `${i + 1} · ${k}`, its.find(it => it.bay === k).shelf));
+  state.routeOrder = order; routeTo(order, true);
+}
+
+// ---------- walk mode: one stop at a time ----------
+const walkRing = new THREE.Mesh(new THREE.RingGeometry(10, 13.5, 48), new THREE.MeshBasicMaterial({ color: '#e60012', transparent: true, opacity: .9 }));
+walkRing.rotation.x = -Math.PI / 2; walkRing.visible = false; scene.add(walkRing);
+function startWalk() {
+  if (!state.routeInfo) routeList();
+  if (!state.routeOrder?.length || !state.routeInfo) return toast('ยังไม่มีสินค้าที่มีพิกัดในรายการ');
+  state.walk = { i: 0 };
+  if (isPhone()) document.body.classList.add('show-map');
+  goStep(0);
+}
+function goStep(i) {
+  state.walk.i = i;
+  const k = state.routeOrder[i];
+  if (k) {
+    const [x, y] = bayCenter(k), p = W(x, y);
+    walkRing.position.set(p.x, 0.5, p.z); walkRing.visible = true;
+    focusBay(k);
+  } else { walkRing.visible = false; home(); }
+  render();
+}
+function endWalk() { state.walk = null; walkRing.visible = false; render(); }
+function renderWalk() {
+  const c = $('#walkCard'), w = state.walk;
+  if (!w) { c.classList.remove('on'); c.innerHTML = ''; return; }
+  const order = state.routeOrder, n = order.length, i = w.i;
+  let html;
+  if (i >= n) html = `<div class="walk-done"><span>🎉</span><b>หยิบครบ ${n} จุดแล้ว</b><p>เดินไปชำระเงินที่แคชเชียร์ด้านหน้าร้านได้เลย</p>
+      <button class="btn primary wide" data-walk="close">เสร็จสิ้น</button></div>`;
+  else {
+    const its = state.list.map(k => byNo.get(k)).filter(it => it?.bay === order[i]);
+    html = `<div class="walk-top"><b>จุดที่ ${i + 1} <small>จาก ${n}</small></b><span>ช่อง ${esc(order[i])}</span>
+        <button class="walk-x" data-walk="close" aria-label="ปิด">✕</button></div>
+      <div class="walk-bar"><i style="width:${i / n * 100}%"></i></div>
+      ${its.map(it => `<div class="witem">${img(it)}<div><b>${esc(it.desc)}</b><span><em>${esc(it.loc)}</em> ชั้น ${it.shelf} นับจากล่าง</span></div></div>`).join('')}
+      <div class="btns"><button class="btn" data-walk="prev" ${i ? '' : 'disabled'}>‹ ก่อนหน้า</button>
+        <button class="btn primary wide" data-walk="next">หยิบแล้ว ✓ ${i === n - 1 ? 'เสร็จ' : 'ถัดไป ›'}</button></div>`;
+  }
+  c.innerHTML = html; c.classList.add('on');
+}
+
+// ---------- phone: the map is its own page ----------
+function showMap(on) {
+  document.body.classList.toggle('show-map', on);
+  requestAnimationFrame(resize);
+  render();
+}
+function updateMapCard() {
+  renderWalk();
+  const c = $('#mapCard');
+  if (state.walk) { c.classList.remove('on'); return; }
+  let html = '';
+  if (state.bay && !state.sel) html = `<div class="t"><b>ช่อง ${esc(state.bay)}</b>${(bayItems.get(state.bay) || []).length} สินค้า</div>
+    <button class="btn primary" data-nav="back">ดูสินค้า</button>`;
+  else if (state.sel) html = `${img(state.sel)}<div class="t"><b>${esc(state.sel.desc)}</b>${state.sel.bay ? `${esc(state.sel.loc)} · ชั้น ${state.sel.shelf}` : 'ไม่มีพิกัด'}</div>
+    <button class="btn" data-nav="back">รายละเอียด</button>`;
+  else if (state.routeInfo) html = `<div class="t"><b>เส้นทาง ${state.routeOrder.length} จุดแวะ</b>ระยะเดินประมาณ ${Math.round(state.routeInfo.metres)} ม.</div>
+    <button class="btn primary" data-walk="start">เดินทีละจุด</button>`;
+  c.innerHTML = html; c.classList.toggle('on', !!html);
+}
+
+function select(it) {
+  state.sel = it; state.bay = null; state.route = null; state.routeInfo = null;
+  clearGroup(markGroup); clearGroup(routeGroup); ants = null;
+  if (it.bay) { pin(it.bay, `${it.loc} · ชั้น ${it.shelf}`, it.shelf); focusBay(it.bay); }
+  else toast('สินค้านี้ยังไม่มีพิกัดบนผัง');
+  state.tab = 'search'; render(); $('#body').scrollTop = 0;
+}
+function openBay(k) {
+  state.bay = k; state.sel = null; state.tab = 'search';
+  clearGroup(markGroup); pin(k, `ช่อง ${k}`, 0); focusBay(k); render(); $('#body').scrollTop = 0;
+}
+function routeTo(keys, info) {
+  const r = drawRoute(keys);
+  if (!r) return toast('หาเส้นทางไม่พบ');
+  toast(`ระยะเดินประมาณ ${Math.round(r.metres)} เมตร`);
+  if (info) { state.routeInfo = r; }
+  setSeg('3d');
+  const box = new THREE.Box3().setFromObject(routeGroup), c = box.getCenter(new THREE.Vector3()), sz = box.getSize(new THREE.Vector3());
+  flyTo(c.setY(0), new THREE.Vector3(-0.2, 0.9, 0.8).multiplyScalar(Math.max(260, Math.max(sz.x, sz.z) * 1.2)));
+}
+function walkDist(from) {                    // walking distance (cells) from one cell to every cell, BFS on the grid
+  const N = G.w * G.h, dist = new Int32Array(N).fill(1e9), q = new Int32Array(N);
+  const s = from[1] * G.w + from[0]; let h = 0, t = 0; dist[s] = 0; q[t++] = s;
+  while (h < t) {
+    const u = q[h++], ux = u % G.w, uy = u / G.w | 0;
+    for (const v of [ux + 1 < G.w ? u + 1 : -1, ux > 0 ? u - 1 : -1, uy + 1 < G.h ? u + G.w : -1, uy > 0 ? u - G.w : -1]) {
+      if (v < 0 || G.block[v] || dist[v] <= dist[u] + 1) continue;
+      dist[v] = dist[u] + 1; q[t++] = v;
+    }
+  }
+  return dist;
+}
+function orderStops(keys) {                 // nearest-neighbour from the entrance
+  const left = [...new Set(keys)], out = []; let [cx, cy] = data.entrance;
+  while (left.length) {
+    let bi = 0, bd = Infinity;
+    left.forEach((k, i) => { const d = Math.hypot(data.bays[k][0] - cx, data.bays[k][1] - cy); if (d < bd) { bd = d; bi = i; } });
+    const k = left.splice(bi, 1)[0]; out.push(k); [cx, cy] = data.bays[k];
+  }
+  // 2-opt on real walking distances: reverse stretches of the tour while that shortens it
+  const cells = [nearestFree(...data.entrance), ...out.map(bayGoal)];
+  const W2 = cells.map(c => walkDist(c));
+  const idx = cells.map(c => c[1] * G.w + c[0]);
+  const P = cells.map((_, i) => i);
+  const d = (a, b) => W2[P[a]][idx[P[b]]];
+  let better = true;
+  while (better) {
+    better = false;
+    for (let i = 1; i < P.length - 1; i++) for (let j = i + 1; j < P.length; j++) {
+      const after = j + 1 < P.length ? d(i, j + 1) - d(j, j + 1) : 0;
+      if (d(i - 1, j) - d(i - 1, i) + after < -1e-6) {
+        P.splice(i, j - i + 1, ...P.slice(i, j + 1).reverse());
+        out.splice(i - 1, j - i + 1, ...out.slice(i - 1, j).reverse());
+        better = true;
+      }
+    }
+  }
+  return out;
+}
+function toggleList(k) {
+  const i = state.list.indexOf(k);
+  if (i >= 0) { state.list.splice(i, 1); toast('นำออกจากรายการแล้ว'); } else { state.list.push(k); toast('เพิ่มลงรายการซื้อแล้ว'); }
+  store.set('store3d-list', state.list); state.routeInfo = null; render();
+}
+function enter() { const b = $('#body'); b.classList.remove('enter'); void b.offsetWidth; b.classList.add('enter'); }
+function nav(to) {
+  if (to === 'map') return showMap(true);
+  if (to !== 'back') {
+    state.tab = to;
+    if (to === 'search') { state.sel = null; state.bay = null; state.cat = null; state.q = ''; state.qcat = null; $('#q').value = ''; $('#qclear').style.display = 'none'; }
+  }
+  document.body.classList.remove('show-map'); requestAnimationFrame(resize);
+  render(); if (to !== 'back') { $('#body').scrollTop = 0; enter(); }
+}
+
+document.addEventListener('click', e => {
+  const n = e.target.closest('[data-nav]');
+  if (n) return nav(n.dataset.nav);
+  const wk = e.target.closest('[data-walk]')?.dataset.walk;
+  if (wk === 'start') return startWalk();
+  if (wk === 'close') return endWalk();
+  if (wk === 'prev') return goStep(Math.max(0, state.walk.i - 1));
+  if (wk === 'next') return goStep(state.walk.i + 1);
+  const sm = e.target.closest('[data-shop]')?.dataset.shop;
+  if (sm) { ai.shop = sm; if (ai.result && ai.text) return runAI(); return render(); }
+  const opt = e.target.closest('[data-opt]');
+  if (opt) { const n = ai.result.needs[+opt.dataset.need]; n.sel = +opt.dataset.opt; ai.open = null; applyPlan(); return render(); }
+  const off = e.target.closest('[data-need-off]');
+  if (off) { const n = ai.result.needs[+off.dataset.needOff]; n.off = !n.off; applyPlan(); return render(); }
+  const more = e.target.closest('[data-need-open]');
+  if (more) { const i = +more.dataset.needOpen; ai.open = ai.open === i ? null : i; return render(); }
+  const qa = e.target.closest('[data-quick]')?.dataset.quick;
+  if (qa === 'scan') return $('#scanBtn').click();
+  if (qa === 'mic') return $('#micBtn').click();
+  if (qa === 'map') { if (isPhone()) return showMap(true); return home(); }
+  const kit = e.target.closest('[data-kit]');
+  if (kit) { ai.text = kit.dataset.kit; state.tab = 'ai'; return runAI(); }
+});
+$('#body').addEventListener('click', e => {
+  const add = e.target.closest('[data-add]');
+  if (add) { e.stopPropagation(); return toggleList(add.dataset.add); }
+  const fav = e.target.closest('[data-fav]');
+  if (fav) { const k = fav.dataset.fav, i = state.fav.indexOf(k);
+    if (i >= 0) { state.fav.splice(i, 1); toast('นำออกจากรายการโปรดแล้ว'); } else { state.fav.push(k); toast('เพิ่มในรายการโปรดแล้ว ♥'); }
+    store.set('store3d-fav', state.fav); return render(); }
+  const flt = e.target.closest('[data-filter]');
+  if (flt) { state.onlyMapped = flt.dataset.filter === '1'; return render(); }
+  if (e.target.closest('[data-act="favToList"]')) {
+    state.fav.forEach(k => { if (!state.list.includes(k)) state.list.push(k); });
+    store.set('store3d-list', state.list); state.routeInfo = null; toast('ใส่ลงรายการซื้อแล้ว'); return nav('list'); }
+  const cc = e.target.closest('[data-cat]');
+  const sb = e.target.closest('[data-sub]');
+  if (sb) { state.sub = sb.dataset.sub === '' ? null : +sb.dataset.sub; state.sub2 = null; state.catN = 40; return render(); }
+  const s2 = e.target.closest('[data-sub2]');
+  if (s2) { state.sub2 = state.sub2 === +s2.dataset.sub2 ? null : +s2.dataset.sub2; state.catN = 40; return render(); }
+  if (cc) { state.cat = +cc.dataset.cat; state.catN = 40; state.sub = null; state.sub2 = null; state.q = ''; $('#q').value = ''; $('#qclear').style.display = 'none';
+    state.sel = null; state.bay = null; state.tab = 'search'; render(); $('#body').scrollTop = 0; return; }
+  const qc = e.target.closest('[data-qcat]');
+  if (qc) { state.qcat = qc.dataset.qcat === '' ? null : +qc.dataset.qcat; return render(); }
+  if (e.target.closest('[data-act="more"]')) { state.catN = (state.catN || 40) + 40; return render(); }
+  const chip = e.target.closest('[data-q]');
+  if (chip) { $('#q').value = chip.dataset.q; return onQuery(); }
+  const act = e.target.closest('[data-act]')?.dataset.act;
+  if (act === 'route') { routeTo([state.sel.bay]); if (isPhone()) showMap(true); return; }
+  if (act === 'showmap') return showMap(true);
+  if (act === 'eye') { setSeg('eye'); focusBay(state.sel.bay, 'eye'); if (isPhone()) showMap(true); return; }
+  if (act === 'bay') return openBay(state.sel.bay);
+  if (act === 'unsel') { state.sel = null; clearGroup(markGroup); clearGroup(routeGroup); ants = null; return render(); }
+  if (act === 'back') { state.bay = null; clearGroup(markGroup); if (state.sel?.bay) pin(state.sel.bay, `${state.sel.loc} · ชั้น ${state.sel.shelf}`, state.sel.shelf); return render(); }
+  if (act === 'routeBay') { routeTo([state.bay]); if (isPhone()) showMap(true); return; }
+  if (act === 'clearList') { state.walk = null; walkRing.visible = false; state.list = []; store.set('store3d-list', []); state.routeInfo = null; clearGroup(routeGroup); clearGroup(markGroup); ants = null; return render(); }
+  if (act === 'routeAll') { if (!state.routeInfo) routeList(); if (isPhone()) return showMap(true); return render(); }
+  if (act === 'aiRun') return runAI();
+  if (e.target.closest('.need')) return;
+  const card = e.target.closest('.item, .pcard');
+  if (card) { const it = byNo.get(card.dataset.k); if (it) select(it); }
+});
+let qT;
+function onQuery() {
+  state.q = $('#q').value; state.sel = null; state.bay = null; state.tab = 'search'; state.qcat = null;
+  if (state.q) state.cat = null;
+  $('#qclear').style.display = state.q ? 'block' : 'none';
+  if (mapShown()) document.body.classList.remove('show-map');
+  render(); $('#body').scrollTop = 0;
+}
+$('#q').addEventListener('input', () => { clearTimeout(qT); qT = setTimeout(onQuery, 160); });
+$('#q').addEventListener('keydown', e => { if (e.key === 'Enter') { clearTimeout(qT); onQuery(); e.target.blur(); } });
+$('#qclear').onclick = () => { $('#q').value = ''; onQuery(); $('#q').focus(); };
+
+// voice search (Chrome / Edge, Thai)
+let rec = null;
+$('#micBtn').onclick = () => {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return toast('เบราว์เซอร์นี้ยังค้นหาด้วยเสียงไม่ได้ ลองใช้ Chrome');
+  if (rec) { rec.abort(); return; }
+  rec = new SR(); rec.lang = 'th-TH'; rec.interimResults = true;
+  $('#micBtn').classList.add('live'); toast('พูดชื่อสินค้าได้เลย…');
+  rec.onresult = e => { $('#q').value = [...e.results].map(r => r[0].transcript).join(''); if (e.results[e.results.length - 1].isFinal) onQuery(); };
+  rec.onerror = e => toast(e.error === 'not-allowed' ? 'กรุณาอนุญาตให้ใช้ไมโครโฟน' : 'ฟังไม่ชัด ลองใหม่อีกครั้ง');
+  rec.onend = () => { rec = null; $('#micBtn').classList.remove('live'); };
+  rec.start();
+};
+
+// barcode scanning: camera + BarcodeDetector where the browser has it, typed barcode otherwise
+let scanStream = null, scanTimer = null;
+function closeScan() {
+  clearInterval(scanTimer); scanTimer = null;
+  scanStream?.getTracks().forEach(t => t.stop()); scanStream = null;
+  $('#scanModal').hidden = true;
+}
+function findBarcode(code) {
+  code = code.trim(); if (!code) return;
+  closeScan();
+  $('#q').value = code; onQuery();
+  const hits = search(code);
+  if (hits.length === 1) select(hits[0]);
+  else if (!hits.length) toast('ไม่พบสินค้าที่มีบาร์โค้ดนี้ในสาขา');
+}
+$('#scanBtn').onclick = async () => {
+  $('#scanModal').hidden = false; $('#scanInput').value = '';
+  const msg = $('#scanMsg'), video = $('#scanVideo');
+  if (!('BarcodeDetector' in window) || !navigator.mediaDevices?.getUserMedia) {
+    video.style.display = 'none';
+    msg.textContent = 'เบราว์เซอร์นี้ยังสแกนด้วยกล้องไม่ได้ (ใช้ได้ใน Chrome บนมือถือ Android) พิมพ์เลขบาร์โค้ดด้านล่างแทนได้';
+    return $('#scanInput').focus();
+  }
+  video.style.display = ''; msg.textContent = 'เล็งกล้องไปที่บาร์โค้ดของสินค้า';
+  try {
+    scanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    video.srcObject = scanStream; await video.play();
+    const det = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'itf'] });
+    scanTimer = setInterval(async () => {
+      const codes = await det.detect(video).catch(() => []);
+      if (codes.length) findBarcode(codes[0].rawValue);
+    }, 300);
+  } catch {
+    video.style.display = 'none';
+    msg.textContent = 'เปิดกล้องไม่ได้ กรุณาอนุญาตให้ใช้กล้อง หรือพิมพ์เลขบาร์โค้ดด้านล่าง';
+  }
+};
+$('#scanClose').onclick = closeScan;
+$('#scanModal').onclick = e => { if (e.target.id === 'scanModal') closeScan(); };
+$('#scanGo').onclick = () => findBarcode($('#scanInput').value);
+$('#scanInput').onkeydown = e => { if (e.key === 'Enter') findBarcode(e.target.value); };
+
+// ---------- loop ----------
+function resize() {
+  const r = canvas.parentElement.getBoundingClientRect();
+  renderer.setSize(r.width, r.height, false); camera.aspect = r.width / r.height; camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(canvas.parentElement); resize();
+camera.position.set(-120, 620, 650); controls.target.copy(HOME_T);
+const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const dummy = new THREE.Object3D();
+function easeOutBounce(x) {                 // pins drop in and bounce
+  const n = 7.5625, d = 2.75;
+  if (x < 1 / d) return n * x * x;
+  if (x < 2 / d) return n * (x -= 1.5 / d) * x + 0.75;
+  if (x < 2.5 / d) return n * (x -= 2.25 / d) * x + 0.9375;
+  return n * (x -= 2.625 / d) * x + 0.984375;
+}
+renderer.setAnimationLoop(now => {
+  if (fly) {
+    const t = Math.min(1, (now - fly.t0) / fly.ms), k = ease(t);
+    controls.target.lerpVectors(fly.fromT, fly.toT, k); camera.position.lerpVectors(fly.fromP, fly.toP, k);
+    if (t === 1) fly = null;
+  }
+  controls.update();
+  markGroup.children.forEach(o => {
+    if (o.userData.pulse) o.material.opacity = 0.55 + 0.35 * Math.sin(now / 220);
+    if (o.userData.bob !== undefined) {
+      o.userData.y0 ??= o.position.y;
+      const bounce = easeOutBounce(Math.max(0, Math.min(1, (now - (o.userData.drop || 0)) / 650)));
+      o.position.y = o.userData.y0 + Math.sin(now / 400 + o.userData.bob) * 1.5 + (1 - bounce) * 40;
+    }
+  });
+  if (ants && antCurve) {
+    for (let i = 0; i < ants.count; i++) {
+      dummy.position.copy(antCurve.getPointAt(((i / ants.count) + now / 9000) % 1)); dummy.position.y = 2.2;
+      dummy.updateMatrix(); ants.setMatrixAt(i, dummy.matrix);
+    }
+    ants.instanceMatrix.needsUpdate = true;
+  }
+  if (walkRing.visible) { const s = 1 + 0.12 * Math.sin(now / 250); walkRing.scale.set(s, s, s); }
+  renderer.render(scene, camera);
+});
+$('#loading').classList.add('hide'); setTimeout(() => $('#loading').remove(), 500);
+render();
+setLook(store.get('store3d-look', 'real') === 'real');
+
+// thumbnails & full titles load in the background
+fetch('data/thumbs.json').then(r => r.json()).then(t => { thumbs = t; render(); }).catch(() => {});
+</script>
+</body>
+</html>
