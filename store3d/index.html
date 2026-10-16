@@ -1061,14 +1061,9 @@ function render() {
         <button data-quick="mic"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></i>ค้นด้วยเสียง</button>
         <button data-nav="fav"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20s-7-4.4-9.2-9A5 5 0 0 1 12 6a5 5 0 0 1 9.2 5c-2.2 4.6-9.2 9-9.2 9Z"/></svg></i>รายการโปรด</button>
         <button data-quick="map"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3Z"/><path d="M9 3v15M15 6v15"/></svg></i>แผนผังร้าน</button></div>
-      <h2 class="sec">เปิดร้านแบบไหน <small>แตะเพื่อจัดรายการ</small></h2>${kitsHtml()}
       <h2 class="sec">หมวดหมู่สินค้า <button class="more" data-nav="search">ดูทั้งหมด ›</button></h2>${catsHtml()}
-      <h2 class="sec">ค้นหายอดนิยม</h2>${chipsHtml()}
-      <h2 class="sec">ข้อมูลสาขาศาลายา</h2>
-      <div class="stat"><div><b>${data.stats.items.toLocaleString()}</b><span>รายการสินค้า</span></div>
-      <div><b>${Math.round(data.stats.mapped / data.stats.items * 100)}%</b><span>มีพิกัดบนผัง</span></div>
-      <div><b>${data.stats.bays.toLocaleString()}</b><span>ช่องวาง</span></div></div>
-      <div class="note">ตำแหน่งสินค้าจากข้อมูลสาขา ณ 1 ก.ย. 2569 · รูปและรายละเอียดจาก Makro PRO เฉพาะสินค้าที่จับคู่รหัสได้ · ยังไม่มีราคาและสต็อกของสาขา · รายการซื้อและรายการโปรดเก็บไว้ในเครื่องนี้เท่านั้น</div>`;
+      <h2 class="sec">เปิดร้านแบบไหน <small>แตะเพื่อจัดรายการ</small></h2>${kitsHtml()}
+      <h2 class="sec">ค้นหายอดนิยม</h2>${chipsHtml()}`;
   } else if (state.tab === 'fav') {
     const favs = state.fav.map(k => byNo.get(k)).filter(Boolean);
     body.innerHTML = `<h2 class="sec">รายการโปรด <small>${favs.length} รายการ</small></h2>
