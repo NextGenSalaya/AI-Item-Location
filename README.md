@@ -27,7 +27,7 @@ python store3d/serve.py 8765
 
 ```sh
 python build_pages.py
-node --experimental-vm-modules --test --test-isolation=none tests/pages.test.mjs
+node --experimental-vm-modules tests/pages.test.mjs
 python -m http.server 8766 --directory dist --bind 127.0.0.1
 ```
 

@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: '22'
       - name: Test business matching and static output
-        run: node --experimental-vm-modules --test --test-isolation=none tests/pages.test.mjs
+        run: node --experimental-vm-modules tests/pages.test.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
