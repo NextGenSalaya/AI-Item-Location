@@ -544,6 +544,7 @@ const CS = {
   glass: [[411.5, 1302, 478.5, 1302, 0.8]],                               // low glass partition on to ...
   wall: [[478.5, 1289, 478.5, 1369, 2.5]],                                // ... the side wall, bay 603-1 down to the outer wall
   floor: [[366, 1297], [478.5, 1297], [478.5, 1366], [368, 1366], [341, 1340]],
+  block: [[363, 1296], [481, 1296], [481, 1370], [367, 1370], [336, 1341], [337, 1336], [363, 1301]],   // room + counters: not walkable
   screens: [[381, 1302], [399, 1302], [356, 1322]],                       // staff monitors on the counter
 };
 data.bays.CS = [...CS.front, 0, 22];          // routable like a bay; added after bayKeys, so it gets no aisle sign
@@ -752,6 +753,21 @@ G.block = new Uint8Array(G.w * G.h);
     inGrid[i] = isIn(G.x0 + (gx + .5) * G.cell, G.y0 + (gy + .5) * G.cell) ? 1 : 0;
     if (!inGrid[i]) G.block[i] = 1;
   }
+  // staff-only areas are walled off, so routes go round them and reach counters from the shop side:
+  // the customer-service room, and the bakery's packing room behind the bakery / cake counters (540)
+  const STAFF_ONLY = [CS.block, [[352, 1144], [452, 1144], [452, 1185], [384, 1185], [352, 1218]]];
+  const inPoly = (poly, x, y) => {
+    let inside = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      const [xi, yi] = poly[i], [xj, yj] = poly[j];
+      if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside = !inside;
+    }
+    return inside;
+  };
+  for (let gy = 0; gy < G.h; gy++) for (let gx = 0; gx < G.w; gx++) {
+    const x = G.x0 + (gx + .5) * G.cell, y = G.y0 + (gy + .5) * G.cell;
+    if (STAFF_ONLY.some(p => inPoly(p, x, y))) G.block[gy * G.w + gx] = 1;
+  }
   // wall: straight runs along the building outline (build_data.py traces and straightens it), in short
   // pieces so the doorway at the entrance can be left open
   const WALL_H = 7, T = 2, PIECE = 6, pieces2 = [];
@@ -788,7 +804,7 @@ function nearestFree(x, y) {
 // Routing follows the main walkways: moves are straight (4 directions), every turn costs extra,
 // and cells close to fixtures cost more, so the route keeps to the middle of wide aisles and only
 // enters a narrow gap for the last stretch to the shelf.
-const ROUTE = { wide: 7, narrowCost: 3, turnCost: 6 };   // wide: clearance (cells) that counts as a main walkway
+const ROUTE = { wide: 5, narrowCost: 3, turnCost: 14 };   // wide: clearance (cells) that counts as a main walkway
 let clearance = null;
 function buildClearance() {          // grid distance (cells, 4-neighbour) to the nearest fixture / wall
   const N = G.w * G.h, d = new Uint16Array(N).fill(0xffff), q = new Int32Array(N);
@@ -881,6 +897,7 @@ function drawRoute(stops) {        // stops: bay keys in visiting order
     cur = goal;
   }
   if (pts.length < 2) return null;
+  window.lastRoute = { stops, pts: corners(pts).map(c => cellXY(...c)) };   // debugging: the drawn path in map units
   const v = corners(pts).map(c => { const [x, y] = cellXY(...c); const p = W(x, y); p.y = 1.6; return p; });
   if (v.length < 2) return null;
   const curve = roundedPath(v);
@@ -923,6 +940,7 @@ function flyTo(target, offset, ms = 900) {
 }
 // look at a point of the map from a given offset, e.g. from the browser console: lookAtMap(400, 1320, -60, 70, -110)
 window.lookAtMap = (x, y, dx, dy, dz) => flyTo(W(x, y), new THREE.Vector3(dx, dy, dz));
+window.routeToBays = keys => routeTo(keys);          // e.g. routeToBays(['603-3']) from the console
 const HOME_T = new THREE.Vector3(0, 0, 10);
 function home() { setSeg('3d'); flyTo(HOME_T, new THREE.Vector3(-120, 620, 640)); }
 function focusBay(k, mode = 'near') {
@@ -1300,10 +1318,13 @@ async function runAI() {
 function routeList() {
   const its = state.list.map(k => byNo.get(k)).filter(it => it?.bay);
   if (!its.length) return toast('ไม่มีสินค้าที่มีพิกัดบนผัง');
-  const order = orderStops(its.map(it => it.bay));
+  const bayGroup = new Map();                   // a bay with fresh + dry items counts as fresh
+  for (const it of its) bayGroup.set(it.bay, Math.min(bayGroup.get(it.bay) ?? 9, STOP_GROUP(it.cat, it.bay)));
+  const { order, till } = orderStops(its.map(it => it.bay), k => bayGroup.get(k));
   clearGroup(markGroup);
   order.forEach((k, i) => pin(k, `${i + 1} · ${k}`, its.find(it => it.bay === k).shelf));
-  state.routeOrder = order; routeTo(order, true);
+  if (till && order[order.length - 1] !== till) pin(till, 'ชำระเงิน', 0);
+  state.routeOrder = order; routeTo(order, true, till);
 }
 
 // ---------- walk mode: one stop at a time ----------
@@ -1377,8 +1398,8 @@ function openBay(k) {
   state.bay = k; state.sel = null; state.tab = 'search';
   clearGroup(markGroup); pin(k, `ช่อง ${k}`, 0); focusBay(k); render(); $('#body').scrollTop = 0;
 }
-function routeTo(keys, info) {
-  const r = drawRoute(keys);
+function routeTo(keys, info, end) {            // end: optional last leg (the checkout) after the stops
+  const r = drawRoute(end && keys[keys.length - 1] !== end ? [...keys, end] : keys);
   if (!r) return toast('หาเส้นทางไม่พบ');
   toast(`ระยะเดินประมาณ ${Math.round(r.metres)} เมตร`);
   if (info) { state.routeInfo = r; }
@@ -1398,32 +1419,67 @@ function walkDist(from) {                    // walking distance (cells) from on
   }
   return dist;
 }
-function orderStops(keys) {                 // nearest-neighbour from the entrance
-  const left = [...new Set(keys)], out = []; let [cx, cy] = data.entrance;
-  while (left.length) {
-    let bi = 0, bd = Infinity;
-    left.forEach((k, i) => { const d = Math.hypot(data.bays[k][0] - cx, data.bays[k][1] - cy); if (d < bd) { bd = d; bi = i; } });
-    const k = left.splice(bi, 1)[0]; out.push(k); [cx, cy] = data.bays[k];
-  }
-  // 2-opt on real walking distances: reverse stretches of the tour while that shortens it
-  const cells = [nearestFree(...data.entrance), ...out.map(bayGoal)];
-  const W2 = cells.map(c => walkDist(c));
+// shopping order: fresh & frozen first, then dry food (groceries, drinks, snacks), then non-food;
+// inside each group the nearest stop next; things at the checkout lanes last, and the walk ends at a till
+const TILLS = Object.keys(data.bays).filter(k => aisleOf(k) === '603');
+const SNAKE_GAP = 22;                          // map units: shelf goals closer than this in x share one walkway
+const SNAKE_SLACK = 1.2;                       // take the S if it walks at most 20% more than the shortest order
+const STOP_GROUP = (cat, bay) => aisleOf(bay) === '603' ? 3 : cat === 0 ? 0 : cat <= 3 ? 1 : 2;
+function orderStops(keys, groupOf = () => 0) {  // -> { order: bay keys, till: checkout lane to finish at }
+  const all = [...new Set(keys)], grp = [-1, ...all.map(groupOf)];
+  const cells = [nearestFree(...data.entrance), ...all.map(bayGoal)];   // node 0 = entrance, 1..n = stops
+  const W2 = cells.map(c => walkDist(c));                               // real walking distances
   const idx = cells.map(c => c[1] * G.w + c[0]);
-  const P = cells.map((_, i) => i);
-  const d = (a, b) => W2[P[a]][idx[P[b]]];
-  let better = true;
-  while (better) {
-    better = false;
-    for (let i = 1; i < P.length - 1; i++) for (let j = i + 1; j < P.length; j++) {
-      const after = j + 1 < P.length ? d(i, j + 1) - d(j, j + 1) : 0;
-      if (d(i - 1, j) - d(i - 1, i) + after < -1e-6) {
-        P.splice(i, j - i + 1, ...P.slice(i, j + 1).reverse());
-        out.splice(i - 1, j - i + 1, ...out.slice(i - 1, j).reverse());
-        better = true;
+  const tillIdx = TILLS.map(k => { const c = bayGoal(k); return c[1] * G.w + c[0]; });
+  const gxy = cells.map(c => cellXY(...c));
+  const dist = (a, b) => W2[a][idx[b]];
+  const walk = (from, seq) => seq.reduce((s, n, i) => s + dist(i ? seq[i - 1] : from, n), 0);
+  // an S through the walkways: stops standing in the same walkway form a column, columns are taken
+  // left→right (or right→left, whichever end is nearer) and each column is walked end to end once
+  const snake = (from, ns) => {
+    const cols = [];
+    for (const n of ns.slice().sort((a, b) => gxy[a][0] - gxy[b][0])) {
+      const col = cols[cols.length - 1];
+      if (col && gxy[n][0] - gxy[col[col.length - 1]][0] < SNAKE_GAP) col.push(n); else cols.push([n]);
+    }
+    for (const col of cols) col.sort((a, b) => gxy[a][1] - gxy[b][1]);
+    const out = [], cur = () => out.length ? out[out.length - 1] : from;
+    const near = col => Math.min(dist(cur(), col[0]), dist(cur(), col[col.length - 1]));
+    if (near(cols[cols.length - 1]) < near(cols[0])) cols.reverse();
+    for (const col of cols) {
+      if (dist(cur(), col[col.length - 1]) < dist(cur(), col[0])) col.reverse();
+      out.push(...col);
+    }
+    return out;
+  };
+  // the shortest order found: nearest stop next, then reverse stretches while that shortens the walk
+  const shortest = (from, ns) => {
+    const left = ns.slice(), out = [];
+    while (left.length) {
+      const w = W2[out.length ? out[out.length - 1] : from];
+      let bi = 0; left.forEach((n, i) => { if (w[idx[n]] < w[idx[left[bi]]]) bi = i; });
+      out.push(left.splice(bi, 1)[0]);
+    }
+    let best = walk(from, out), better = true, S = out;
+    while (better) {
+      better = false;
+      for (let i = 0; i < S.length - 1; i++) for (let j = i + 1; j < S.length; j++) {
+        const T = [...S.slice(0, i), ...S.slice(i, j + 1).reverse(), ...S.slice(j + 1)], l = walk(from, T);
+        if (l < best - 1e-6) { S = T; best = l; better = true; }
       }
     }
+    return S;
+  };
+  // zone by zone; the S is easier to follow, so it wins unless it is clearly longer (irregular areas like fresh)
+  let P = [0];
+  for (const g of [...new Set(grp.slice(1))].sort((a, b) => a - b)) {
+    const ns = grp.map((x, i) => x === g ? i : -1).filter(i => i > 0), from = P[P.length - 1];
+    const s = snake(from, ns), o = shortest(from, ns);
+    P.push(...(walk(from, s) <= walk(from, o) * SNAKE_SLACK ? s : o));
   }
-  return out;
+  const w = W2[P[P.length - 1]];
+  let ti = 0; tillIdx.forEach((t, i) => { if (w[t] < w[tillIdx[ti]]) ti = i; });
+  return { order: P.slice(1).map(n => all[n - 1]), till: TILLS[ti] };
 }
 function toggleList(k) {
   const i = state.list.indexOf(k);
