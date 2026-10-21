@@ -129,6 +129,8 @@ h2.sec .more{border:0;background:none;color:var(--red);font-size:13px;font-weigh
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
 .chip{border:1px solid #d9d9df;background:#fff;border-radius:18px;padding:6px 13px;font-size:13px}
 .chip:hover{border-color:var(--red);color:var(--red)}
+.place{display:flex;gap:12px;align-items:center;justify-content:space-between;background:#fff1f1;border:1px solid #f5c6c8;border-radius:12px;padding:12px 14px;margin:0 0 12px}
+.place b{display:block;font-size:15px}.place small{color:var(--muted);font-size:12.5px}
 .res-head{display:flex;justify-content:space-between;align-items:baseline;margin:2px 0 10px}
 .res-head h3{margin:0;font-size:16px}
 .res-head span{color:var(--muted);font-size:12.5px}
@@ -533,6 +535,57 @@ function textSprite(text, { bg = '#ffffff', fg = '#1d2330', scale = 1, bold = 60
   const ring = new THREE.Mesh(new THREE.RingGeometry(6, 9, 40), new THREE.MeshBasicMaterial({ color: '#1d2330' }));
   ring.rotation.x = -Math.PI / 2; ring.position.set(e.x, 0.3, e.z); scene.add(ring);
 }
+// ---------- customer service (จุดบริการลูกค้า): the counter room beside the entrance ----------
+// map units, traced from the drawing (~7.6 units = 1 m). Runs are centre lines [x1, y1, x2, y2, depth].
+// front = where a customer stands (route goal)
+const CS = {
+  front: [391, 1288],
+  counters: [[369, 1302, 411.5, 1302, 11], [369, 1305, 341.3, 1339.4, 10]],   // L counter: straight run, angled run ending at the entrance wall
+  glass: [[411.5, 1302, 478.5, 1302, 0.8]],                               // low glass partition on to ...
+  wall: [[478.5, 1289, 478.5, 1369, 2.5]],                                // ... the side wall, bay 603-1 down to the outer wall
+  floor: [[366, 1297], [478.5, 1297], [478.5, 1366], [368, 1366], [341, 1340]],
+  screens: [[381, 1302], [399, 1302], [356, 1322]],                       // staff monitors on the counter
+};
+data.bays.CS = [...CS.front, 0, 22];          // routable like a bay; added after bayKeys, so it gets no aisle sign
+{
+  const g = new THREE.Group(), M = (color, o = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.6, ...o });
+  const red = M('#c8102e'), white = M('#f7f7f5'), dark = M('#2b2f36'), glass = M('#cfe8f3', { transparent: true, opacity: 0.35 });
+  const run = ([x1, y1, x2, y2, dep], y, h, mat, extra = 0) => {
+    const len = Math.hypot(x2 - x1, y2 - y1), b = new THREE.Mesh(new THREE.BoxGeometry(len + dep * 0.5, h, dep + extra), mat);
+    const p = W((x1 + x2) / 2, (y1 + y2) / 2);
+    b.position.set(p.x, y + h / 2, p.z); b.rotation.y = -Math.atan2(y2 - y1, x2 - x1); g.add(b);
+  };
+  // the room's own floor, a shade warmer than the shop floor
+  const shape = new THREE.Shape(CS.floor.map(([x, y]) => { const p = W(x, y); return new THREE.Vector2(p.x, -p.z); }));
+  const fl = new THREE.Mesh(new THREE.ShapeGeometry(shape), M('#efe9df')); fl.rotation.x = -Math.PI / 2; fl.position.y = 0.12; g.add(fl);
+  // counter: dark kick, red body, white top with a small overhang (about 1 m high)
+  for (const c of CS.counters) { run(c, 0, 0.8, dark, -1); run(c, 0.8, 6.4, red); run(c, 7.2, 0.6, white, 1.4); }
+  for (const c of CS.glass) { run(c, 0, 9, glass); run(c, 9, 0.5, white, 0.6); }
+  for (const c of CS.wall) { run(c, 0, 12, white); run(c, 3.2, 1.2, red, 0.2); }
+  for (const [x, y] of CS.screens) {
+    const p = W(x, y), s = new THREE.Mesh(new THREE.BoxGeometry(3.4, 2.4, 0.4), dark);
+    s.position.set(p.x, 9.2, p.z + 2); g.add(s);
+  }
+  // hanging sign above the straight run, readable from the shop floor
+  const cv = document.createElement('canvas'); cv.width = 1024; cv.height = 192;
+  const ctx = cv.getContext('2d'), tex = new THREE.CanvasTexture(cv);
+  const paint = () => {
+    ctx.fillStyle = '#d71920'; ctx.fillRect(0, 0, 1024, 192);
+    ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.font = '700 82px "IBM Plex Sans Thai"'; ctx.fillText('บริการลูกค้า', 512, 78);
+    ctx.font = '600 40px "IBM Plex Sans Thai"'; ctx.fillText('CUSTOMER SERVICE', 512, 150);
+    tex.needsUpdate = true;
+  };
+  paint(); document.fonts?.ready.then(paint);                             // repaint once the Thai web font is in
+  tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
+  const sp = W(390, 1300), sign = new THREE.Mesh(new THREE.PlaneGeometry(40, 7.5), new THREE.MeshBasicMaterial({ map: tex }));
+  sign.position.set(sp.x, 21, sp.z); sign.rotation.y = Math.PI; g.add(sign);   // faces the shop floor (north)
+  const back = new THREE.Mesh(new THREE.BoxGeometry(40.6, 8.1, 0.6), red); back.position.set(sp.x, 21, sp.z + 0.35); g.add(back);
+  for (const dx of [-16, 16]) {                                           // two hanging rods
+    const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 12), dark); rod.position.set(sp.x + dx, 31, sp.z + 0.3); g.add(rod);
+  }
+  scene.add(g);
+}
 
 // ---------- realistic look: steel racking with stock, freezers, pallets, concrete floor ----------
 let realGroup = null, concreteTex = null;
@@ -549,9 +602,23 @@ async function buildReal() {
     v3.set(c.x + ca * u - sa * v, y, c.z + sa * u + ca * v); q.setFromAxisAngle(up, -ang); sc.set(sx, sy, sz);
     list.push([m.compose(v3, q, sc).clone(), color]);
   };
+  const lanes = [];
   pieces.forEach(pc => {
     const [x, y, ang, len, dep, k] = pc, c = W(x, y), h = pieceH(pc);
     if (!k) return add(L.grey, c, ang, 0, h / 2, 0, len, h, dep);
+    if (aisleOf(k) === '603') {              // checkout lane: counter along the lane, belt, till, numbered pole
+      const RED = '#c8102e', DARK = '#2b2f36';
+      add(L.prod, c, 0, -6, 0.4, 0, 4.6, 0.8, 18, DARK);           // kick plate
+      add(L.prod, c, 0, -6, 4.4, 0, 5, 7.2, 18.4, RED);             // counter body
+      add(L.white, c, 0, -6, 8.3, 0, 5.8, 0.6, 19);                 // top
+      add(L.prod, c, 0, -6.4, 8.75, 3.2, 3.4, 0.3, 11.5, DARK);     // conveyor belt
+      add(L.prod, c, 0, -3.9, 10.4, -6.5, 0.5, 2.6, 3.2, DARK);    // till screen
+      add(L.white, c, 0, -2.4, 6.5, -6.5, 2.6, 13, 3.6);           // cashier stand
+      add(L.grey, c, 0, -8.6, 14, -8.4, 0.6, 28, 0.6);              // front-right pole: odd lane (sign sprites below)
+      add(L.grey, c, 0, -3.2, 14, 8.4, 0.6, 28, 0.6);               // back-left pole: even lane
+      lanes.push([c, k.split('-')[1]]);
+      return;
+    }
     const z = zone(aisleOf(k));
     if (z === 'dry') {                       // gondola / pallet racking: blue uprights, orange beams, stock on every level
       const lh = h / LEVELS;
@@ -616,6 +683,12 @@ async function buildReal() {
     im.receiveShadow = name !== 'glass';
     grp.add(im);
   }
+  for (const [c, n] of lanes) {             // each counter serves two lanes: 2n-1 on the front-right pole, 2n on the back-left
+    [[2 * n - 1, -8.6, -8.4], [2 * n, -3.2, 8.4]].forEach(([lane, dx, dz]) => {
+      const s = textSprite(String(lane), { bg: '#d71920', fg: '#ffffff', scale: 0.7, bold: 700, onTop: false });
+      s.position.set(c.x + dx, 31, c.z + dz); grp.add(s);
+    });
+  }
   // polished concrete floor inside the building
   const img = await new THREE.ImageLoader().loadAsync(`data/footprint.png?v=${data.version}`);
   const cw = 1190, ch = 1684, cv = document.createElement('canvas'); cv.width = cw; cv.height = ch;
@@ -679,18 +752,24 @@ G.block = new Uint8Array(G.w * G.h);
     inGrid[i] = isIn(G.x0 + (gx + .5) * G.cell, G.y0 + (gy + .5) * G.cell) ? 1 : 0;
     if (!inGrid[i]) G.block[i] = 1;
   }
-  // wall: one short box per footprint pixel-run on the boundary (sampled at 2 map units)
-  const st = 2, walls = [];
-  for (let y = 0; y < img.height; y += st) for (let x = 0; x < img.width; x += st) {
-    if (!isIn(x, y)) continue;
-    if (Math.hypot(x - data.entrance[0], y - data.entrance[1]) < 18) continue;   // doorway
-    if (!isIn(x - st, y) || !isIn(x + st, y) || !isIn(x, y - st) || !isIn(x, y + st)) walls.push([x, y]);
-  }
-  const WALL_H = 7;
-  const wall = new THREE.InstancedMesh(new THREE.BoxGeometry(st, WALL_H, st),
-    new THREE.MeshStandardMaterial({ color: '#8d96a8', roughness: 0.9 }), walls.length);
-  const m = new THREE.Matrix4();
-  walls.forEach(([x, y], i) => { const p = W(x, y); wall.setMatrixAt(i, m.makeTranslation(p.x, WALL_H / 2, p.z)); });
+  // wall: straight runs along the building outline (build_data.py traces and straightens it), in short
+  // pieces so the doorway at the entrance can be left open
+  const WALL_H = 7, T = 2, PIECE = 6, pieces2 = [];
+  for (const loop of data.outline || []) loop.forEach((a, i) => {
+    const b = loop[(i + 1) % loop.length], len = Math.hypot(b[0] - a[0], b[1] - a[1]), n = Math.max(1, Math.round(len / PIECE));
+    for (let j = 0; j < n; j++) {
+      const t0 = j / n, t1 = (j + 1) / n, mx = a[0] + (b[0] - a[0]) * (t0 + t1) / 2, my = a[1] + (b[1] - a[1]) * (t0 + t1) / 2;
+      if (Math.hypot(mx - data.entrance[0], my - data.entrance[1]) < 18) continue;   // doorway
+      pieces2.push([mx, my, len / n + T, Math.atan2(b[1] - a[1], b[0] - a[0])]);
+    }
+  });
+  const wall = new THREE.InstancedMesh(new THREE.BoxGeometry(1, WALL_H, T),
+    new THREE.MeshStandardMaterial({ color: '#8d96a8', roughness: 0.9 }), pieces2.length);
+  const m = new THREE.Matrix4(), q = new THREE.Quaternion(), yAxis = new THREE.Vector3(0, 1, 0);
+  pieces2.forEach(([x, y, l, ang], i) => {
+    const p = W(x, y); p.y = WALL_H / 2; q.setFromAxisAngle(yAxis, -ang);
+    wall.setMatrixAt(i, m.compose(p, q, new THREE.Vector3(l, 1, 1)));
+  });
   wall.castShadow = true;
   scene.add(wall);
 }
@@ -842,6 +921,8 @@ function flyTo(target, offset, ms = 900) {
   fly = { t0: performance.now(), ms, fromT: controls.target.clone(), toT: target.clone(),
           fromP: camera.position.clone(), toP: target.clone().add(offset) };
 }
+// look at a point of the map from a given offset, e.g. from the browser console: lookAtMap(400, 1320, -60, 70, -110)
+window.lookAtMap = (x, y, dx, dy, dz) => flyTo(W(x, y), new THREE.Vector3(dx, dy, dz));
 const HOME_T = new THREE.Vector3(0, 0, 10);
 function home() { setSeg('3d'); flyTo(HOME_T, new THREE.Vector3(-120, 620, 640)); }
 function focusBay(k, mode = 'near') {
@@ -1102,7 +1183,10 @@ function render() {
     CATS.forEach(c => counts[c.i] = found.filter(it => it.cat === c.i).length);
     const all = state.qcat != null ? found.filter(it => it.cat === state.qcat) : found;
     const res = state.onlyMapped ? all.filter(it => it.bay) : all, shown = res.slice(0, 60);
-    body.innerHTML = `<div class="res-head"><h3>ผลการค้นหา “${esc(state.q)}”</h3><span>${res.length.toLocaleString()} รายการ</span></div>
+    const csHit = /บริการ|ลูกค้า|customer|service|คืนสินค้า|เปลี่ยนสินค้า|สมาชิก|member|เคาน์เตอร์|ติดต่อ/i.test(state.q);
+    body.innerHTML = `${csHit ? `<div class="place"><div><b>จุดบริการลูกค้า</b><small>Customer Service · สมัครสมาชิก · คืน/เปลี่ยนสินค้า · ข้างทางเข้า</small></div>
+        <button class="btn primary" data-act="gocs">นำทาง</button></div>` : ''}
+      <div class="res-head"><h3>ผลการค้นหา “${esc(state.q)}”</h3><span>${res.length.toLocaleString()} รายการ</span></div>
       ${catChips(state.qcat, counts)}
       <div class="filter"><button class="chip ${state.onlyMapped ? '' : 'on'}" data-filter="0">ทั้งหมด ${all.length}</button><button class="chip ${state.onlyMapped ? 'on' : ''}" data-filter="1">มีตำแหน่งบนผัง ${all.filter(it => it.bay).length}</button></div>
       ${shown.length ? `<div class="grid">${shown.map(pcard).join('')}</div>` : '<p class="hint">ไม่พบสินค้า ลองคำค้นอื่น หรือพิมพ์รหัสช่อง เช่น 014-</p>'}
@@ -1405,6 +1489,7 @@ $('#body').addEventListener('click', e => {
   const chip = e.target.closest('[data-q]');
   if (chip) { $('#q').value = chip.dataset.q; return onQuery(); }
   const act = e.target.closest('[data-act]')?.dataset.act;
+  if (act === 'gocs') { clearGroup(markGroup); routeTo(['CS']); if (isPhone()) showMap(true); return; }
   if (act === 'route') { routeTo([state.sel.bay]); if (isPhone()) showMap(true); return; }
   if (act === 'showmap') return showMap(true);
   if (act === 'eye') { setSeg('eye'); focusBay(state.sel.bay, 'eye'); if (isPhone()) showMap(true); return; }
