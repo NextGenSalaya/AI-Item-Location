@@ -151,6 +151,7 @@ h2.sec .more{border:0;background:none;color:var(--red);font-size:13px;font-weigh
 @keyframes sp{to{transform:rotate(360deg)}}
 .modal{position:fixed;inset:0;background:rgba(20,22,30,.5);z-index:20;display:grid;place-items:center;padding:16px}
 .modal[hidden]{display:none}
+#scanRetry[hidden]{display:none}
 .modal .sheet{background:var(--bg);border-radius:18px;padding:16px;width:min(440px,100%)}
 #scanVideo{width:100%;aspect-ratio:4/3;background:#111;border-radius:12px;object-fit:cover;display:block}
 .sacts{position:absolute;right:6px;top:4px;display:flex;gap:2px;align-items:center}
@@ -365,8 +366,9 @@ h2.sec .more{border:0;background:none;color:var(--red);font-size:13px;font-weigh
 <div class="modal" id="scanModal" hidden>
   <div class="sheet">
     <div class="res-head"><h3>สแกนบาร์โค้ด</h3><button class="back" id="scanClose" style="margin:0">ปิด ✕</button></div>
-    <video id="scanVideo" playsinline muted></video>
-    <p class="hint" id="scanMsg">เล็งกล้องไปที่บาร์โค้ดของสินค้า</p>
+    <video id="scanVideo" playsinline autoplay muted></video>
+    <button class="btn" id="scanRetry" hidden>ลองเปิดกล้องใหม่</button>
+    <p class="hint" id="scanMsg" role="status" aria-live="polite">เล็งกล้องไปที่บาร์โค้ดของสินค้า</p>
     <div class="btns"><input id="scanInput" class="ai-input" style="min-height:0;height:44px;flex:1" inputmode="numeric" placeholder="หรือพิมพ์เลขบาร์โค้ด / รหัสสินค้า">
       <button class="btn primary" id="scanGo">ค้นหา</button></div>
   </div>
@@ -1586,11 +1588,20 @@ $('#micBtn').onclick = () => {
   rec.start();
 };
 
-// barcode scanning: camera + BarcodeDetector where the browser has it, typed barcode otherwise
-let scanStream = null, scanTimer = null;
+// Camera frames are decoded on-device; ZXing supports Safari without BarcodeDetector.
+import { createCameraScanner, scannerErrorMessage } from './barcode-scanner.mjs';
+const barcodeScanner = createCameraScanner({
+  video: $('#scanVideo'),
+  onResult: findBarcode,
+  onStatus: text => { $('#scanMsg').textContent = text; },
+  onError: error => {
+    $('#scanVideo').style.display = 'none';
+    $('#scanRetry').hidden = false;
+    $('#scanMsg').textContent = scannerErrorMessage(error);
+  },
+});
 function closeScan() {
-  clearInterval(scanTimer); scanTimer = null;
-  scanStream?.getTracks().forEach(t => t.stop()); scanStream = null;
+  barcodeScanner.stop();
   $('#scanModal').hidden = true;
 }
 function findBarcode(code) {
@@ -1601,32 +1612,23 @@ function findBarcode(code) {
   if (hits.length === 1) select(hits[0]);
   else if (!hits.length) toast('ไม่พบสินค้าที่มีบาร์โค้ดนี้ในสาขา');
 }
-$('#scanBtn').onclick = async () => {
+function startScan() {
+  $('#scanRetry').hidden = true;
+  $('#scanVideo').style.display = '';
+  return barcodeScanner.start();
+}
+$('#scanBtn').onclick = () => {
   $('#scanModal').hidden = false; $('#scanInput').value = '';
-  const msg = $('#scanMsg'), video = $('#scanVideo');
-  if (!('BarcodeDetector' in window) || !navigator.mediaDevices?.getUserMedia) {
-    video.style.display = 'none';
-    msg.textContent = 'เบราว์เซอร์นี้ยังสแกนด้วยกล้องไม่ได้ (ใช้ได้ใน Chrome บนมือถือ Android) พิมพ์เลขบาร์โค้ดด้านล่างแทนได้';
-    return $('#scanInput').focus();
-  }
-  video.style.display = ''; msg.textContent = 'เล็งกล้องไปที่บาร์โค้ดของสินค้า';
-  try {
-    scanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-    video.srcObject = scanStream; await video.play();
-    const det = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'itf'] });
-    scanTimer = setInterval(async () => {
-      const codes = await det.detect(video).catch(() => []);
-      if (codes.length) findBarcode(codes[0].rawValue);
-    }, 300);
-  } catch {
-    video.style.display = 'none';
-    msg.textContent = 'เปิดกล้องไม่ได้ กรุณาอนุญาตให้ใช้กล้อง หรือพิมพ์เลขบาร์โค้ดด้านล่าง';
-  }
+  return startScan();
 };
+$('#scanRetry').onclick = startScan;
 $('#scanClose').onclick = closeScan;
 $('#scanModal').onclick = e => { if (e.target.id === 'scanModal') closeScan(); };
 $('#scanGo').onclick = () => findBarcode($('#scanInput').value);
 $('#scanInput').onkeydown = e => { if (e.key === 'Enter') findBarcode(e.target.value); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#scanModal').hidden) closeScan(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) closeScan(); });
+window.addEventListener('pagehide', closeScan);
 
 // ---------- loop ----------
 function resize() {

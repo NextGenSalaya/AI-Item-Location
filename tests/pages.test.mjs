@@ -49,3 +49,5 @@ test('Inline modules parse without syntax errors', () => {
     assert.doesNotThrow(() => new SourceTextModule(script));
   }
 });
+
+import './barcode-scanner.test.mjs';

@@ -49,6 +49,10 @@ def build():
     html = html.replace('เลือกประเภทร้าน ระบบจะจัดรายการให้', 'เลือกประเภทร้าน ระบบจะจัดชุดรายการตั้งต้นให้ (ปรับปริมาณตามการใช้งานจริง)')
     (OUTPUT / 'index.html').write_text(html, encoding='utf-8')
     shutil.copy2(SOURCE / 'static-planner.mjs', OUTPUT / 'static-planner.mjs')
+    shutil.copy2(SOURCE / 'barcode-scanner.mjs', OUTPUT / 'barcode-scanner.mjs')
+    (OUTPUT / 'vendor').mkdir(exist_ok=True)
+    for name in ('zxing-library-0.21.3.min.js', 'ZXING-LICENSE', 'README.md'):
+        shutil.copy2(SOURCE / 'vendor' / name, OUTPUT / 'vendor' / name)
     (OUTPUT / '.nojekyll').touch()
     print(f'Built {len(store["items"])} item rows; {len(KITS) * 2} starter plans; 100 detail files')
 
