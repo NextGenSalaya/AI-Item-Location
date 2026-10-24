@@ -51,3 +51,18 @@ test('Inline modules parse without syntax errors', () => {
 });
 
 import './barcode-scanner.test.mjs';
+
+test('All six translation dictionaries and English product names ship with Pages', () => {
+  for (const name of ['ui','cats','kits']) {
+    const dictionary=read(`i18n-${name}.json`);
+    assert.deepEqual(dictionary.langs,['en','zh','my','ko','ja','ru']);
+    assert.ok(Object.keys(dictionary.t).length>0);
+    for (const translations of Object.values(dictionary.t)) {
+      assert.equal(translations.length,6);
+      assert.ok(translations.every(t=>typeof t==='string' && t.length>0));
+    }
+  }
+  const names=read('names-en.json');
+  assert.ok(Object.keys(names).length>0);
+  assert.ok(Object.values(names).every(v=>typeof v==='string' && v.length>0));
+});

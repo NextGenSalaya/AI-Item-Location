@@ -16,7 +16,7 @@ def build():
     # Allowlist customer-facing data. Never publish Python, secrets or review inputs.
     data = OUTPUT / 'data'
     data.mkdir(exist_ok=True)
-    for name in ('store.json', 'thumbs.json', 'floor.png', 'footprint.png'):
+    for name in ('store.json', 'thumbs.json', 'floor.png', 'footprint.png', 'i18n-ui.json', 'i18n-cats.json', 'i18n-kits.json', 'names-en.json'):
         shutil.copy2(SOURCE / 'data' / name, data / name)
     (data / 'details').mkdir(exist_ok=True)
     for number in range(100):

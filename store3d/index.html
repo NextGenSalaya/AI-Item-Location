@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Makro AI Item Location | ศาลายา</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --red:#e60012;--red-dark:#b3000e;--red-soft:#fff0f1;--ink:#1d2330;--muted:#6b7280;--line:#ececf0;
@@ -13,7 +13,7 @@
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
-  font-family:"IBM Plex Sans Thai",system-ui,sans-serif;font-size:14px;overflow:hidden}
+  font-family:"IBM Plex Sans Thai","Noto Sans Myanmar",system-ui,sans-serif;font-size:14px;overflow:hidden}
 body{display:flex;flex-direction:column}
 button{font:inherit;cursor:pointer;color:inherit}
 /* ---- header (white, red brand, pill search) ---- */
@@ -33,6 +33,17 @@ header{background:#fff;position:relative;z-index:6;box-shadow:0 2px 8px rgba(0,0
 .hicon:hover{background:#f4f4f6}
 .badge{position:absolute;top:3px;right:1px;min-width:18px;height:18px;border-radius:9px;background:var(--red);color:#fff;font-size:11px;font-weight:600;display:grid;place-items:center;padding:0 5px;border:2px solid #fff}
 .badge:empty,.badge[data-n="0"]{display:none}
+.langwrap{position:relative;flex:none}
+.langbtn{width:auto;padding:0 8px;gap:4px;grid-auto-flow:column;border-radius:22px}
+.langbtn span{font:700 11px/1 Arial,sans-serif;letter-spacing:.5px;color:#555960}
+.langmenu{position:absolute;right:0;top:48px;background:#fff;border-radius:14px;box-shadow:var(--shadow);padding:6px;z-index:30;min-width:150px;display:grid}
+.langmenu[hidden]{display:none}
+.langmenu button{border:0;background:none;text-align:left;padding:9px 12px;border-radius:9px;font-size:15px;display:flex;align-items:center;gap:10px}
+.flag{flex:none;border-radius:3px;box-shadow:0 0 0 1px rgba(0,0,0,.12)}
+.langbtn span{display:flex;align-items:center;gap:5px}
+.langbtn .flag{width:20px;height:13px}
+.langmenu button:hover{background:#f4f4f6}
+.langmenu button.on{color:var(--red);font-weight:600;background:var(--red-soft)}
 .navrow{display:flex;gap:6px;padding:0 20px;border-top:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
 .navrow button{border:0;background:none;padding:11px 12px;font-size:15px;font-weight:500;color:#3b3f4a;border-bottom:3px solid transparent;white-space:nowrap;display:flex;gap:6px;align-items:center}
 .navrow button.on{color:var(--red);border-bottom-color:var(--red)}
@@ -329,6 +340,8 @@ h2.sec .more{border:0;background:none;color:var(--red);font-size:13px;font-weigh
       <div class="sacts"><button class="clear" id="qclear" aria-label="ล้าง">✕</button><button class="sbtn" id="micBtn" title="ค้นหาด้วยเสียง" aria-label="ค้นหาด้วยเสียง"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button class="sbtn" id="scanBtn" title="สแกนบาร์โค้ด" aria-label="สแกนบาร์โค้ด"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2"/><path d="M8 8v8M11 8v8M14 8v8M17 8v8"/></svg></button></div>
     </div>
     <div class="store-chip" title="สาขาที่ใช้ข้อมูล"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></svg>สาขาศาลายา</div>
+    <div class="langwrap"><button class="hicon langbtn" id="langBtn" title="ภาษา · Language" aria-label="ภาษา · Language"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3Z"/></svg><span id="langCode" translate="no">TH</span></button>
+      <div class="langmenu" id="langMenu" hidden></div></div>
     <button class="hicon" data-nav="fav" title="รายการโปรด"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20s-7-4.4-9.2-9A5 5 0 0 1 12 6a5 5 0 0 1 9.2 5c-2.2 4.6-9.2 9-9.2 9Z"/></svg><span class="badge" id="favCount" data-n="0"></span></button>
     <button class="hicon" data-nav="list" title="รายการซื้อ"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 4h2l2.4 10.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 7H6.2"/><circle cx="9" cy="19" r="1.6"/><circle cx="17" cy="19" r="1.6"/></svg><span class="badge" id="listCount" data-n="0"></span></button>
   </div>
@@ -392,6 +405,96 @@ const store = { get(k, d){ try{ return JSON.parse(localStorage.getItem(k)) ?? d 
 
 // ---------- data ----------
 const data = await fetch('data/store.json', { cache: 'no-cache' }).then(r => r.json());
+
+// ---------- languages: the page is written in Thai; text on screen is swapped for the chosen language ----------
+// data/i18n-{ui,cats,kits}.json: { langs: [...], t: { "Thai text": [one per lang] } }; "{0}" in a key matches any text (that part
+// is translated too when the dictionary knows it), "{q}" matches text kept as typed. Product names (translate="no")
+// and anything missing from the dictionary stay in Thai.
+const LANGS = [['th', 'ไทย'], ['en', 'English'], ['zh', '中文'], ['my', 'မြန်မာ'], ['ko', '한국어'], ['ja', '日本語'], ['ru', 'Русский']];
+// flags as small SVGs (flag emoji show as letters on Windows); 3:2, simplified where the real flag is detailed
+const star = (cx, cy, r, fill) => `<path fill="${fill}" d="${Array.from({ length: 10 }, (_, i) => {
+  const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .4 : r;
+  return (i ? 'L' : 'M') + (cx + rr * Math.cos(a)).toFixed(2) + ' ' + (cy + rr * Math.sin(a)).toFixed(2); }).join('')}Z"/>`;
+const FLAGS = {
+  th: '<rect width="30" height="20" fill="#a51931"/><rect y="3.33" width="30" height="13.34" fill="#f4f5f8"/><rect y="6.67" width="30" height="6.66" fill="#2d2a4a"/>',
+  en: '<rect width="30" height="20" fill="#012169"/><path d="M0 0l30 20M30 0L0 20" stroke="#fff" stroke-width="4"/><path d="M0 0l30 20M30 0L0 20" stroke="#c8102e" stroke-width="1.6"/><path d="M15 0v20M0 10h30" stroke="#fff" stroke-width="6"/><path d="M15 0v20M0 10h30" stroke="#c8102e" stroke-width="3.4"/>',
+  zh: '<rect width="30" height="20" fill="#de2910"/>' + star(5, 5, 3, '#ffde00') + star(10, 2, 1, '#ffde00') + star(12, 4, 1, '#ffde00') + star(12, 7, 1, '#ffde00') + star(10, 9, 1, '#ffde00'),
+  my: '<rect width="30" height="20" fill="#fecb00"/><rect y="6.67" width="30" height="6.66" fill="#34b233"/><rect y="13.33" width="30" height="6.67" fill="#ea2839"/>' + star(15, 11, 7, '#fff'),
+  ko: '<rect width="30" height="20" fill="#fff"/><circle cx="15" cy="10" r="5" fill="#0047a0"/><path d="M10 10a5 5 0 0 1 10 0a2.5 2.5 0 0 1-5 0a2.5 2.5 0 0 0-5 0Z" fill="#cd2e3a"/>'
+    + '<g stroke="#000" stroke-width="1.1"><path d="M5 4l3-2.2M5.8 5l3-2.2M6.6 6l3-2.2M21.2 1.8l3 2.2M20.4 2.8l3 2.2M19.6 3.8l3 2.2M5 16l3 2.2M5.8 15l3 2.2M6.6 14l3 2.2M21.2 18.2l3-2.2M20.4 17.2l3-2.2M19.6 16.2l3-2.2"/></g>',
+  ja: '<rect width="30" height="20" fill="#fff"/><circle cx="15" cy="10" r="6" fill="#bc002d"/>',
+  ru: '<rect width="30" height="20" fill="#fff"/><rect y="6.67" width="30" height="6.66" fill="#0039a6"/><rect y="13.33" width="30" height="6.67" fill="#d52b1e"/>',
+};
+const flag = l => `<svg class="flag" viewBox="0 0 30 20" width="24" height="16" aria-hidden="true">${FLAGS[l]}</svg>`;
+const DICT = new Map(), PATTERNS = [];
+for (const d of await Promise.all(['ui', 'cats', 'kits'].map(f => fetch(`data/i18n-${f}.json`).then(r => r.json()).catch(() => null))))
+  if (d) for (const [th, tr] of Object.entries(d.t)) DICT.set(th, Object.fromEntries(d.langs.map((l, i) => [l, tr[i]])));
+for (const [th] of DICT) if (th.includes('{')) {
+  const names = [];
+  const re = th.replace(/[.*+?^$()|[\]\\]/g, '\\$&').replace(/\{(\w)\}/g, (_, k) => { names.push(k); return '(.+?)'; });
+  PATTERNS.push([new RegExp('^' + re + '$'), th, names]);
+}
+PATTERNS.sort((a, b) => b[1].length - a[1].length);   // longest (most specific) first: "ชั้น {0} นับจากล่าง" before "ชั้น {0}"
+const THAI = /[\u0E00-\u0E7F]/;
+let lang = store.get('store3d-lang', null) || (LANGS.find(([l]) => l !== 'th' && navigator.language?.startsWith(l)) || ['th'])[0];
+const word = (th, l) => DICT.get(th)?.[l] || DICT.get(th)?.en;
+function tr(s) {                                  // one piece of Thai UI text -> current language
+  if (lang === 'th' || !THAI.test(s)) return s;
+  const w = word(s, lang); if (w) return w;
+  for (const [re, th, names] of PATTERNS) {
+    const m = s.match(re); if (!m) continue;
+    const out = word(th, lang); if (!out) continue;
+    return out.replace(/\{(\w)\}/g, (_, k) => { const v = m[names.indexOf(k) + 1]; return k === 'q' ? v : tr(v); });
+  }
+  let m = s.match(/^([^\u0E00-\u0E7F]+)(.*)$/s);                   // leading symbols: "← ", "✦ ", "+ "
+  if (m) return m[1] + tr(m[2]);
+  if (s.includes(' · ')) return s.split(' · ').map(p => tr(p.trim())).join(' · ');
+  m = s.match(/^(.*?)([^\u0E00-\u0E7F]+)$/s);                      // trailing symbols / numbers: " ›", " 12", "…"
+  if (m && m[1]) { const h = tr(m[1]); if (h !== m[1]) return h + m[2]; }
+  return s;
+}
+const ORIG = new WeakMap(), ORIG_ATTR = new WeakMap(), ATTRS = ['placeholder', 'title', 'aria-label'], TITLE = document.title;
+function trNode(n) {                              // text node: keep its Thai source, show the translation
+  const src = ORIG.get(n) ?? n.data;
+  if (!ORIG.has(n)) { if (!THAI.test(src)) return; ORIG.set(n, src); }
+  const core = src.trim(); if (!core) return;
+  const out = lang === 'th' ? src : src.replace(core, tr(core.replace(/\s+/g, ' ')));
+  if (n.data !== out) n.data = out;
+}
+function trTree(root) {
+  if (root.nodeType === 3) { if (!root.parentElement?.closest('[translate="no"],script,style,textarea')) trNode(root); return; }
+  if (root.nodeType !== 1 || root.closest('[translate="no"],script,style,textarea')) return;
+  for (const el of [root, ...root.querySelectorAll('[placeholder],[title],[aria-label]')]) {
+    if (el.closest('[translate="no"]')) continue;
+    const src = ORIG_ATTR.get(el) || {};
+    for (const a of ATTRS) if (el.hasAttribute(a)) {
+      if (!(a in src) && THAI.test(el.getAttribute(a))) src[a] = el.getAttribute(a);
+      if (a in src) el.setAttribute(a, tr(src[a]));
+    }
+    ORIG_ATTR.set(el, src);
+  }
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n =>
+    n.parentElement.closest('[translate="no"],script,style,textarea') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  for (let n; (n = w.nextNode());) trNode(n);
+}
+new MutationObserver(ms => { if (lang !== 'th') for (const m of ms) m.addedNodes.forEach(trTree); })
+  .observe(document.body, { childList: true, subtree: true });
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.title = tr(TITLE);
+  $('#langCode').innerHTML = flag(lang) + lang.toUpperCase();
+  document.querySelectorAll('#langMenu [data-lang]').forEach(b => b.classList.toggle('on', b.dataset.lang === lang));
+  trTree(document.body);
+}
+$('#langMenu').innerHTML = LANGS.map(([l, name]) => `<button data-lang="${l}" translate="no">${flag(l)}${name}</button>`).join('');
+$('#langBtn').onclick = e => { e.stopPropagation(); $('#langMenu').hidden = !$('#langMenu').hidden; };
+document.addEventListener('click', () => { $('#langMenu').hidden = true; });
+$('#langMenu').onclick = e => {
+  const b = e.target.closest('[data-lang]'); if (!b) return;
+  lang = b.dataset.lang; store.set('store3d-lang', lang); applyLang(); render();   // render: product names
+};
+applyLang();
+
 const [MW, MH] = data.size;
 const CX = 700, CY = 870;                       // centre of the sales floor (map units)
 const norm = s => s.toLowerCase().replace(/[็-์]/g, '').replace(/\s+/g, ' ');   // Thai tone-mark order varies in the data
@@ -414,6 +517,17 @@ const bayCenter = k => {
 };
 
 const aisleOf = k => k.split('-')[0];
+// how a location is named to shoppers: fresh-food aisles (5xx) and the walled wine room by department,
+// everything else as "ล็อกสินค้าที่ 008"
+const DEPT = { 510: 'แผนกผักและผลไม้', 520: 'แผนกเนื้อสัตว์', 530: 'แผนกอาหารทะเล', 540: 'แผนกเบเกอรี่', 541: 'แผนกเบเกอรี่',
+  550: 'แผนกนมและอาหารแช่เย็น', 560: 'แผนกอาหารแช่แข็ง', 580: 'แผนกเส้นและอาหารเอเชีย',
+  '053': 'แผนกไวน์ สุรา WINE LIQUOR', '054': 'แผนกไวน์ สุรา WINE LIQUOR' };
+// single bays with a name of their own
+const ZONE_NAME = { '550-40': 'โซน ARO ไก่อบ', '550-41': 'โซน ARO ไก่อบ', '550-42': 'โซน ARO ไก่อบ' };
+const isDept = a => a in DEPT || a[0] === '5';
+const aisleLabel = a => isDept(a) ? DEPT[a] || 'แผนกของสด' : `ล็อกสินค้าที่ ${a}`;
+const placeLabel = k => ZONE_NAME[k] || aisleLabel(aisleOf(k));          // where an item is, for its location box
+const bayLabel = k => ZONE_NAME[k] || isDept(aisleOf(k)) ? `${placeLabel(k)} · ${k}` : `ล็อกสินค้าที่ ${k}`;
 const zone = a => { const n = +a; return n >= 500 && n < 600 ? 'cold' : n >= 600 && n < 700 ? 'fresh' : 'dry'; };
 const bayH = k => ({ cold: 12, fresh: 9, dry: 18 })[zone(aisleOf(k))];
 const pieceH = pc => pc[5] ? bayH(pc[5]) : 8;
@@ -435,12 +549,14 @@ controls.maxPolarAngle = Math.PI * 0.47;
 controls.minDistance = 25; controls.maxDistance = 1600;
 controls.screenSpacePanning = false;
 
-scene.add(new THREE.HemisphereLight('#ffffff', '#c9cdd6', 1.6));
+const hemi = new THREE.HemisphereLight('#ffffff', '#c9cdd6', 1.6);
+scene.add(hemi);
 const sun = new THREE.DirectionalLight('#ffffff', 1.4);
 sun.position.set(-300, 600, 250);
 sun.castShadow = true;
-sun.shadow.mapSize.set(2048, 2048);
-Object.assign(sun.shadow.camera, { left: -520, right: 520, top: 520, bottom: -520, near: 100, far: 1500 });
+const SHADOW = matchMedia('(pointer: coarse)').matches ? 2048 : 4096;   // phones: smaller shadow map
+sun.shadow.mapSize.set(SHADOW, SHADOW);
+Object.assign(sun.shadow.camera, { left: -600, right: 600, top: 600, bottom: -600, near: 100, far: 1500 });
 sun.shadow.bias = -0.0005;
 scene.add(sun);
 
@@ -485,6 +601,7 @@ scene.add(shelfMesh);
 
 let levelLines;
 const aisleSprites = [], signSprites = [];
+const NO_SIGN = /^(03[1-9]|04\d|05\d|06\d|07[0-2]|5\d\d|601|603)$/;   // aisles without a red sign in the realistic view (asked to remove)
 // shelf levels: thin lines around each piece so the 6 shelves read in 3D
 {
   const pos = [];
@@ -527,12 +644,13 @@ function textSprite(text, { bg = '#ffffff', fg = '#1d2330', scale = 1, bold = 60
     const s = textSprite(a, { scale: 0.8, onTop: false });
     const p = W(top[0], top[1]); s.position.set(p.x, bayH(a + '-1') + 7, p.z - 6);
     scene.add(s); aisleSprites.push(s);
-    // realistic look: red Makro-style aisle sign hanging over the head of the aisle
+    // realistic look: red Makro-style aisle sign hanging over the head of the aisle (not over the aisles in NO_SIGN)
+    if (NO_SIGN.test(a)) continue;
     const sign = textSprite(a, { bg: '#e60012', fg: '#ffffff', scale: 1.25, bold: 700, onTop: false });
-    sign.position.set(p.x, bayH(a + '-1') + 15, p.z - 4); sign.visible = false;
+    sign.position.set(p.x, +a >= 1 && +a <= 30 ? 44 : bayH(a + '-1') + 15, p.z - 4); sign.visible = false;   // 1-30: above the aisle-head tower
     scene.add(sign); signSprites.push(sign);
   }
-  const e = W(...data.entrance), ent = textSprite('ทางเข้า', { bg: '#1d2330', fg: '#fff', scale: 1.3 });
+  const e = W(...data.entrance), ent = textSprite(tr('ทางเข้า'), { bg: '#1d2330', fg: '#fff', scale: 1.3 });
   ent.position.set(e.x, 16, e.z); scene.add(ent);
   const ring = new THREE.Mesh(new THREE.RingGeometry(6, 9, 40), new THREE.MeshBasicMaterial({ color: '#1d2330' }));
   ring.rotation.x = -Math.PI / 2; ring.position.set(e.x, 0.3, e.z); scene.add(ring);
@@ -590,14 +708,212 @@ data.bays.CS = [...CS.front, 0, 22];          // routable like a bay; added afte
   scene.add(g);
 }
 
-// ---------- realistic look: steel racking with stock, freezers, pallets, concrete floor ----------
+// ---------- realistic look: steel racking with stock, fridges, produce stands, pallets, concrete floor ----------
 let realGroup = null, concreteTex = null;
+// stock artwork: one 256px tile per kind of product, drawn here (no outside images), in a 5x5 atlas.
+// w = shelf width (map units) one tile covers, h = height as a share of the shelf level
+const ATL = 6, TILE_PX = 256;
+const TILES = { water: [2.6, .85], soda: [2.6, .85], canRed: [2.4, .62], canSilver: [2.4, .62], bagWarm: [3, .78], bagCool: [3, .78],
+  boxes: [3, .8], jars: [2.6, .6], jugs: [3.2, .85], tissue: [3.6, .8], care: [2.6, .7], appliance: [4.5, .92], sack: [4, .9],
+  noodle: [2.8, .7], sixpack: [3.2, .75], carton: [3.4, .85], milk: [2.6, .8], yogurt: [2.6, .45], frozen: [3, .6],
+  meat: [3, .3], fish: [3.2, .3], veg: [3, .5], fruit: [3, .5], bread: [3, .55], wine: [2.6, .9], eggs: [3, .62], pastry: [3, .75],
+  spread: [2.6, .55], onion: [3, .8], spiceBag: [2.8, .85] };
+const TILE_NAMES = Object.keys(TILES);
+const EGG_BAYS = /^550-3\d$/;                 // the eggs in the dairy area: open shelving, not fridges ...
+const EGG_PALLETS = /^550-3[4-9]$/;           // ... except the free-standing block, which is pallets of egg trays
+// the two freezer islands around aisle 580 (frozen squid & shrimp, frozen sea fish): chest freezers only, map units
+// fish preparation counter in the seafood department: staff area against the wall below the dairy row (map units, from the drawing)
+const FISH_PREP = { centre: [429, 864], len: 78, depth: 18 };
+const ROTISSERIE = /^550-4\d$/;               // the rotisserie chicken counter beside the dairy area
+const BREAD_RACKS = /^540-[1-9]$/;            // the bakery wall: wooden bread racks in front of the bakery's glass wall
+const BREAD_ISLAND = /^540-1[3-6]$/;          // the free-standing bread island in front of it (built as one arranged unit)
+const inFreezerIsland = (x, y) => x > 418 && x < 512 && y > 748 && y < 822;
+function stockAtlas() {
+  const S = TILE_PX, cv = document.createElement('canvas'); cv.width = cv.height = S * ATL;
+  const g = cv.getContext('2d');
+  let seed = 11; const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647, pick = a => a[(r() * a.length) | 0];
+  const rr = (x, y, w, h, rad, fill) => { g.fillStyle = fill; g.beginPath(); g.roundRect(x, y, w, h, rad); g.fill(); };
+  const shade = (x, y, w, h, a = .28) => {                         // rounded-object light: dark edges, highlight left of centre
+    const gr = g.createLinearGradient(x, 0, x + w, 0);
+    gr.addColorStop(0, 'rgba(0,0,0,.25)'); gr.addColorStop(.28, `rgba(255,255,255,${a})`); gr.addColorStop(.55, 'rgba(255,255,255,0)'); gr.addColorStop(1, 'rgba(0,0,0,.3)');
+    g.fillStyle = gr; g.fillRect(x, y, w, h);
+  };
+  const bottles = (n, body, cap, label, slim = 1) => { const w = S / n; for (let i = 0; i < n; i++) {
+    const bw = w * .8 * slim, x = i * w + (w - bw) / 2, col = pick(body);
+    rr(x + bw * .36, S * .07, bw * .28, S * .09, 3, pick(cap)); rr(x + bw * .3, S * .14, bw * .4, S * .12, 4, col);
+    rr(x, S * .24, bw, S * .76, bw * .28, col); rr(x, S * .48, bw, S * .24, 2, pick(label)); shade(x, S * .14, bw, S * .86); } };
+  const cans = (n, rows, body, band) => { const w = S / n, h = S / rows; for (let j = 0; j < rows; j++) for (let i = 0; i < n; i++) {
+    const x = i * w + w * .07, y = j * h + h * .06, cw = w * .86, ch = h * .92, col = pick(body);
+    rr(x, y, cw, ch, 6, col); rr(x, y + ch * .4, cw, ch * .22, 0, pick(band)); rr(x, y, cw, ch * .07, 3, '#d9dde2'); rr(x, y + ch * .93, cw, ch * .07, 3, '#b8bdc4'); shade(x, y, cw, ch, .35); } };
+  const bags = (n, body, frost) => { const w = S / n; for (let i = 0; i < n; i++) {
+    const x = i * w + w * .05, bw = w * .9, col = pick(body);
+    rr(x, S * .12, bw, S * .88, 18, col); rr(x + bw * .05, S * .12, bw * .9, S * .06, 2, 'rgba(255,255,255,.35)');
+    g.fillStyle = 'rgba(255,255,255,.9)'; g.beginPath(); g.ellipse(x + bw / 2, S * .5, bw * .3, S * .14, 0, 0, 7); g.fill();
+    g.fillStyle = col; g.fillRect(x + bw * .3, S * .47, bw * .4, S * .06); shade(x, S * .12, bw, S * .88, frost ? .5 : .3);
+    if (frost) { g.fillStyle = 'rgba(230,245,255,.35)'; g.fillRect(x, S * .12, bw, S * .88); } } };
+  const boxes = (n, body, print = '#fff') => { const w = S / n; for (let i = 0; i < n; i++) {
+    const x = i * w + w * .04, bw = w * .92, col = pick(body);
+    rr(x, S * .08, bw, S * .92, 3, col); rr(x, S * .3, bw, S * .2, 0, print); rr(x + bw * .15, S * .6, bw * .7, S * .25, 6, 'rgba(0,0,0,.18)');
+    shade(x, S * .08, bw, S * .92, .15); } };
+  const disks = (n, cols, bg, rad) => { g.fillStyle = bg; g.fillRect(0, 0, S, S);
+    for (let i = 0; i < n; i++) { const x = r() * S, y = r() * S, rd = rad * (.7 + r() * .6);
+      g.fillStyle = pick(cols); g.beginPath(); g.arc(x, y, rd, 0, 7); g.fill();
+      g.fillStyle = 'rgba(255,255,255,.3)'; g.beginPath(); g.arc(x - rd * .3, y - rd * .3, rd * .35, 0, 7); g.fill(); } };
+  const art = {
+    water: () => bottles(4, ['#d8eef9', '#e3f3fb'], ['#1f6fd1', '#2a8be0'], ['#1f6fd1', '#3aa0e8']),
+    soda: () => bottles(4, ['#b3261e', '#2e7d32', '#ef8f12', '#1d1d1f'], ['#c0392b', '#e8e8e8'], ['#ffffff', '#f6d04d']),
+    canRed: () => cans(5, 2, ['#d32f2f', '#c62828', '#b71c1c'], ['#ffffff', '#f4c430']),
+    canSilver: () => cans(5, 2, ['#c9d0d7', '#d9b44a', '#2e5aa8', '#2e7d32'], ['#ffffff', '#1d1d1f']),
+    bagWarm: () => bags(3, ['#f4c430', '#e53935', '#ff8f00']),
+    bagCool: () => bags(3, ['#43a047', '#1e88e5', '#8e24aa']),
+    boxes: () => boxes(3, ['#fdd835', '#e53935', '#1e88e5', '#fafafa', '#fb8c00', '#6d4c41']),
+    jars: () => bottles(5, ['#6d3b12', '#3e2723', '#a31515', '#c48b1a'], ['#d4a017', '#c62828', '#2e7d32'], ['#fff8e1', '#ffffff'], .85),
+    jugs: () => bottles(3, ['#1565c0', '#f5f5f5', '#00897b', '#f06292'], ['#0d47a1', '#e53935', '#43a047'], ['#ffffff', '#ffeb3b'], 1.1),
+    tissue: () => boxes(2, ['#fdfdfd', '#f6f8ff'], '#9ec5f8'),
+    care: () => bottles(5, ['#f8bbd0', '#b3e5fc', '#ffffff', '#c5e1a5', '#ffe082'], ['#ffffff', '#7b1fa2', '#1565c0'], ['#ffffff', '#ce93d8'], .8),
+    appliance: () => { boxes(1, ['#fafafa', '#eef1f4']); rr(S * .2, S * .52, S * .6, S * .34, 4, '#26323d'); rr(S * .1, S * .16, S * .5, S * .08, 2, '#e60012'); },
+    sack: () => bags(2, ['#c62828', '#1565c0', '#2e7d32', '#f9a825', '#6a1b9a']),
+    noodle: () => { for (let j = 0; j < 3; j++) for (let i = 0; i < 4; i++) { const x = i * S / 4 + 3, y = j * S / 3 + 3, col = pick(['#e53935', '#fbc02d', '#ff7043', '#43a047']);
+      rr(x, y, S / 4 - 6, S / 3 - 6, 5, col); rr(x + 6, y + 12, S / 4 - 18, 14, 3, '#fff'); shade(x, y, S / 4 - 6, S / 3 - 6, .2); } },
+    sixpack: () => { bottles(6, ['#d8eef9'], ['#1f6fd1'], ['#1f6fd1', '#e53935']); g.fillStyle = 'rgba(255,255,255,.28)'; g.fillRect(0, S * .1, S, S * .9); },
+    carton: () => boxes(2, ['#c79d6b', '#b98d5c', '#d2ab7c'], '#f2ece0'),
+    milk: () => bottles(4, ['#fbfbfb', '#f4f7fb'], ['#1e88e5', '#43a047', '#e53935'], ['#1e88e5', '#81d4fa', '#ffffff']),
+    yogurt: () => { for (let j = 0; j < 2; j++) for (let i = 0; i < 5; i++) { const x = i * S / 5 + 4, y = j * S / 2 + 6, w = S / 5 - 8, h = S / 2 - 12;
+      rr(x, y + 10, w, h - 10, 8, '#fafafa'); rr(x - 2, y, w + 4, 14, 4, pick(['#e91e63', '#7e57c2', '#26a69a', '#ffb300'])); shade(x, y + 10, w, h - 10, .3); } },
+    frozen: () => bags(3, ['#90caf9', '#ef5350', '#fff59d', '#a5d6a7'], true),
+    meat: () => { g.fillStyle = '#e9edf0'; g.fillRect(0, 0, S, S); for (let j = 0; j < 2; j++) for (let i = 0; i < 3; i++) {
+      const x = i * S / 3 + 6, y = j * S / 2 + 8; rr(x, y, S / 3 - 12, S / 2 - 16, 8, '#fafafa');
+      g.fillStyle = pick(['#c0485a', '#d65c6e', '#b23b4e', '#e8a0a8']); g.beginPath(); g.ellipse(x + S / 6 - 6, y + S / 4 - 8, S / 9, S / 7, r(), 0, 7); g.fill();
+      g.fillStyle = 'rgba(255,255,255,.25)'; g.fillRect(x, y, S / 3 - 12, (S / 2 - 16) * .35); } },
+    fish: () => { disks(260, ['#f4f8fb', '#e3edf3'], '#dfe9ef', 7);
+      for (let i = 0; i < 16; i++) { const x = r() * S * .8 + S * .1, y = r() * S * .8 + S * .1; g.save(); g.translate(x, y); g.rotate(r() * 3);
+        g.fillStyle = pick(['#5f7384', '#78909c', '#c0504d', '#e07a52', '#4e5d6c']); g.beginPath(); g.ellipse(0, 0, 34, 11, 0, 0, 7); g.fill();
+        g.beginPath(); g.moveTo(30, 0); g.lineTo(46, -10); g.lineTo(46, 10); g.fill(); g.restore(); } },
+    veg: () => disks(140, ['#2e7d32', '#388e3c', '#558b2f', '#7cb342', '#1b5e20', '#f5f5f5'], '#3e5f2a', 16),
+    fruit: () => disks(120, ['#fb8c00', '#ef6c00', '#e53935', '#fdd835', '#7cb342', '#c62828'], '#6d4c2f', 17),
+    bread: () => { g.fillStyle = '#efe4d0'; g.fillRect(0, 0, S, S); for (let j = 0; j < 3; j++) for (let i = 0; i < 3; i++) {
+      const x = i * S / 3 + 5, y = j * S / 3 + 8; rr(x, y, S / 3 - 10, S / 3 - 16, 22, pick(['#c68642', '#b5762f', '#d39b55', '#8d5524']));
+      g.fillStyle = 'rgba(255,240,210,.35)'; g.fillRect(x + 8, y + 10, S / 3 - 26, 6); } },
+    wine: () => bottles(5, ['#1f3b23', '#4a0f1b', '#2a2a2a', '#3b4d1f'], ['#7b1f1f', '#c9a227', '#1d1d1d'], ['#f3ead2', '#ffffff', '#e8d9b0'], .72),
+    eggs: () => {                                                  // stacked 30-egg pulp trays seen from the front
+      for (let j = 0; j < 4; j++) { const y = S * (.1 + j * .225);
+        rr(4, y, S - 8, S * .2, 6, '#cdb894');
+        for (let i = 0; i < 6; i++) { const x = 4 + (i + .5) * (S - 8) / 6;
+          g.fillStyle = pick(['#e9c79c', '#f1d8b4', '#e2b98a']); g.beginPath(); g.ellipse(x, y + S * .07, (S - 8) / 14, S * .075, 0, 0, 7); g.fill();
+          g.fillStyle = 'rgba(255,255,255,.35)'; g.beginPath(); g.ellipse(x - 5, y + S * .045, 5, 7, 0, 0, 7); g.fill(); }
+        g.fillStyle = 'rgba(0,0,0,.15)'; g.fillRect(4, y + S * .17, S - 8, S * .03); }
+      g.fillStyle = '#cdb894'; g.fillRect(0, 0, S, S * .06); },   // top strip = colour of the tray stack's top
+    pastry: () => {                                                // clear clamshell boxes of croissants / buns, two rows
+      g.fillStyle = '#c9a46a'; g.fillRect(0, 0, S, S);              // wooden tray behind
+      for (let j = 0; j < 2; j++) for (let i = 0; i < 3; i++) {
+        const x = 6 + i * (S - 12) / 3, y = 10 + j * S / 2, w = (S - 12) / 3 - 8, h = S / 2 - 18;
+        rr(x, y, w, h, 10, 'rgba(245,248,250,.9)');
+        for (let n = 0; n < 3; n++) { g.fillStyle = pick(['#d18a3a', '#c47a2c', '#e0a050']); g.beginPath(); g.ellipse(x + w * (.22 + n * .28), y + h * .58, w * .15, h * .22, 0, 0, 7); g.fill(); }
+        g.fillStyle = 'rgba(255,255,255,.55)'; g.fillRect(x + 4, y + 4, w - 8, h * .18);   // lid shine
+        rr(x + w * .3, y + h * .12, w * .4, h * .14, 3, pick(['#2f4a3e', '#e60012', '#1e88e5']));   // label
+      }
+      g.fillStyle = '#efe6d2'; g.fillRect(0, 0, S, S * .05); },
+    spread: () => {                                                // jars of peanut butter / jam: coloured lids, light labels
+      g.fillStyle = '#e9e4da'; g.fillRect(0, 0, S, S);
+      for (let i = 0; i < 6; i++) { const x = 4 + i * (S - 8) / 6, w = (S - 8) / 6 - 6, lid = pick(['#c62828', '#1e3f8a', '#c62828', '#6d3b12']);
+        rr(x, S * .2, w, S * .78, 8, pick(['#b07a3a', '#8a4b1c', '#c99a5b', '#7a1f2b']));
+        rr(x - 1, S * .1, w + 2, S * .14, 4, lid); rr(x + 2, S * .42, w - 4, S * .32, 3, '#fbf6ea');
+        rr(x + 6, S * .5, w - 12, S * .1, 2, lid); shade(x, S * .2, w, S * .78, .3); }
+      g.fillStyle = '#e9e4da'; g.fillRect(0, 0, S, S * .06); },
+    onion: () => {                                                 // net sacks of onions / shallots / garlic
+      g.fillStyle = '#5a3a2a'; g.fillRect(0, 0, S, S);
+      for (let i = 0; i < 3; i++) { const x = 4 + i * (S - 8) / 3, w = (S - 8) / 3 - 6, col = pick(['#8e1f3a', '#c8692a', '#d9a3c0', '#a3283f']);
+        rr(x, S * .12, w, S * .86, 22, col);
+        for (let n = 0; n < 9; n++) { g.fillStyle = 'rgba(255,255,255,.18)'; g.beginPath(); g.arc(x + w * (.2 + (n % 3) * .3), S * (.3 + ((n / 3) | 0) * .22), w * .13, 0, 7); g.fill(); }
+        g.strokeStyle = 'rgba(0,0,0,.25)'; g.lineWidth = 2;                      // the net
+        for (let k = 0; k < 8; k++) { g.beginPath(); g.moveTo(x + k * w / 7, S * .12); g.lineTo(x + w - k * w / 7, S); g.stroke(); }
+        rr(x + w * .2, S * .45, w * .6, S * .12, 3, pick(['#f6d04d', '#ffffff'])); }
+      g.fillStyle = '#7a1f2b'; g.fillRect(0, 0, S, S * .06); },
+    spiceBag: () => {                                              // small clear bags of spices on hooks, two rows
+      g.fillStyle = '#8b6a47'; g.fillRect(0, 0, S, S);
+      for (let j = 0; j < 2; j++) for (let i = 0; i < 4; i++) {
+        const x = 6 + i * (S - 12) / 4, y = 8 + j * S / 2, w = (S - 12) / 4 - 8, h = S / 2 - 14;
+        rr(x, y, w, h, 4, 'rgba(240,240,236,.92)'); rr(x + 3, y + h * .3, w - 6, h * .62, 3, pick(['#9a3b1f', '#d6a33b', '#4d3220', '#b5651d', '#6b8e23', '#8b0000']));
+        rr(x + w * .2, y + h * .06, w * .6, h * .18, 2, '#e60012'); }
+      g.fillStyle = '#8b6a47'; g.fillRect(0, 0, S, S * .05); },
+  };
+  TILE_NAMES.forEach((n, i) => {
+    g.save(); g.translate((i % ATL) * S, ((i / ATL) | 0) * S); g.beginPath(); g.rect(0, 0, S, S); g.clip();
+    const bg = g.createLinearGradient(0, 0, 0, S); bg.addColorStop(0, '#2c2f35'); bg.addColorStop(1, '#45484f');   // shelf back in shadow
+    g.fillStyle = bg; g.fillRect(0, 0, S, S);
+    art[n]();
+    g.restore();
+  });
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  return t;
+}
+// stock material: each instance shows one atlas tile (aTile.xy), repeated aTile.z times across its width.
+// "front" geometry puts the artwork on the sides (shelves); "top" geometry on the top (freezers, produce stands)
+function stockMaterial(atlas) {
+  const mat = new THREE.MeshStandardMaterial({ map: atlas, roughness: 0.7 });
+  mat.onBeforeCompile = sh => {
+    sh.vertexShader = sh.vertexShader.replace('#include <uv_pars_vertex>', '#include <uv_pars_vertex>\nattribute vec3 aTile;\nvarying vec3 vTile;')
+      .replace('#include <uv_vertex>', '#include <uv_vertex>\nvTile = aTile;');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <map_pars_fragment>', '#include <map_pars_fragment>\nvarying vec3 vTile;')
+      .replace('#include <map_fragment>', `vec2 tuv = vec2(fract(vMapUv.x * vTile.z), vMapUv.y);
+        diffuseColor *= texture2D(map, vTile.xy + (0.01 + tuv * 0.98) / ${ATL}.0);`);
+  };
+  return mat;
+}
+function stockGeometry(artOnTop) {
+  const geo = new THREE.BoxGeometry(1, 1, 1), uv = geo.attributes.uv;
+  // faces: +x -x +y -y +z -z, 4 vertices each; plain faces sample the top strip of the tile (one colour)
+  for (let f = 0; f < 6; f++) {
+    const art = artOnTop ? f === 2 : f !== 2 && f !== 3;
+    if (!art) for (let i = f * 4; i < f * 4 + 4; i++) uv.setXY(i, 0.37, artOnTop ? 0.6 : 0.97);
+  }
+  return geo;
+}
 async function buildReal() {
   let seed = 7;
-  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-  const PROD = ['#d94b3f', '#f2c14e', '#3f7fbf', '#f7f7f2', '#4caf6a', '#e98a3c', '#8e5ea2', '#efe6d2', '#2f3e57', '#c0392b', '#5aa9d6', '#f5d9a8', '#7a4b2a', '#e8eef2'];
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647, pick = a => a[(rnd() * a.length) | 0];
   const CARTON = ['#c79d6b', '#b98d5c', '#d2ab7c', '#a97e50', '#cfa577'];
-  const L = { post: [], beam: [], deck: [], back: [], prod: [], white: [], glass: [], pallet: [], grey: [] };
+  const L = { post: [], beam: [], deck: [], back: [], prod: [], white: [], glass: [], pallet: [], grey: [], frame: [], light: [], steel: [], warm: [], screen: [],
+    stock: [], stockTop: [] };
+  // what a bay sells -> which artwork its shelves show (top category of the items in that bay)
+  const CAT_TILES = { 0: ['carton', 'boxes'], 1: ['boxes', 'jars', 'canSilver', 'noodle', 'jars'], 2: ['water', 'soda', 'canRed', 'canSilver', 'sixpack', 'soda'],
+    3: ['bagWarm', 'bagCool', 'noodle', 'boxes', 'bagWarm'], 4: ['appliance', 'carton', 'appliance'], 5: ['jugs', 'tissue', 'carton', 'jugs'],
+    6: ['care', 'tissue', 'boxes', 'care'], 7: ['sack', 'boxes', 'sack'] };
+  const AISLE_TILES = { '053': ['wine', 'wine', 'canSilver'], '054': ['wine', 'jars'], 550: ['milk', 'yogurt', 'milk', 'boxes'], 560: ['frozen', 'frozen', 'boxes'],
+    580: ['noodle', 'jars', 'boxes'] };
+  const bayKinds = k => {
+    if (AISLE_TILES[aisleOf(k)]) return AISLE_TILES[aisleOf(k)];
+    const n = {}; for (const it of bayItems.get(k) || []) n[it.cat] = (n[it.cat] || 0) + 1;
+    const top = Object.entries(n).sort((a, b) => b[1] - a[1])[0];
+    return CAT_TILES[top ? top[0] : 0] || CAT_TILES[0];
+  };
+  // which long side(s) of a fixture face a walkway (fridge doors, freezer glass go there)
+  const freeAt = (x, y) => { const [gx, gy] = toCell(x, y); return !G.block[gy * G.w + gx]; };
+  const openSides = ([x, y, ang, , dep]) => [-1, 1].filter(s => { const v = s * (dep / 2 + 5); return freeAt(x - Math.sin(ang) * v, y + Math.cos(ang) * v); });
+  // turn a fixture so its front (+/- v side) faces map direction [dx, dy]: returns [ang, len, dep, side]
+  const orient = ([, , ang, len, dep], [dx, dy]) => {
+    const du = dx * Math.cos(ang) + dy * Math.sin(ang), dv = -dx * Math.sin(ang) + dy * Math.cos(ang);
+    return Math.abs(dv) >= Math.abs(du) ? [ang, len, dep, Math.sign(dv)] : [ang + Math.PI / 2, dep, len, -Math.sign(du)];
+  };
+  // upright fridges set by hand: the meat block next to the wine room (520-16..18, back to back, doors east and
+  // west) and the seafood column on the west wall (530-7..9, doors east)
+  const UPRIGHT_FACE = (k, x) => /^520-1[678]$/.test(k) ? [x >= 604 ? 1 : -1, 0] : /^530-[789]$/.test(k) ? [1, 0]
+    : /^540-1[01]$/.test(k) ? [0, 1] : null;                          // + the frozen-bakery freezer by the bakery door (faces south)
+  // open-front multideck chillers along the walls, as in the store: each run is built as one even row of cabinets over
+  // the outline of all its bays (the drawing traces some bays as several overlapping pieces). dir = way the fronts face
+  const CHILLER_RUNS = [
+    { re: /^550-[1-6]$/, dir: [0, -1] }, { re: /^550-([7-9]|1\d|2\d)$/, dir: [1, 0] },               // dairy L
+    { re: /^510-([1-9]|10)$/, dir: [0, -1], produce: true }, { re: /^510-(1[1-9]|2[01])$/, dir: [1, 0], produce: true },   // fruit / veg
+    // back to back in the produce hall: the spice shelf faces north, the local vegetable chiller south (band: piece centre y)
+    { re: /^510-(3[1-6]|27)$/, dir: [0, -1], band: [0, 1009], style: 'onion' },          // onions / garlic: crates and net sacks
+    { re: /^510-2[2-7]$/, dir: [0, 1], band: [1009, 1e9], produce: true },                // local vegetable chiller
+    { re: /^510-(3[7-9]|40)$/, dir: [1, 0], style: 'spice', raw: true },                  // raw-spice wall (west wall, faces east)
+    { re: /^510-4[1-8]$/, dir: [0, 1], band: [959, 1e9], style: 'spice' },               // spice gondola, backs onto the seafood freezers
+    { re: /^530-[1-6]$/, dir: [0, -1], style: 'chest', top: ['fish'] },                    // those seafood freezers: one even row
+    { re: /^540-(1[7-9]|2[0-5])$/, dir: [1, 0], style: 'chest', top: ['bread'], clipX: [452.5, 462] },   // bakery chests along the bakery wall
+  ];
+  const runHas = (r, k, y) => r.re.test(k) && (!r.band || (y >= r.band[0] && y < r.band[1]));
+  const inChillerRun = (k, y) => CHILLER_RUNS.some(r => runHas(r, k, y));
   const m = new THREE.Matrix4(), q = new THREE.Quaternion(), v3 = new THREE.Vector3(), sc = new THREE.Vector3();
   // u: along the fixture, v: across it, y: up (all relative to the fixture centre c)
   const add = (list, c, ang, u, y, v, sx, sy, sz, color) => {
@@ -605,8 +921,145 @@ async function buildReal() {
     v3.set(c.x + ca * u - sa * v, y, c.z + sa * u + ca * v); q.setFromAxisAngle(up, -ang); sc.set(sx, sy, sz);
     list.push([m.compose(v3, q, sc).clone(), color]);
   };
-  const lanes = [];
-  pieces.forEach(pc => {
+  // a run of one product along u (from u0, at most room wide): its artwork tile repeats once per product width
+  const addRun = (list, c, ang, u0, room, y0, v, lh, dep, kinds) => {
+    let u = u0;
+    while (true) {
+      const t = pick(kinds), [tw, th] = TILES[t], left = u0 + room - u;
+      let reps = 1 + ((rnd() * 3) | 0);
+      while (reps > 1 && tw * reps > left) reps--;
+      if (tw * reps > left + 0.3) break;
+      const w = Math.min(tw * reps, left), h = lh * th * (0.92 + rnd() * 0.08);
+      add(list, c, ang, u + w / 2, y0 + h / 2, v, w - 0.12, h, dep, [TILE_NAMES.indexOf(t), reps]);
+      u += w;
+    }
+  };
+  // one open-front multideck cabinet: white body, lit shelves with price strips, a low well, bumper rail
+  const multideck = (c, A, Ln, D, s, well, shelf) => {
+    const H = 20, inner = Math.max(2, D - 1.4);
+    add(L.white, c, A, 0, H / 2, -s * (D / 2 - 0.3), Ln, H, 0.6);                        // back
+    for (const su of [-1, 1]) add(L.white, c, A, su * (Ln / 2 - 0.2), H / 2, 0, 0.4, H, D);   // end panels
+    add(L.white, c, A, 0, H - 0.9, 0, Ln, 1.8, D);                                       // canopy
+    add(L.light, c, A, 0, H - 2.05, s * (D / 2 - 0.8), Ln - 0.8, 0.2, 1);                 // canopy light
+    add(L.white, c, A, 0, 1.6, s * 0.2, Ln, 3.2, D - 0.4);                               // base / well
+    add(L.steel, c, A, 0, 2.4, s * (D / 2 + 0.5), Ln - 0.6, 0.35, 0.35);                // bumper rail
+    add(L.prod, c, A, 0, 3.1, s * (D / 2 - 0.1), Ln - 0.6, 0.3, 0.1, '#e60012');        // price strip on the well
+    addRun(L.stock, c, A, -Ln / 2 + 0.5, Ln - 1, 3.2, s * 0.6, 3.5, inner * 0.7, well);   // big jugs / produce in the well
+    const lh = (H - 7.4) / 4;
+    for (let l = 0; l < 4; l++) {
+      const yb = 6.6 + l * lh, reach = inner * (0.75 - l * 0.08);                        // upper shelves a little shallower
+      add(L.deck, c, A, 0, yb, -s * (inner / 2 - reach / 2 - 0.2), Ln - 0.8, 0.15, reach);
+      add(L.prod, c, A, 0, yb - 0.1, s * (reach - inner / 2 + 0.3), Ln - 0.8, 0.35, 0.08, pick(['#ffffff', '#e60012']));   // shelf price strip
+      add(L.light, c, A, 0, yb + lh - 0.35, s * (reach - inner / 2 + 0.1), Ln - 0.8, 0.1, 0.4);           // light under the shelf above
+      addRun(L.stock, c, A, -Ln / 2 + 0.5, Ln - 1, yb + 0.08, -s * (inner / 2 - reach / 2 - 0.2), lh, reach * 0.8, shelf);
+    }
+  };
+  // spice gondola (as in the store): pegboard back with bags on hooks, wire shelves below, picture header with a band
+  const spiceHeads = [];
+  const spiceRack = (c, A, Ln, D, s, i) => {
+    const H = 12.5, Dg = Math.min(D, 6), v0 = -s * (D / 2 - Dg / 2);                      // gondola stands against the back
+    add(L.prod, c, A, 0, H / 2, v0 - s * (Dg / 2 - 0.2), Ln, H, 0.3, '#8b6a47');         // pegboard back
+    for (const su of [-1, 1]) add(L.steel, c, A, su * (Ln / 2 - 0.15), H / 2, v0, 0.3, H, Dg);   // uprights
+    add(L.white, c, A, 0, 0.6, v0, Ln, 1.2, Dg);                                            // base
+    for (const [y, d] of [[1.3, Dg - 0.4], [3.3, Dg * 0.8], [5.3, Dg * 0.65]]) {            // wire shelves, shallower going up
+      const v = v0 - s * (Dg / 2 - d / 2 - 0.3);
+      add(L.steel, c, A, 0, y, v, Ln - 0.4, 0.1, d);
+      add(L.prod, c, A, 0, y + 0.15, v + s * d / 2, Ln - 0.5, 0.3, 0.05, pick(['#ffffff', '#f6d04d']));   // price strip
+      addRun(L.stock, c, A, -Ln / 2 + 0.4, Ln - 0.8, y + 0.06, v, 2, d * 0.7, ['jars', 'spiceBag', 'spread']);
+    }
+    for (const y of [7.4, 9.5]) addRun(L.stock, c, A, -Ln / 2 + 0.4, Ln - 0.8, y, v0 - s * (Dg / 2 - 0.9), 2.2, 0.8, ['spiceBag']);   // bags on hooks
+    spiceHeads.push([c, A, Ln, v0 - s * (Dg / 2 - 0.6), s, i % 2 ? ['เครื่องเทศนานาชาติ', 'INTERNATIONAL SPICES', '#a8172e'] : ['เครื่องเทศชนิดต่างๆ', 'RAW SPICES', '#b8721e']]);
+  };
+  // onions / shallots / garlic (as in the store): stainless frame, green crates and net sacks on three tiers
+  const onionRack = (c, A, Ln, D, s) => {
+    const H = 8;
+    for (const su of [-1, 1]) for (const sv of [-1, 1]) add(L.steel, c, A, su * (Ln / 2 - 0.2), H / 2, sv * (D / 2 - 0.3), 0.3, H, 0.3);
+    add(L.white, c, A, 0, 6.5, -s * (D / 2 - 0.05), Ln, 13, 0.15);                           // white wall panel behind
+    for (let t = 0; t < 3; t++) {
+      const y = 0.4 + t * 2.7, d = D - 1 - t * 1.6, v = -s * (D / 2 - d / 2 - 0.3);       // upper tiers shallower
+      add(L.steel, c, A, 0, y, v, Ln - 0.3, 0.15, d);
+      add(L.prod, c, A, 0, y + 0.1, v + s * (d / 2 + 0.05), Ln - 0.4, 0.4, 0.06, pick(['#ffffff', '#e60012']));   // price strip
+      let u = -Ln / 2 + 0.3;
+      while (u < Ln / 2 - 1) {
+        const w = Math.min(2.8, Ln / 2 - 0.3 - u), sack = t === 2 && rnd() < 0.6;   // net sacks only on the top tier, as in the store
+        if (sack) add(L.stock, c, A, u + w / 2, y + 1.15, v, w - 0.15, 2.1, d - 0.3, [TILE_NAMES.indexOf('onion'), 1]);   // net sacks
+        else {
+          add(L.prod, c, A, u + w / 2, y + 0.75, v, w - 0.15, 1.3, d - 0.3, '#1f6b3a');                                 // green crate
+          add(L.stockTop, c, A, u + w / 2, y + 1.5, v, w - 0.35, 0.4, d - 0.5, [TILE_NAMES.indexOf(pick(['fruit', 'fruit', 'veg'])), 1]);   // loose onions / garlic heaped in the crate
+        }
+        u += w;
+      }
+    }
+  };
+  // chest freezer module (same look as the island freezers): white body, well, steel rim, red price rail, glass lid
+  const chestFreezer = (c, A, Ln, D, top) => {
+    const bh = 6.5, inner = Math.max(0.6, D - 1.4), L2 = Ln - 0.3;                          // small gap between modules
+    add(L.frame, c, A, 0, 0.45, 0, L2 - 0.2, 0.9, D - 0.2);                                  // kick
+    add(L.white, c, A, 0, (bh - 1.2 + 0.9) / 2, 0, L2, bh - 2.1, D);                          // body
+    for (const sv of [-1, 1]) {
+      add(L.white, c, A, 0, bh - 0.6, sv * (D / 2 - 0.15), L2, 1.2, 0.3);                     // well walls
+      add(L.steel, c, A, 0, bh + 0.05, sv * (D / 2 - 0.3), L2, 0.35, 0.6);                   // rim
+      add(L.prod, c, A, 0, bh - 1.4, sv * (D / 2 + 0.02), L2 - 0.6, 0.5, 0.06, '#e60012');   // red price rail
+    }
+    for (const su of [-1, 1]) {
+      add(L.white, c, A, su * (L2 / 2 - 0.15), bh - 0.6, 0, 0.3, 1.2, D);
+      add(L.steel, c, A, su * (L2 / 2 - 0.3), bh + 0.05, 0, 0.6, 0.35, D);
+    }
+    add(L.stockTop, c, A, 0, bh - 0.75, 0, L2 - 1.2, 0.9, inner, [TILE_NAMES.indexOf(pick(top)), Math.max(1, Math.round(L2 / 3))]);
+    add(L.glass, c, A, 0, bh + 0.3, 0, L2 - 0.6, 0.15, D - 0.6);                              // sliding lid
+  };
+  for (const run of CHILLER_RUNS) {
+    const corners = [];
+    for (const [x, y, ang, len, dep, k] of pieces) if (k && runHas(run, k, y))
+      for (const [su, sv] of [[-1, -1], [1, -1], [1, 1], [-1, 1]])
+        corners.push([x + Math.cos(ang) * su * len / 2 - Math.sin(ang) * sv * dep / 2, y + Math.sin(ang) * su * len / 2 + Math.cos(ang) * sv * dep / 2]);
+    if (!corners.length) continue;
+    let x0 = Math.min(...corners.map(p => p[0])), x1 = Math.max(...corners.map(p => p[0]));
+    const y0 = Math.min(...corners.map(p => p[1])), y1 = Math.max(...corners.map(p => p[1]));
+    if (run.clipX) { x0 = Math.max(x0, run.clipX[0]); x1 = Math.min(x1, run.clipX[1]); }   // keep clear of a wall
+    const [dx, dy] = run.dir, alongX = dy !== 0;                                         // fronts face north/south: run along x
+    const Ln = alongX ? x1 - x0 : y1 - y0, D = Math.min(11, Math.max(7, alongX ? y1 - y0 : x1 - x0));
+    // back against the wall side of the outline, front towards dir
+    const cx = alongX ? (x0 + x1) / 2 : (dx > 0 ? x0 + D / 2 : x1 - D / 2), cy = alongX ? (dy > 0 ? y0 + D / 2 : y1 - D / 2) : (y0 + y1) / 2;
+    const [A, s] = alongX ? [0, Math.sign(dy)] : [Math.PI / 2, -Math.sign(dx)];
+    const n = Math.max(1, Math.round(Ln / 12)), lm = Ln / n;
+    const kinds = run.kinds || (run.produce ? ['veg', 'fruit', 'veg'] : AISLE_TILES[550]), well = run.well || (run.produce ? ['veg', 'fruit'] : ['milk', 'jugs']);
+    for (let i = 0; i < n; i++) {
+      const off = -Ln / 2 + lm * (i + 0.5), mc = W(cx + (alongX ? off : 0), cy + (alongX ? 0 : off));
+      if (run.style === 'spice') spiceRack(mc, A, lm, D, s, run.raw ? 0 : i);           // raw: every header "RAW SPICES"
+      else if (run.style === 'onion') onionRack(mc, A, lm, D, s);
+      else if (run.style === 'chest') chestFreezer(mc, A, lm, D, run.top);
+      else multideck(mc, A, lm, D, s, well, kinds);
+    }
+  }
+  const lanes = [], bakeryPanels = [], headers = [], ovalSigns = [];
+  // tidy dry-goods racks: the drawing traces every bay on its own (small gaps, slightly different lengths and
+  // offsets), so each aisle is redrawn as continuous runs of equal bays on one straight line. A run breaks where
+  // the drawing has a real gap (> 5 units). Only the look changes; clicking and routes use the traced pieces.
+  const tidy = [];
+  {
+    const groups = {};
+    pieces.forEach((p, i) => { const k = p[5]; if (k && aisleOf(k)[0] === '0' && zone(aisleOf(k)) === 'dry') (groups[aisleOf(k)] ||= []).push(i); });
+    const median = v => v.slice().sort((a, b) => a - b)[v.length >> 1];
+    for (const ids of Object.values(groups)) {
+      const V = ids.every(i => Math.abs(Math.sin(pieces[i][2])) > 0.7), H = ids.every(i => Math.abs(Math.sin(pieces[i][2])) < 0.3);
+      if (!V && !H) continue;
+      const ax = V ? 1 : 0, cx = 1 - ax, across = ids.map(i => pieces[i][cx]);
+      if (Math.max(...across) - Math.min(...across) > 2) continue;              // not one straight line: leave as drawn
+      const ac = median(across), dp = median(ids.map(i => pieces[i][4]));
+      const s = ids.slice().sort((a, b) => pieces[a][ax] - pieces[b][ax]);
+      const lo = i => pieces[i][ax] - pieces[i][3] / 2, hi = i => pieces[i][ax] + pieces[i][3] / 2;
+      const flush = run => {
+        const a0 = lo(run[0]), L = (hi(run[run.length - 1]) - a0) / run.length;
+        run.forEach((i, j) => { const p = pieces[i].slice(); p[ax] = a0 + L * (j + 0.5); p[cx] = ac; p[3] = L; p[4] = dp; tidy[i] = p; });
+      };
+      let run = [s[0]];
+      for (const i of s.slice(1)) { if (lo(i) - hi(run[run.length - 1]) > 5) { flush(run); run = []; } run.push(i); }
+      flush(run);
+    }
+  }
+  pieces.forEach((pc0, pi) => {
+    const pc = tidy[pi] || pc0;
     const [x, y, ang, len, dep, k] = pc, c = W(x, y), h = pieceH(pc);
     if (!k) return add(L.grey, c, ang, 0, h / 2, 0, len, h, dep);
     if (aisleOf(k) === '603') {              // checkout lane: counter along the lane, belt, till, numbered pole
@@ -622,8 +1075,52 @@ async function buildReal() {
       lanes.push([c, k.split('-')[1]]);
       return;
     }
-    const z = zone(aisleOf(k));
-    if (z === 'dry') {                       // gondola / pallet racking: blue uprights, orange beams, stock on every level
+    if (ROTISSERIE.test(k) || BREAD_ISLAND.test(k) || inChillerRun(k, y)) return;   // built as one unit elsewhere
+    if (k === '510-77') return;              // not a fixture in the realistic view (asked to remove)
+    if (inFreezerIsland(x, y)) return;       // the two freezer islands are rebuilt as even layouts below
+    if (k === '510-45' && y < 959) return;   // thin extra trace behind the spice gondola, against the freezers
+    const a = aisleOf(k), z = zone(a), kinds = bayKinds(k);
+    if (a === '001') {                       // TV wall (as in the store): white racking, lit display bays of TVs, overstock above
+      const n = +k.split('-')[1] || 0, sides = openSides(pc).length ? openSides(pc) : [-1, 1];
+      const head = ['#1e5bb8', '#b0152f', '#2b2f36', '#f2f2f2'][n % 4];
+      for (const su of [-1, 1]) for (const sv of [-1, 1]) add(L.white, c, ang, su * (len / 2 - 0.25), h / 2, sv * (dep / 2 - 0.25), 0.5, h, 0.5);   // white uprights
+      add(L.prod, c, ang, 0, 5.2, 0, len - 0.6, 10.4, 0.4, '#3a3d42');                       // dark display back
+      for (const s of sides) {
+        const f = s * (dep / 2 - 0.3);
+        add(L.white, c, ang, 0, 0.6, s * dep / 4, len - 0.6, 1.2, dep / 2 - 0.4);             // white plinth
+        add(L.screen, c, ang, 0, 0.15, f + s * 0.1, len - 0.6, 0.2, 0.15, '#3d7bff');           // blue LED strip at the floor
+        add(L.prod, c, ang, 0, 11, f, len - 0.4, 1.4, 0.2, head);                              // coloured header band
+        add(L.light, c, ang, 0, 10.2, s * (dep / 2 - 1), len - 1, 0.15, 0.4);                  // light under the header
+        if (n <= 12) {                        // 001-1..12: refrigerators on display instead of TVs, two per bay
+          const fw = len / 2 - 0.5;
+          for (const u of [-len / 4, len / 4]) {
+            const col = pick(['#c9cdd2', '#2b2e33', '#e9eaec', '#b7bcc2']), fh = 8.2 + rnd() * 1.2, v = s * (dep / 4);
+            add(L.prod, c, ang, u, 1.2 + fh / 2, v, fw, fh, dep / 2 - 0.8, col);                 // cabinet
+            add(L.frame, c, ang, u, 1.2 + fh * 0.62, v + s * (dep / 4 - 0.38), fw - 0.2, 0.08, 0.04);   // door split
+            add(L.frame, c, ang, u, 1.2 + fh / 2, v + s * (dep / 4 - 0.38), 0.06, fh - 0.4, 0.04);       // French-door gap
+            for (const hu of [-0.35, 0.35]) add(L.steel, c, ang, u + hu, 1.2 + fh * 0.72, v + s * (dep / 4 - 0.25), 0.15, 2.2, 0.2);   // handles
+            add(L.screen, c, ang, u - fw / 4, 1.2 + fh * 0.8, v + s * (dep / 4 - 0.36), 0.8, 0.5, 0.03, '#7fd3ff');   // door display
+          }
+          continue;
+        }
+        // TVs: a big one and two small ones, alternating per bay; black bezel, bright promo screen
+        const tvs = n % 2 ? [[-len / 4, 6.6, 0.42], [len / 4, 6.6, 0.42], [0, 2.9, 0.62]] : [[0, 6.2, 0.62], [-len / 4, 2.6, 0.4], [len / 4, 2.6, 0.4]];
+        for (const [u, y, sz] of tvs) {
+          const w = len * sz, hh = w * 0.58;
+          add(L.frame, c, ang, u, y, s * 0.45, w, hh, 0.2);
+          add(L.screen, c, ang, u, y, s * 0.57, w - 0.3, hh - 0.3, 0.05, pick(['#e8452c', '#ee5a2f', '#d93a2a']));
+        }
+      }
+      for (const y of [12.2, 15.6]) {                                                          // upper levels: wrapped overstock
+        add(L.deck, c, ang, 0, y, 0, len - 0.4, 0.18, dep - 0.4);
+        let u = -len / 2 + 0.5;
+        while (u < len / 2 - 2) {
+          const w = Math.min(2.6 + rnd() * 1.2, len / 2 - 0.5 - u);
+          add(L.prod, c, ang, u + w / 2, y + 1.5, 0, w - 0.15, 2.8, dep - 1, pick(['#d9d9d6', '#c79d6b', '#e4e4e0', '#b98d5c']));
+          u += w;
+        }
+      }
+    } else if (z === 'dry') {                       // gondola / pallet racking: blue uprights, orange beams, stock on every level
       const lh = h / LEVELS;
       for (const su of [-1, 1]) for (const sv of [-1, 1]) add(L.post, c, ang, su * (len / 2 - 0.25), h / 2, sv * (dep / 2 - 0.25), 0.5, h, 0.5);
       add(L.back, c, ang, 0, h / 2, 0, Math.max(0.5, len - 0.5), h, 0.25);
@@ -632,28 +1129,130 @@ async function buildReal() {
         add(L.deck, c, ang, 0, yb, 0, Math.max(0.5, len - 0.4), 0.18, Math.max(0.5, dep - 0.4));
         for (const sv of [-1, 1]) {
           if (l) add(L.beam, c, ang, 0, yb + 0.1, sv * (dep / 2 - 0.15), Math.max(0.5, len - 0.6), 0.45, 0.3);
-          let u = -len / 2 + 0.55;
-          while (true) {
-            const w = top ? 2.4 + rnd() * 1.4 : 1.1 + rnd() * 1.6;
-            if (u + w > len / 2 - 0.5) break;
-            const ph = top ? lh * 0.88 : lh * (0.45 + rnd() * 0.38);
-            const col = top ? CARTON[(rnd() * CARTON.length) | 0] : PROD[(rnd() * PROD.length) | 0];
-            add(L.prod, c, ang, u + w / 2, yb + 0.1 + ph / 2, sv * (dep / 4 + 0.05), w - 0.15, ph, Math.max(0.6, dep / 2 - 0.9), col);
+          if (top) {                         // overstock cartons on the top level
+            let u = -len / 2 + 0.55;
+            while (true) {
+              const w = 2.4 + rnd() * 1.4;
+              if (u + w > len / 2 - 0.5) break;
+              add(L.prod, c, ang, u + w / 2, yb + 0.1 + lh * .44, sv * (dep / 4 + 0.05), w - 0.15, lh * .88, Math.max(0.6, dep / 2 - 0.9), pick(CARTON));
+              u += w;
+            }
+          } else addRun(L.stock, c, ang, -len / 2 + 0.5, len - 1, yb + 0.1, sv * (dep / 4 + 0.05), lh, Math.max(0.6, dep / 2 - 0.9), kinds);
+        }
+      }
+    } else if (z === 'cold') {
+      const open = openSides(pc);
+      if (a === '510') {                     // produce stand: dark base, two tiers of crates of fruit / vegetables
+        add(L.frame, c, ang, 0, 1.5, 0, len, 3, dep);
+        let u = -len / 2 + 0.2;
+        while (u < len / 2 - 1) {
+          const w = Math.min(3 + rnd() * 1.5, len / 2 - 0.2 - u), t = TILE_NAMES.indexOf(pick(['veg', 'fruit', 'veg']));
+          add(L.stockTop, c, ang, u + w / 2, 3.6, 0, w - 0.2, 1.2, dep - 0.3, [t, 1]);
+          if (dep > 6) add(L.stockTop, c, ang, u + w / 2, 4.8, 0, w - 0.2, 1.2, dep * 0.45, [TILE_NAMES.indexOf(pick(['veg', 'fruit'])), 1]);
+          u += w;
+        }
+      } else if (k === '540-12') {           // cake chiller: white base with vents, open front, glass sides, stainless canopy, guard rail
+        const [A, Ln, D, s] = orient(pc, [0, 1]), f = s * D / 2;
+        add(L.white, c, A, 0, 3, 0, Ln, 6, D);                                              // base
+        for (let i = -1; i <= 1; i++) for (let j = 0; j < 5; j++)
+          add(L.frame, c, A, i * Ln / 3.4, 1.4 + j * 0.65, f + 0.03, Ln / 4.5, 0.18, 0.05);  // vent grilles
+        add(L.steel, c, A, 0, 6.1, 0, Ln + 0.2, 0.3, D + 0.2);                              // stainless deck edge
+        add(L.prod, c, A, 0, 5.6, f + 0.04, Ln - 0.4, 0.5, 0.05, '#ffffff');               // label band
+        add(L.deck, c, A, 0, 11, -s * (D / 2 - 0.3), Ln - 0.4, 10, 0.3);                    // perforated back
+        for (let l = 0; l < 3; l++) {                                                         // shelves step back as they rise
+          const y = 6.4 + l * 3.1, v = -s * (l * 0.9), d = D - 1.6 - l * 1.8;
+          add(L.steel, c, A, 0, y, v - s * 0.4, Ln - 0.6, 0.15, d);
+          add(L.prod, c, A, 0, y + 0.15, v - s * 0.4 + s * d / 2, Ln - 0.6, 0.35, 0.05, pick(['#ffffff', '#e60012']));   // price strip
+          addRun(L.stock, c, A, -Ln / 2 + 0.5, Ln - 1, y + 0.1, v - s * 0.6, 2.6, d * 0.6, ['yogurt', 'boxes', 'bread', 'boxes']);
+        }
+        add(L.steel, c, A, 0, 16.6, -s * 1.2, Ln, 0.8, D * 0.55);                           // stainless canopy
+        add(L.light, c, A, 0, 16.15, -s * 0.2, Ln - 0.8, 0.1, 0.5);
+        for (const su of [-1, 1]) add(L.glass, c, A, su * (Ln / 2 - 0.05), 11.3, 0, 0.1, 10.4, D);   // glass ends
+        for (let u = -Ln / 2; u <= Ln / 2 + 0.01; u += Ln / 3) add(L.steel, c, A, u, 1.7, f + 1.6, 0.25, 3.4, 0.25);   // guard rail
+        for (const y of [1.6, 3.2]) add(L.steel, c, A, 0, y, f + 1.6, Ln, 0.22, 0.22);
+      } else if (BREAD_RACKS.test(k)) {     // bakery wall: wooden 3-tier bread racks on white wheeled frames, glass + pictures behind
+        const s = open.length === 1 ? open[0] : 1, D = Math.min(dep, 7), back = -s * (dep / 2);
+        for (const su of [-1, 1]) for (const sv of [-1, 1]) {
+          add(L.white, c, ang, su * (len / 2 - 0.4), 3.2, sv * (D / 2 - 0.4), 0.3, 6.2, 0.3);           // frame legs
+          add(L.frame, c, ang, su * (len / 2 - 0.4), 0.3, sv * (D / 2 - 0.4), 0.6, 0.6, 0.6);           // castors
+        }
+        add(L.white, c, ang, 0, 1.2, 0, len - 0.6, 0.25, D - 0.6);                                      // bottom rail
+        for (let t = 0; t < 3; t++) {                                                                   // trays: lower at the front
+          const y = 2.2 + t * 2.1, v = s * (D / 2 - 1.6 - t * 1.1), d = 3;
+          add(L.pallet, c, ang, 0, y, v, len - 0.5, 0.25, d);                                            // wooden tray
+          add(L.pallet, c, ang, 0, y + 0.45, v + s * d / 2, len - 0.5, 0.7, 0.15);                       // front lip
+          add(L.prod, c, ang, 0, y + 0.2, v + s * (d / 2 + 0.1), len - 0.8, 0.3, 0.05, '#f4f6f8');        // price strip
+          let u = -len / 2 + 0.4;
+          while (u < len / 2 - 0.8) {
+            const w = Math.min(2.6 + rnd(), len / 2 - 0.4 - u), tk = pick(['bread', 'bagWarm', 'bread', 'boxes']);
+            add(L.stockTop, c, ang, u + w / 2, y + 0.55, v, w - 0.15, 0.6, d - 0.4, [TILE_NAMES.indexOf(tk), 1]);
             u += w;
           }
         }
-      }
-    } else if (z === 'cold') {               // white chest freezer / chiller with a glass top and stock inside
-      const bh = Math.min(h * 0.62, 8);
-      add(L.white, c, ang, 0, bh / 2, 0, len, bh, dep);
-      add(L.glass, c, ang, 0, bh + 0.7, 0, Math.max(0.5, len - 0.3), 1.4, Math.max(0.5, dep - 0.3));
-      let u = -len / 2 + 0.6;
-      while (true) {
-        const w = 1 + rnd() * 1.3;
-        if (u + w > len / 2 - 0.5) break;
-        for (const sv of [-1, 1]) if (dep > 5 || sv > 0)
-          add(L.prod, c, ang, u + w / 2, bh - 0.1, dep > 5 ? sv * dep / 4 : 0, w - 0.2, 1.1, Math.max(0.6, dep / 2 - 0.8), PROD[(rnd() * PROD.length) | 0]);
-        u += w;
+        add(L.glass, c, ang, 0, 4, back + s * 0.2, len, 7, 0.12);                                      // glass into the bakery
+        bakeryPanels.push([c, ang, back + s * 0.25, len, s]);                                           // picture panel above (built below)
+      } else if (EGG_PALLETS.test(k)) {     // wooden pallet with stacks of 30-egg trays (trays show on every side)
+        add(L.pallet, c, ang, 0, 0.45, 0, Math.max(0.5, len - 0.3), 0.9, Math.max(0.5, dep - 0.3));
+        const nu = Math.max(1, Math.round((len - 0.6) / 3.2)), nv = Math.max(1, Math.round((dep - 0.6) / 3.2));
+        const bw = (len - 0.6) / nu, bd = (dep - 0.6) / nv, egg = TILE_NAMES.indexOf('eggs');
+        for (let i = 0; i < nu; i++) for (let j = 0; j < nv; j++) {
+          const sh = 6 + ((rnd() * 3) | 0) * 1.4;                 // stacks of slightly different height
+          add(L.stock, c, ang, -len / 2 + 0.3 + bw * (i + 0.5), 0.9 + sh / 2, -dep / 2 + 0.3 + bd * (j + 0.5), bw - 0.2, sh, bd - 0.2, [egg, 1]);
+        }
+      } else if (EGG_BAYS.test(k)) {        // open egg shelving: steel posts, white shelves, 30-egg trays facing the walkway
+        const H = 12, lh = (H - 1.5) / 4, sides = open.length ? open : [1];
+        for (const su of [-1, 1]) for (const sv of [-1, 1]) add(L.steel, c, ang, su * (len / 2 - 0.25), H / 2, sv * (dep / 2 - 0.25), 0.4, H, 0.4);
+        add(L.frame, c, ang, 0, 0.5, 0, len, 1, dep);
+        if (sides.length === 1) add(L.back, c, ang, 0, H / 2, -sides[0] * (dep / 2 - 0.2), len - 0.5, H, 0.25);
+        for (let l = 0; l < 4; l++) {
+          const yb = 1 + l * lh;
+          add(L.white, c, ang, 0, yb, 0, len - 0.4, 0.2, dep - 0.4);
+          for (const sv of sides) addRun(L.stock, c, ang, -len / 2 + 0.4, len - 0.8, yb + 0.1, sv * dep / 4, lh, Math.max(0.6, dep / 2 - 0.6), ['eggs']);
+        }
+      } else if (UPRIGHT_FACE(k, x) || (open.length === 1 && dep < 9 && !['520', '530', '560'].includes(a) && !inFreezerIsland(x, y))) {
+        // upright glass-door cooler, doors to the walkway (meat, seafood, frozen are chests, except where set in UPRIGHT_FACE)
+        const [A, Ln, D, s] = UPRIGHT_FACE(k, x) ? orient(pc, UPRIGHT_FACE(k, x)) : [ang, len, dep, open[0]];
+        const H = 20, inner = D - 1.2, ks = a === '520' ? ['meat', 'frozen'] : a === '530' ? ['fish', 'frozen'] : a === '540' ? ['bread', 'frozen', 'boxes'] : kinds;
+        if (a === '540') headers.push([c, A, Ln, D, s, 'เบเกอรี่แช่แข็ง', 'FROZEN BAKERY']);   // red header board on top (built below)
+        add(L.white, c, A, 0, H / 2, -s * (D / 2 - 0.3), Ln, H, 0.6);                        // back
+        for (const su of [-1, 1]) add(L.white, c, A, su * (Ln / 2 - 0.2), H / 2, 0, 0.4, H, D);   // ends
+        add(L.white, c, A, 0, H - 0.9, 0, Ln, 1.8, D);                                       // canopy
+        add(L.light, c, A, 0, H - 2.05, s * (D / 2 - 0.5), Ln - 0.8, 0.25, 0.6);              // light strip under it
+        add(L.frame, c, A, 0, 0.6, 0, Ln, 1.2, D);                                          // kick plate
+        const lh = (H - 4.2) / 5;
+        for (let l = 0; l < 5; l++) {
+          const yb = 1.3 + l * lh;
+          add(L.deck, c, A, 0, yb, -s * 0.2, Ln - 0.8, 0.15, inner - 0.4);
+          addRun(L.stock, c, A, -Ln / 2 + 0.5, Ln - 1, yb + 0.08, -s * 0.2, lh, inner * 0.7, ks);
+        }
+        add(L.glass, c, A, 0, (H - 1.8 + 1.2) / 2, s * (D / 2 - 0.12), Ln - 0.4, H - 3, 0.12);   // glass doors
+        const doors = Math.max(1, Math.round(Ln / 4.5));
+        for (let d = 0; d <= doors; d++) {
+          const u = -Ln / 2 + 0.2 + d * (Ln - 0.4) / doors;
+          add(L.frame, c, A, u, (H - 0.6) / 2, s * (D / 2 - 0.1), 0.3, H - 1.8, 0.25);             // door frames
+          if (d < doors) add(L.steel, c, A, u + 0.7, H * 0.45, s * (D / 2 + 0.15), 0.18, 4, 0.3);   // handles
+        }
+      } else {                               // island chest freezer / service counter: white body, steel rim, glass lid, stock seen from above
+        const bh = a === '520' || a === '530' ? 6.5 : 7, inner = Math.max(0.6, dep - 1.4);
+        const top = a === '520' ? ['meat'] : a === '530' ? ['fish'] : a === '540' || a === '541' ? ['bread'] : a === '550' ? ['milk', 'yogurt']
+          : a === '580' ? ['frozen', 'fish', 'frozen'] : ['frozen'];
+        add(L.frame, c, ang, 0, 0.45, 0, len - 0.2, 0.9, dep - 0.2);                          // kick
+        add(L.white, c, ang, 0, (bh - 1.2 + 0.9) / 2, 0, len, bh - 2.1, dep);                 // body, up to the well floor
+        for (const sv of [-1, 1]) add(L.white, c, ang, 0, bh - 0.6, sv * (dep / 2 - 0.15), len, 1.2, 0.3);   // well walls
+        for (const su of [-1, 1]) add(L.white, c, ang, su * (len / 2 - 0.15), bh - 0.6, 0, 0.3, 1.2, dep);
+        for (const sv of [-1, 1]) {
+          add(L.steel, c, ang, 0, bh + 0.05, sv * (dep / 2 - 0.3), len, 0.35, 0.6);           // rim, long sides
+          add(L.prod, c, ang, 0, bh - 1.4, sv * (dep / 2 + 0.02), len - 0.6, 0.5, 0.06, '#e60012');   // red price rail
+        }
+        for (const su of [-1, 1]) add(L.steel, c, ang, su * (len / 2 - 0.3), bh + 0.05, 0, 0.6, 0.35, dep);
+        let u = -len / 2 + 0.6;
+        while (u < len / 2 - 1) {
+          const w = Math.min(3 + rnd() * 2, len / 2 - 0.6 - u), t = TILE_NAMES.indexOf(pick(top));
+          add(L.stockTop, c, ang, u + w / 2, bh - 0.75, 0, w - 0.15, 0.9, inner, [t, Math.max(1, Math.round(w / 3))]);
+          u += w;
+        }
+        if (a === '520' || a === '530') add(L.glass, c, ang, 0, bh + 1.6, 0, len - 0.6, 3, 0.15);   // sneeze guard
+        else add(L.glass, c, ang, 0, bh + 0.3, 0, len - 0.6, 0.15, dep - 0.6);                    // sliding lid
       }
     } else {                                 // promo / fresh: wooden pallet with stacked cartons
       add(L.pallet, c, ang, 0, 0.45, 0, Math.max(0.5, len - 0.3), 0.9, Math.max(0.5, dep - 0.3));
@@ -666,6 +1265,145 @@ async function buildReal() {
       }
     }
   });
+  // rotisserie chicken counter (550-40..42, as in the store): black counter with a red front and guard rail,
+  // a heated glass display case and three rotisserie ovens glowing warm, promo boards on top. Faces the open floor.
+  {
+    const ps = pieces.filter(p => ROTISSERIE.test(p[5]));
+    if (ps.length) {
+      const xs = ps.flatMap(p => [p[0] - p[3] / 2, p[0] + p[3] / 2]), ys = ps.flatMap(p => [p[1] - p[4] / 2, p[1] + p[4] / 2]);
+      const mx = (Math.min(...xs) + Math.max(...xs)) / 2, my = (Math.min(...ys) + Math.max(...ys)) / 2, c = W(mx, my);
+      const run = (dx, dy) => { let n = 0; for (let d = 16; d < 70 && freeAt(mx + dx * d, my + dy * d); d += 2) n++; return n; };
+      // the counter runs along the longer side of the space and faces the side with more open floor
+      const w = Math.max(...xs) - Math.min(...xs), h = Math.max(...ys) - Math.min(...ys);
+      const [dx, dy] = (h > w ? [[1, 0], [-1, 0]] : [[0, 1], [0, -1]]).reduce((b, d) => run(...d) > run(...b) ? d : b);
+      const [A, s] = dy ? [0, Math.sign(dy)] : [Math.PI / 2, -Math.sign(dx)];
+      const Ln = Math.min(26, Math.max(w, h) - 1), D = 9, f = s * D / 2;              // u along the counter, s*v toward the customer
+      add(L.frame, c, A, 0, 2.3, 0, Ln, 4.6, D);                                     // black counter
+      add(L.prod, c, A, 0, 2.3, f + 0.03, Ln, 2, 0.06, '#c8102e');                   // red front panel
+      add(L.prod, c, A, 0, 3.45, f + 0.04, Ln, 0.25, 0.06, '#d4a43a');               // gold line above it
+      add(L.steel, c, A, 0, 4.7, 0, Ln, 0.2, D);                                     // stainless top
+      for (let u = -Ln / 2 + 1; u <= Ln / 2 - 1; u += 5) add(L.steel, c, A, u, 1.6, f + 1.4, 0.25, 3.2, 0.25);   // rail posts
+      add(L.steel, c, A, 0, 3.1, f + 1.4, Ln - 1.4, 0.25, 0.25);                    // guard rail
+      add(L.steel, c, A, 0, 1.6, f + 1.4, Ln - 1.4, 0.2, 0.2);
+      add(L.white, c, A, 0, 4.5, -f + 0.3, Ln, 9, 0.6);                               // staff-side back panel
+      // heated display case on the left: glass box, warm shelves, roast chicken on two levels
+      const cu = -Ln / 2 + 4.2;
+      add(L.warm, c, A, cu, 5.2, 0, 7.6, 0.15, D * 0.6);
+      add(L.warm, c, A, cu, 7.4, 0, 7.6, 0.15, D * 0.6);
+      for (const y of [5.3, 7.5]) add(L.stockTop, c, A, cu, y + 0.35, 0, 7.2, 0.6, D * 0.55, [TILE_NAMES.indexOf('bread'), 2]);
+      add(L.glass, c, A, cu, 7, 0, 8, 4.6, D * 0.7);
+      add(L.steel, c, A, cu, 9.35, 0, 8.2, 0.2, D * 0.72);
+      // three rotisserie ovens: stainless body, glass door with a warm glow inside, dark grille at the bottom
+      for (let i = 0; i < 3; i++) {
+        const u = -Ln / 2 + 10.5 + i * 5.3;
+        add(L.steel, c, A, u, 4.8 + 4.4, -s * 0.6, 5, 8.8, D * 0.6);
+        add(L.warm, c, A, u, 4.8 + 4.8, s * (D * 0.3 - 0.4), 3.8, 5.2, 0.1);
+        add(L.glass, c, A, u, 4.8 + 4.8, s * (D * 0.3 - 0.25), 4, 5.6, 0.1);
+        add(L.frame, c, A, u, 4.8 + 1.2, s * (D * 0.3 - 0.2), 4, 1.4, 0.12);
+        add(L.prod, c, A, u, 14.6, s * (D * 0.3 - 0.4), 4.6, 2.2, 0.15, i === 1 ? '#f4f1ea' : '#c8102e');   // promo boards
+      }
+    }
+  }
+  // the bread island by the bakery door (540-13..16), arranged as in the store: a main rack each side (cream frame on
+  // castors, three stepped wooden trays of boxed croissants / buns, a wire shelf of spreads, green oval sign) and a
+  // smaller rack at each end. It faces away from the bakery wall.
+  {
+    const ps = pieces.filter(p => BREAD_ISLAND.test(p[5])), wall = pieces.filter(p => BREAD_RACKS.test(p[5]));
+    if (ps.length && wall.length) {
+      const mean = (a, i) => a.reduce((t, p) => t + p[i], 0) / a.length;
+      const mx = mean(ps, 0), my = mean(ps, 1), fx = mx - mean(wall, 0), fy = my - mean(wall, 1), fl = Math.hypot(fx, fy);
+      const A = Math.round(Math.atan2(-fx / fl, fy / fl) / (Math.PI / 2)) * (Math.PI / 2);   // square to the building, not diagonal
+      const at = (u, v) => W(mx + u * Math.cos(A) - v * Math.sin(A), my + u * Math.sin(A) + v * Math.cos(A));
+      const cream = '#ece3cc';
+      const rack = (c, ang, Lr, Dr, s, withTop, sign) => {
+        for (const su of [-1, 1]) {
+          add(L.prod, c, ang, su * (Lr / 2 - 0.15), 3.9, 0, 0.3, 7.8, Dr, cream);                   // side panels
+          for (const sv of [-1, 1]) add(L.frame, c, ang, su * (Lr / 2 - 0.4), 0.3, sv * (Dr / 2 - 0.4), 0.5, 0.6, 0.5);   // castors
+        }
+        add(L.prod, c, ang, 0, 0.9, 0, Lr, 0.3, Dr, cream);                                         // bottom rail
+        add(L.prod, c, ang, 0, withTop ? 5.4 : 4.2, -s * (Dr / 2 - 0.15), Lr - 0.4, withTop ? 9.6 : 7.2, 0.25, cream);   // back board
+        const d = Dr * 0.5;
+        for (let t = 0; t < 3; t++) {                                                              // trays step back as they rise
+          const y = 1.5 + t * 2.1, v = s * (Dr / 2 - d / 2 - 0.15 - t * 0.55);
+          add(L.pallet, c, ang, 0, y, v, Lr - 0.5, 0.18, d);                                      // wooden tray
+          add(L.pallet, c, ang, 0, y + 0.32, v + s * d / 2, Lr - 0.5, 0.5, 0.12);                 // scalloped front lip
+          add(L.prod, c, ang, 0, y + 0.16, v + s * (d / 2 + 0.07), Lr - 0.8, 0.26, 0.04, '#f4f6f8');   // price strip
+          addRun(L.stock, c, ang, -Lr / 2 + 0.45, Lr - 0.9, y + 0.09, v - s * 0.15, 1.9, d - 0.45, ['pastry']);
+        }
+        if (withTop) {                                                                             // wire shelf of spreads
+          add(L.steel, c, ang, 0, 7.9, -s * (Dr / 2 - 1.1), Lr - 0.6, 0.1, 1.6);
+          addRun(L.stock, c, ang, -Lr / 2 + 0.45, Lr - 0.9, 7.95, -s * (Dr / 2 - 1.1), 2, 1.2, ['spread']);
+        }
+        if (sign) ovalSigns.push([c, ang, Lr, ...sign]);
+      };
+      // main racks back to back, each 9 long and 4.4 deep; the end racks turned sideways
+      rack(at(0, 2.2), A, 9, 4.4, 1, true, ['ครัวซองต์เนยสด', 'Butter croissant']);
+      rack(at(0, -2.2), A, 9, 4.4, -1, true, ['ขนมปังไส้กรอก', 'Sausage Bread']);
+      rack(at(6.3, 0), A - Math.PI / 2, 4.4, 3.4, 1, false, null);
+      rack(at(-6.3, 0), A + Math.PI / 2, 4.4, 3.4, 1, false, ['เค้กกล้วยหอม', 'Banana cake']);
+    }
+  }
+  // fish preparation counter (as in the store), against the wall below the dairy row: band saw, stainless tables with
+  // under-shelves, a tub on wheels, sinks behind low glass screens, a scale hanging on a pole, bin, wet-floor sign.
+  // Faces south; the hanging boards are added with the other signs below.
+  {
+    const c = W(...FISH_PREP.centre), back = -FISH_PREP.depth / 2;
+    add(L.white, c, 0, 0, 10, back + 0.15, FISH_PREP.len, 20, 0.3);                              // tiled wall
+    add(L.steel, c, 0, 12, 3.2, back + 2.8, 52, 6.4, 5);                                      // sink run along the wall
+    add(L.glass, c, 0, 12, 8.6, back + 5.3, 52, 4.4, 0.15);                                   // low glass splash screens
+    for (const u of [-14, 12, 38]) add(L.glass, c, 0, u, 8.6, back + 2.8, 0.15, 4.4, 5);
+    const table = (u, w) => {
+      add(L.steel, c, 0, u, 6.2, -1, w, 0.25, 5);                                            // top
+      add(L.steel, c, 0, u, 1.6, -1, w - 0.4, 0.15, 4.6);                                    // under-shelf
+      for (const su of [-1, 1]) for (const sv of [-1, 1]) add(L.steel, c, 0, u + su * (w / 2 - 0.3), 3.1, -1 + sv * 2.2, 0.25, 6.2, 0.25);
+    };
+    table(-8, 16); table(5, 7); table(12.5, 7);
+    add(L.white, c, 0, -10, 7.4, -1.5, 6, 2.2, 3.8);                                          // styrofoam box
+    add(L.steel, c, 0, -22, 3.6, -0.5, 8, 6.2, 5.5);                                          // tub on wheels
+    for (const su of [-1, 1]) add(L.frame, c, 0, -22 + su * 3.4, 0.3, -0.5, 0.6, 0.6, 0.6);
+    add(L.steel, c, 0, -33, 6, -2, 6, 12, 4.5);                                                // band saw
+    add(L.frame, c, 0, -33, 10.5, 0.3, 4, 2.2, 0.1);                                           // its display
+    add(L.steel, c, 0, 1, 15, back + 4, 0.3, 10, 0.3);                                         // pole for the scale
+    add(L.steel, c, 0, 1, 10, back + 4.3, 3.2, 2.6, 1.4);                                      // hanging scale
+    add(L.steel, c, 0, 21, 2.8, 1, 3.4, 5.6, 3);                                               // bin
+    add(L.prod, c, 0, 21, 3.5, 2.55, 2, 1.2, 0.05, '#e53935');                                 // "FS" on the bin
+    add(L.prod, c, 0, 25.5, 2.2, 2.5, 2.2, 4.4, 0.5, '#f6c400');                               // wet-floor sign
+  }
+  // the two 580 freezer islands (frozen squid & shrimp, frozen sea fish): a raised wire rack of dry goods runs
+  // along the middle, above the freezers on both sides (as in the store)
+  // The drawing traces the freezers in odd sizes, so each island is rebuilt as an even layout over its outline:
+  // a row of chest freezers along each long side (back to back, a gap between for the rack's uprights), an end cap
+  // across each end.
+  {
+    const isl = [[], []];
+    for (const pc of pieces) if (pc[5] && inFreezerIsland(pc[0], pc[1])) isl[pc[1] < 785 ? 0 : 1].push(pc);
+    for (const ps of isl) {
+      if (!ps.length) continue;
+      const ext = ps.flatMap(([x, y, ang, l, dp]) => {
+        const hl = Math.abs(Math.cos(ang)) * l / 2 + Math.abs(Math.sin(ang)) * dp / 2, hd = Math.abs(Math.sin(ang)) * l / 2 + Math.abs(Math.cos(ang)) * dp / 2;
+        return [[x - hl, y - hd], [x + hl, y + hd]];
+      });
+      const bx0 = Math.min(...ext.map(p => p[0])), bx1 = Math.max(...ext.map(p => p[0])), by0 = Math.min(...ext.map(p => p[1])), by1 = Math.max(...ext.map(p => p[1]));
+      const cy = (by0 + by1) / 2, wid = by1 - by0, capD = 7.5, rowD = (wid - 3.2) / 2, rowLen = bx1 - bx0 - 2 * capD;
+      const top = ['frozen', 'fish', 'frozen'], n = Math.max(1, Math.round(rowLen / 12)), lm = rowLen / n;
+      for (const sv of [-1, 1]) for (let i = 0; i < n; i++)                                // the two long rows
+        chestFreezer(W(bx0 + capD + lm * (i + 0.5), cy + sv * (wid / 2 - rowD / 2)), 0, lm, rowD, top);
+      for (const [x, su] of [[bx0 + capD / 2, -1], [bx1 - capD / 2, 1]])                   // end caps
+        chestFreezer(W(x, cy), Math.PI / 2, wid, capD, top);
+      const x0 = bx0 + capD, x1 = bx1 - capD;
+      const len = x1 - x0 - 2, c = W((x0 + x1) / 2, cy), H = 17;
+      for (let i = 0; i <= Math.round(len / 8); i++) {                                   // uprights
+        const u = -len / 2 + i * len / Math.round(len / 8);
+        for (const v of [-1.6, 1.6]) add(L.white, c, 0, u, 4 + H / 2 - 2, v, 0.35, H, 0.35);
+      }
+      for (const [y, d] of [[11, 4.2], [15.5, 3.4]]) {                                  // two white wire shelves
+        add(L.white, c, 0, 0, y, 0, len, 0.2, d);
+        add(L.prod, c, 0, 0, y + 0.25, d / 2, len, 0.5, 0.06, '#f4f6f8');               // front lip
+        add(L.prod, c, 0, 0, y + 0.25, -d / 2, len, 0.5, 0.06, '#f4f6f8');
+        for (const v of [-d / 4, d / 4]) addRun(L.stock, c, 0, -len / 2 + 0.3, len - 0.6, y + 0.1, v, 4, d / 2 - 0.3, ['bagWarm', 'boxes', 'noodle', 'bagCool']);
+      }
+    }
+  }
   const grp = new THREE.Group(), box = new THREE.BoxGeometry(1, 1, 1);
   const mats = {
     post: new THREE.MeshStandardMaterial({ color: '#1f5ea8', metalness: 0.35, roughness: 0.45 }),
@@ -674,17 +1412,237 @@ async function buildReal() {
     back: new THREE.MeshStandardMaterial({ color: '#dfe2e6', roughness: 0.9 }),
     prod: new THREE.MeshStandardMaterial({ roughness: 0.8 }),
     white: new THREE.MeshStandardMaterial({ color: '#f3f5f7', roughness: 0.4 }),
-    glass: new THREE.MeshStandardMaterial({ color: '#cfeaf7', transparent: true, opacity: 0.38, roughness: 0.05, metalness: 0.1 }),
+    glass: new THREE.MeshStandardMaterial({ color: '#d8f0fa', transparent: true, opacity: 0.22, roughness: 0.05, metalness: 0.1, depthWrite: false }),
     pallet: new THREE.MeshStandardMaterial({ color: '#a8794b', roughness: 0.95 }),
     grey: new THREE.MeshStandardMaterial({ color: '#cfd2d8', roughness: 0.8 }),
+    frame: new THREE.MeshStandardMaterial({ color: '#34393f', metalness: 0.4, roughness: 0.5 }),
+    light: new THREE.MeshBasicMaterial({ color: '#fffbea' }),
+    warm: new THREE.MeshBasicMaterial({ color: '#ff9d45' }),                     // heated display / oven glow
+    screen: new THREE.MeshBasicMaterial({ color: '#ffffff' }),                   // lit TV screens / LED strips (colour per instance)
+    steel: new THREE.MeshStandardMaterial({ color: '#d3d7dc', metalness: 0.25, roughness: 0.35 }),   // no env map: low metalness keeps it bright
   };
+  const atlas = stockAtlas(), stockMat = stockMaterial(atlas), stockGeo = { stock: stockGeometry(false), stockTop: stockGeometry(true) };
   for (const [name, list] of Object.entries(L)) {
     if (!list.length) continue;
-    const im = new THREE.InstancedMesh(box, mats[name], list.length);
-    list.forEach(([mat, col], i) => { im.setMatrixAt(i, mat); if (col) im.setColorAt(i, new THREE.Color(col)); });
-    im.castShadow = ['back', 'white', 'grey', 'pallet'].includes(name);
-    im.receiveShadow = name !== 'glass';
+    let im;
+    if (stockGeo[name]) {                  // product artwork: per-instance atlas tile
+      const geo = stockGeo[name], tiles = new Float32Array(list.length * 3);
+      list.forEach(([, [t, reps]], i) => tiles.set([(t % ATL) / ATL, 1 - (((t / ATL) | 0) + 1) / ATL, reps], i * 3));
+      geo.setAttribute('aTile', new THREE.InstancedBufferAttribute(tiles, 3));
+      im = new THREE.InstancedMesh(geo, stockMat, list.length);
+      list.forEach(([mat], i) => im.setMatrixAt(i, mat));
+    } else {
+      im = new THREE.InstancedMesh(box, mats[name], list.length);
+      list.forEach(([mat, col], i) => { im.setMatrixAt(i, mat); if (col) im.setColorAt(i, new THREE.Color(col)); });
+    }
+    im.castShadow = !['glass', 'light', 'warm', 'screen'].includes(name);
+    im.receiveShadow = !['glass', 'light', 'warm', 'screen'].includes(name);
     grp.add(im);
+  }
+  // bakery wall pictures (drawn here, no photos): donuts, cupcakes, croissants, muffins, a sandwich, sliced bread
+  if (bakeryPanels.length) {
+    const scenes = [
+      g => { for (const [x, y, c] of [[90, 120, '#d9a066'], [190, 110, '#6d3b1f'], [150, 175, '#f3b6c8']]) { g.fillStyle = c; g.beginPath(); g.arc(x, y, 48, 0, 7); g.fill(); g.fillStyle = '#e8c49a'; g.beginPath(); g.arc(x, y, 14, 0, 7); g.fill(); } },
+      g => { for (let i = 0; i < 4; i++) { const x = 45 + i * 65; g.fillStyle = '#c98d55'; g.fillRect(x - 24, 140, 48, 50); g.fillStyle = pick(['#f7c6d6', '#fff', '#f3a8c0']); g.beginPath(); g.arc(x, 132, 30, Math.PI, 0); g.fill(); g.beginPath(); g.arc(x, 112, 16, 0, 7); g.fill(); } },
+      g => { for (const [x, y] of [[100, 130], [190, 150]]) { g.fillStyle = '#d18a3a'; g.beginPath(); g.ellipse(x, y, 70, 32, -0.2, 0, 7); g.fill(); g.strokeStyle = '#a5621f'; g.lineWidth = 4; for (let i = -2; i <= 2; i++) { g.beginPath(); g.moveTo(x + i * 22, y - 28); g.lineTo(x + i * 18, y + 28); g.stroke(); } } },
+      g => { for (let i = 0; i < 3; i++) { const x = 60 + i * 85; g.fillStyle = '#8a5527'; g.beginPath(); g.arc(x, 120, 38, Math.PI, 0); g.fill(); g.fillStyle = '#b77a3f'; g.fillRect(x - 32, 120, 64, 60); } },
+      g => { g.fillStyle = '#e1b26b'; g.beginPath(); g.ellipse(140, 105, 110, 40, 0, Math.PI, 0); g.fill(); g.fillStyle = '#6aa84f'; g.fillRect(40, 108, 200, 14); g.fillStyle = '#e57373'; g.fillRect(45, 122, 190, 10); g.fillStyle = '#e1b26b'; g.beginPath(); g.ellipse(140, 140, 105, 22, 0, 0, Math.PI); g.fill(); },
+      g => { for (let i = 0; i < 6; i++) { g.fillStyle = i % 2 ? '#f0d7a8' : '#e6c690'; g.fillRect(30 + i * 36, 70 + i * 6, 30, 110); g.fillStyle = '#b07a3a'; g.fillRect(30 + i * 36, 66 + i * 6, 30, 8); } },
+    ];
+    bakeryPanels.forEach(([c, ang, v, len, s], i) => {
+      const cv = document.createElement('canvas'), g = cv.getContext('2d'); cv.width = 280; cv.height = 220;
+      const bg = g.createLinearGradient(0, 0, 0, 220); bg.addColorStop(0, '#f6e7cf'); bg.addColorStop(1, '#e9cfa6');
+      g.fillStyle = bg; g.fillRect(0, 0, 280, 220); scenes[i % scenes.length](g);
+      g.fillStyle = '#e60012'; g.fillRect(0, 206, 280, 14);
+      const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace;
+      const panel = new THREE.Mesh(new THREE.PlaneGeometry(len - 0.3, 8), new THREE.MeshBasicMaterial({ map: t }));
+      const ca = Math.cos(ang), sa = Math.sin(ang);
+      panel.position.set(c.x - sa * v, 11.5, c.z + ca * v);
+      panel.rotation.y = -ang + (s > 0 ? 0 : Math.PI);                     // picture faces the shop floor
+      grp.add(panel);
+    });
+  }
+  // green oval signs on the bakery island racks (Thai over English), readable from both sides
+  for (const [c, ang, len, th, en] of ovalSigns) {
+    const cv = document.createElement('canvas'), g = cv.getContext('2d'); cv.width = 256; cv.height = 128;
+    g.fillStyle = '#2f4a3e'; g.beginPath(); g.ellipse(128, 64, 124, 60, 0, 0, 7); g.fill();
+    g.strokeStyle = '#d9cfa8'; g.lineWidth = 5; g.stroke();
+    g.fillStyle = '#fff'; g.textAlign = 'center'; g.font = '600 26px "IBM Plex Sans Thai"'; g.fillText(th, 128, 62, 220);
+    g.font = '500 17px Arial'; g.fillText(en, 128, 90, 200);
+    const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace;
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(4.6, 2.3), new THREE.MeshBasicMaterial({ map: t, transparent: true, side: THREE.DoubleSide }));
+    sign.position.set(c.x, 11.4, c.z); sign.rotation.y = -ang; grp.add(sign);
+  }
+  // spice headers: a picture of spice bowls over a coloured band with the name (Thai / English)
+  for (const [c, A, Ln, v, s, [th, en, band]] of spiceHeads) {
+    const cv = document.createElement('canvas'), g = cv.getContext('2d'); cv.width = 384; cv.height = 192;
+    g.fillStyle = '#efe3cf'; g.fillRect(0, 0, 384, 192);
+    for (let i = 0; i < 9; i++) {                                                         // bowls / heaps of spices
+      const x = 24 + (i % 5) * 84 + ((i / 5) | 0) * 42, y = 40 + ((i / 5) | 0) * 52, col = pick(['#9a3b1f', '#d6a33b', '#4d3220', '#c0392b', '#6b8e23', '#e9c46a']);
+      g.fillStyle = '#7a5a3c'; g.beginPath(); g.ellipse(x, y + 10, 34, 14, 0, 0, 7); g.fill();
+      g.fillStyle = col; g.beginPath(); g.ellipse(x, y + 4, 30, 14, 0, Math.PI, 0); g.fill();
+    }
+    g.fillStyle = band; g.fillRect(0, 128, 384, 64); g.fillStyle = '#fff'; g.textAlign = 'center';
+    g.font = '700 30px "IBM Plex Sans Thai"'; g.fillText(th, 192, 160, 360); g.font = 'italic 700 18px Arial'; g.fillText(en, 192, 183, 360);
+    const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace;
+    const board = new THREE.Mesh(new THREE.PlaneGeometry(Ln - 0.2, (Ln - 0.2) / 2), new THREE.MeshBasicMaterial({ map: t }));
+    const ca = Math.cos(A), sa = Math.sin(A);
+    board.position.set(c.x - sa * v, 12.5 + (Ln - 0.2) / 4, c.z + ca * v);
+    board.rotation.y = -A + (s > 0 ? 0 : Math.PI); grp.add(board);
+  }
+  // fish preparation boards hanging over the counter: white with a red icon panel, and a red salmon board
+  {
+    const c = W(...FISH_PREP.centre), back = -FISH_PREP.depth / 2;
+    const icon = {
+      scale: g => { g.strokeStyle = '#fff'; g.lineWidth = 6; g.beginPath(); g.arc(64, 70, 30, 0, 7); g.stroke(); g.beginPath(); g.moveTo(64, 70); g.lineTo(80, 52); g.stroke(); g.fillStyle = '#fff'; g.fillRect(34, 104, 60, 8); g.fillRect(40, 24, 48, 8); },
+      fish: g => { g.fillStyle = '#fff'; g.beginPath(); g.ellipse(58, 60, 38, 14, 0, 0, 7); g.fill(); g.beginPath(); g.moveTo(92, 60); g.lineTo(116, 44); g.lineTo(116, 76); g.fill(); g.beginPath(); g.moveTo(30, 96); g.lineTo(90, 88); g.lineTo(80, 112); g.fill(); },
+    };
+    const board = (u, th, en, ic, w) => {
+      const cv = document.createElement('canvas'), g = cv.getContext('2d'); cv.width = 512; cv.height = 128;
+      g.fillStyle = '#ffffff'; g.fillRect(0, 0, 512, 128); g.fillStyle = '#c8102e'; g.fillRect(384, 0, 128, 128);
+      g.save(); g.translate(384, 0); icon[ic](g); g.restore();
+      g.fillStyle = '#222'; g.textAlign = 'center'; g.font = '600 38px "IBM Plex Sans Thai"'; g.fillText(th, 192, 58, 360);
+      g.fillStyle = '#d0d0d0'; g.fillRect(16, 74, 352, 2); g.fillStyle = '#333'; g.font = '600 22px Arial'; g.fillText(en, 192, 108, 360);
+      const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace;
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, w / 4), new THREE.MeshBasicMaterial({ map: t, side: THREE.DoubleSide }));
+      m.position.set(c.x + u, 17, c.z + back + 5); grp.add(m);
+    };
+    board(-1, 'กรุณาชั่งน้ำหนักที่นี่', 'PLEASE WEIGH PRODUCT HERE', 'scale', 14);
+    board(24, 'บริการตัดแต่งปลา', 'FILLETING SERVICE', 'fish', 14);
+    const cv = document.createElement('canvas'), g = cv.getContext('2d'); cv.width = 512; cv.height = 160;
+    const gr = g.createLinearGradient(0, 0, 512, 160); gr.addColorStop(0, '#f08a6a'); gr.addColorStop(1, '#e8613f');
+    g.fillStyle = gr; g.fillRect(0, 0, 512, 160);
+    for (let i = 0; i < 6; i++) { g.strokeStyle = 'rgba(255,255,255,.55)'; g.lineWidth = 3; g.beginPath(); g.moveTo(40 + i * 80, 160); g.lineTo(90 + i * 80, 70); g.stroke(); }
+    g.fillStyle = '#c8102e'; g.fillRect(0, 0, 512, 70); g.fillStyle = '#fff'; g.textAlign = 'center';
+    g.font = '700 30px "IBM Plex Sans Thai"'; g.fillText('ที่ตัดแต่งปลาแซลมอน', 256, 32, 490); g.font = '600 22px Arial'; g.fillText('Salmon Filleting Area', 256, 60, 490);
+    const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace;
+    const salmon = new THREE.Mesh(new THREE.PlaneGeometry(14, 14 * 160 / 512), new THREE.MeshBasicMaterial({ map: t, side: THREE.DoubleSide }));
+    salmon.position.set(c.x - 31, 16, c.z + back + 3); grp.add(salmon);
+  }
+  // red header boards on top of fridges (Thai over English, as in the store)
+  for (const [c, A, Ln, D, s, th, en] of headers) {
+    const cv = document.createElement('canvas'), g = cv.getContext('2d'); cv.width = 512; cv.height = 128;
+    g.fillStyle = '#c8102e'; g.fillRect(0, 0, 512, 128); g.fillStyle = '#fff'; g.textAlign = 'center';
+    g.font = '700 54px "IBM Plex Sans Thai"'; g.fillText(th, 256, 66, 490); g.font = '700 30px Arial'; g.fillText(en, 256, 108, 490);
+    const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace;
+    const board = new THREE.Mesh(new THREE.PlaneGeometry(Ln - 0.4, (Ln - 0.4) / 4), new THREE.MeshBasicMaterial({ map: t }));
+    const ca = Math.cos(A), sa = Math.sin(A), v = s * (D / 2 + 0.05);
+    board.position.set(c.x - sa * v, 20 - (Ln - 0.4) / 8 - 0.1, c.z + ca * v);
+    board.rotation.y = -A + (s > 0 ? 0 : Math.PI); grp.add(board);
+  }
+  // soft contact shadow under every fixture, so nothing looks like it floats
+  {
+    const cv = document.createElement('canvas'); cv.width = cv.height = 128;
+    const g = cv.getContext('2d'); g.filter = 'blur(10px)'; g.fillStyle = '#000'; g.fillRect(24, 24, 80, 80);
+    const t = new THREE.CanvasTexture(cv);
+    const im = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2),
+      new THREE.MeshBasicMaterial({ map: t, transparent: true, opacity: 0.32, depthWrite: false }), pieces.length);
+    pieces.forEach(([x, y, ang, len, dep], i) => {
+      v3.copy(W(x, y)).setY(0.06); q.setFromAxisAngle(up, -ang); sc.set(len * 1.6 + 4, 1, dep * 1.6 + 4);
+      im.setMatrixAt(i, m.compose(v3, q, sc));
+    });
+    im.renderOrder = -1; grp.add(im);
+  }
+  // aisle heads (หัวล็อค) at both ends of the racks for aisles 1-30, as in the store: a promo panel, a white board
+  // with each aisle's main sub-categories (Thai / English), and a red band with the two aisle numbers and arrows
+  {
+    const CAT_BG = ['#2e7d32', '#c62828', '#1565c0', '#f9a825', '#37474f', '#00838f', '#ad1457', '#6d4c41'];
+    const board = (w, h, draw) => {
+      const cv = document.createElement('canvas'); cv.width = 512; cv.height = Math.round(512 * h / w);
+      const g = cv.getContext('2d'); draw(g, cv.width, cv.height);
+      const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+      const side = mats.white;
+      return new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.4), [side, side, side, side, new THREE.MeshBasicMaterial({ map: t }), side]);
+    };
+    const subsOf = a => {                                            // the aisle's biggest sub-categories
+      const n = {};
+      for (const k of bayKeys) if (aisleOf(k) === a) for (const it of bayItems.get(k) || []) {
+        const name = SUBS[it.cat]?.[it.sub]?.[0] || CATS[it.cat]?.name; if (name) n[name] = (n[name] || 0) + 1;
+      }
+      return Object.entries(n).sort((p, q) => q[1] - p[1]).slice(0, 3).map(([name]) => name);
+    };
+    const catOf = a => {
+      const n = {}; for (const k of bayKeys) if (aisleOf(k) === a) for (const it of bayItems.get(k) || []) n[it.cat] = (n[it.cat] || 0) + 1;
+      return +(Object.entries(n).sort((p, q) => q[1] - p[1])[0]?.[0] ?? 1);
+    };
+    const pad = n => String(n).padStart(3, '0');
+    for (let p = 1; p <= 15; p++) {
+      const A = pad(2 * p - 1), B = pad(2 * p), corners = [];
+      for (const [x, y, ang, len, dep, k] of pieces) if (k && (aisleOf(k) === A || aisleOf(k) === B))
+        for (const [su, sv] of [[-1, -1], [1, -1], [1, 1], [-1, 1]])
+          corners.push([x + Math.cos(ang) * su * len / 2 - Math.sin(ang) * sv * dep / 2, y + Math.sin(ang) * su * len / 2 + Math.cos(ang) * sv * dep / 2]);
+      if (!corners.length) continue;
+      const x0 = Math.min(...corners.map(c => c[0])), x1 = Math.max(...corners.map(c => c[0]));
+      const y0 = Math.min(...corners.map(c => c[1])), y1 = Math.max(...corners.map(c => c[1]));
+      const xa = (x => x.reduce((s, v) => s + v, 0) / x.length)(bayKeys.filter(k => aisleOf(k) === A).map(k => data.bays[k][0]));
+      const aLeftNorth = xa > (x0 + x1) / 2;                       // seen from the north end, is aisle A on the left?
+      const w = Math.max(8, x1 - x0 + 1.5), subsA = subsOf(A), subsB = subsOf(B), catA = catOf(A), catB = catOf(B);
+      const promo = (left, right) => board(w, 7, (g, W2, H2) => {   // two halves: the main category of each side
+        [[0, left], [W2 / 2, right]].forEach(([cx, cat]) => {
+          g.fillStyle = CAT_BG[cat] || '#455a64'; g.fillRect(cx, 0, W2 / 2, H2);
+          g.fillStyle = 'rgba(255,255,255,.12)'; g.beginPath(); g.arc(cx + W2 / 4, H2 * 1.1, H2 * .8, 0, 7); g.fill();
+          g.fillStyle = '#fff'; g.textAlign = 'center';
+          g.font = '700 30px "IBM Plex Sans Thai"'; g.fillText(CATS[cat]?.name || '', cx + W2 / 4, H2 * .45, W2 / 2 - 16);
+          g.font = '600 15px Arial'; g.fillText((word(CATS[cat]?.name || '', 'en') || '').toUpperCase(), cx + W2 / 4, H2 * .68, W2 / 2 - 16);
+        });
+        g.fillStyle = '#e60012'; g.fillRect(0, 0, W2, 8);
+      });
+      const listBoard = (left, right) => board(w, 4, (g, W2, H2) => {
+        g.fillStyle = '#ffffff'; g.fillRect(0, 0, W2, H2); g.fillStyle = '#d0d4da'; g.fillRect(W2 / 2 - 1, 6, 2, H2 - 12);
+        g.font = '600 15px "IBM Plex Sans Thai"'; g.fillStyle = '#333'; g.textAlign = 'left';
+        [[8, left], [W2 / 2 + 8, right]].forEach(([x, list]) => list.forEach((th, i) => {
+          const en = word(th, 'en'); g.fillText(en ? `${th} / ${en.toUpperCase()}` : th, x, 24 + i * 24, W2 / 2 - 16);
+        }));
+      });
+      const numBand = (l, r) => board(w, 3.2, (g, W2, H2) => {
+        g.fillStyle = '#e60012'; g.fillRect(0, 0, W2, H2); g.fillStyle = '#fff';
+        g.font = '700 54px Arial'; g.textAlign = 'left'; g.fillText(String(+l), 14, H2 * .74); g.textAlign = 'right'; g.fillText(String(+r), W2 - 14, H2 * .74);
+        for (const ax of [W2 * .4, W2 * .6]) { g.beginPath(); g.moveTo(ax - 14, H2 * .3); g.lineTo(ax, H2 * .7); g.lineTo(ax + 14, H2 * .3); g.lineWidth = 7; g.strokeStyle = '#fff'; g.stroke(); }
+      });
+      // north end faces -y (towards the back wall), south end faces +y; the left/right aisle swaps between them
+      for (const [y, out] of [[y0, -1], [y1, 1]]) {
+        const leftA = out < 0 ? aLeftNorth : !aLeftNorth, [l, r] = leftA ? [A, B] : [B, A];
+        const tower = new THREE.Group();
+        const parts = [[numBand(l, r), 20.6], [listBoard(leftA ? subsA : subsB, leftA ? subsB : subsA), 24.2], [promo(leftA ? catA : catB, leftA ? catB : catA), 29.7]];
+        for (const [mesh, yy] of parts) { mesh.position.y = yy; tower.add(mesh); }
+        for (const sx of [-w / 2 + 0.3, w / 2 - 0.3]) { const post = new THREE.Mesh(new THREE.BoxGeometry(0.35, 15, 0.35), mats.white); post.position.set(sx, 26, -0.4); tower.add(post); }
+        for (let i = 0; i < 3; i++) { const b = new THREE.Mesh(new THREE.BoxGeometry(w / 3 - 0.4, 2.4, 3), mats.prod.clone()); b.material.color.set(pick(CARTON)); b.position.set(-w / 3 + i * w / 3, 34.6, -1.2); tower.add(b); }
+        const pos = W((x0 + x1) / 2, y + out * 0.3);
+        tower.position.set(pos.x, 0, pos.z); tower.rotation.y = out > 0 ? 0 : Math.PI;
+        grp.add(tower);
+      }
+    }
+  }
+  // department boards hanging over the fresh-food areas and the wine room (Thai + English, like the store's own)
+  {
+    const SIGN_EN = { 'แผนกผักและผลไม้': 'FRUIT & VEGETABLES', 'แผนกเนื้อสัตว์': 'MEAT', 'แผนกอาหารทะเล': 'SEAFOOD', 'แผนกเบเกอรี่': 'BAKERY',
+      'แผนกนมและอาหารแช่เย็น': 'DAIRY & CHILLED', 'แผนกอาหารแช่แข็ง': 'FROZEN FOOD', 'แผนกเส้นและอาหารเอเชีย': 'NOODLES & ASIAN FOOD', 'แผนกไวน์ สุรา WINE LIQUOR': 'WINE LIQUOR' };
+    const where = {};
+    for (const k of bayKeys) { const d = DEPT[aisleOf(k)]; if (d) (where[d] ||= []).push(data.bays[k]); }
+    // the spice corner inside the produce hall gets its own board, over the middle of its spice shelves
+    where['แผนกเครื่องเทศ'] = bayKeys.filter(k => /^510-(3[7-9]|4\d)$/.test(k)).map(k => data.bays[k]);
+    SIGN_EN['แผนกเครื่องเทศ'] = 'SPICE';
+    // and the electrical-appliance racks (aisles 037-044)
+    where['แผนกเครื่องใช้ไฟฟ้า'] = bayKeys.filter(k => +aisleOf(k) >= 37 && +aisleOf(k) <= 44).map(k => data.bays[k]);
+    SIGN_EN['แผนกเครื่องใช้ไฟฟ้า'] = 'ELECTRICAL APPLIANCES';
+    // and the column of promotion pallets (aisle 601)
+    where['แผนกกองโปรโมชั่น'] = bayKeys.filter(k => aisleOf(k) === '601').map(k => data.bays[k]);
+    SIGN_EN['แผนกกองโปรโมชั่น'] = 'PROMOTION';
+    for (const [name, pts] of Object.entries(where)) {
+      const th = name.replace('แผนก', '').replace(' WINE LIQUOR', ''), en = SIGN_EN[name] || '';
+      const cv = document.createElement('canvas'), g = cv.getContext('2d'); cv.width = 1024; cv.height = 256;
+      g.fillStyle = '#e60012'; g.fillRect(0, 0, 1024, 256); g.fillStyle = '#fff'; g.fillRect(0, 226, 1024, 10);
+      g.textAlign = 'center'; g.fillStyle = '#fff';
+      g.font = '700 104px "IBM Plex Sans Thai"'; g.fillText(th, 512, 120, 980);
+      g.font = '600 52px Arial, sans-serif'; g.fillText(en, 512, 196, 980);
+      const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+      const x = pts.reduce((s, p) => s + p[0], 0) / pts.length, y = pts.reduce((s, p) => s + p[1], 0) / pts.length, p = W(x, y);
+      const board = new THREE.Group(), mat = new THREE.MeshBasicMaterial({ map: t });
+      for (const r of [0, Math.PI]) { const f = new THREE.Mesh(new THREE.PlaneGeometry(36, 9), mat); f.rotation.y = r; f.position.z = r ? -0.15 : 0.15; board.add(f); }
+      const edge = new THREE.Mesh(new THREE.BoxGeometry(36.4, 9.4, 0.25), mats.frame); board.add(edge);
+      for (const sx of [-15, 15]) { const wire = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 14), mats.frame); wire.position.set(sx, 11.5, 0); board.add(wire); }
+      board.position.set(p.x, 34, p.z); grp.add(board);
+    }
   }
   for (const [c, n] of lanes) {             // each counter serves two lanes: 2n-1 on the front-right pole, 2n on the back-left
     [[2 * n - 1, -8.6, -8.4], [2 * n, -3.2, 8.4]].forEach(([lane, dx, dz]) => {
@@ -706,6 +1664,10 @@ async function buildReal() {
     out.data[i + 3] = 255;
   }
   cx.putImageData(out, 0, 0);
+  cx.strokeStyle = '#e2b422'; cx.lineWidth = 1.2;            // yellow floor marking round promotion pallets
+  for (const [x, y, ang, len, dep, k] of pieces) if (k && zone(aisleOf(k)) === 'fresh' && aisleOf(k) !== '603') {
+    cx.save(); cx.translate(x, y); cx.rotate(ang); cx.strokeRect(-len / 2 - 1.6, -dep / 2 - 1.6, len + 3.2, dep + 3.2); cx.restore();
+  }
   concreteTex = new THREE.CanvasTexture(cv); concreteTex.colorSpace = THREE.SRGBColorSpace;
   concreteTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
   scene.add(grp);
@@ -721,6 +1683,10 @@ async function setLook(real) {
   aisleSprites.forEach(s => s.visible = !real);
   signSprites.forEach(s => s.visible = real);
   floor.material.map = real ? concreteTex : tex; floor.material.needsUpdate = true;
+  // realistic: light from high overhead (store lighting) - short soft shadows under the fixtures, polished floor
+  floor.material.roughness = real ? 0.45 : 1; floor.material.metalness = real ? 0.05 : 0;
+  sun.position.set(...(real ? [-90, 800, 140] : [-300, 600, 250])); sun.intensity = real ? 1.7 : 1.4;
+  hemi.intensity = real ? 1.25 : 1.6; hemi.groundColor.set(real ? '#d9d4ca' : '#c9cdd6');
   $('.legend').style.display = real ? 'none' : '';
 }
 $('#lookSeg').onclick = e => { const b = e.target.closest('[data-look]'); if (b) setLook(b.dataset.look === 'real'); };
@@ -757,7 +1723,9 @@ G.block = new Uint8Array(G.w * G.h);
   }
   // staff-only areas are walled off, so routes go round them and reach counters from the shop side:
   // the customer-service room, and the bakery's packing room behind the bakery / cake counters (540)
-  const STAFF_ONLY = [CS.block, [[352, 1144], [452, 1144], [452, 1185], [384, 1185], [352, 1218]]];
+  const [fx, fy] = FISH_PREP.centre, fl = FISH_PREP.len / 2, fd = FISH_PREP.depth / 2;
+  const STAFF_ONLY = [CS.block, [[352, 1144], [452, 1144], [452, 1185], [384, 1185], [352, 1218]],
+    [[fx - fl, fy - fd], [fx + fl, fy - fd], [fx + fl, fy + fd - 4], [fx - fl, fy + fd - 4]]];   // + the fish preparation counter
   const inPoly = (poly, x, y) => {
     let inside = false;
     for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
@@ -994,7 +1962,7 @@ canvas.addEventListener('pointermove', ev => {
   canvas.style.cursor = k ? 'pointer' : '';
   if (id >= 0) {
     const r = canvas.getBoundingClientRect();
-    tip.textContent = k ? `ช่อง ${k} · ${bayItems.get(k)?.length || 0} สินค้า` : 'ชั้นวาง (ไม่มีรหัสช่องในข้อมูล)';
+    tip.textContent = k ? `${bayLabel(k)} · ${bayItems.get(k)?.length || 0} สินค้า` : 'ชั้นวาง (ไม่มีรหัสช่องในข้อมูล)';
     tip.style.left = ev.clientX - r.left + 'px'; tip.style.top = ev.clientY - r.top + 'px'; tip.style.display = 'block';
   } else tip.style.display = 'none';
 });
@@ -1020,7 +1988,7 @@ function search(q) {
   else if (/^\d+$/.test(q)) res = items.filter(it => it.no.startsWith(q) || it.bc.includes(q) || it.loc.replace('-', '').startsWith(q));
   else {
     const toks = q.split(/\s+/);
-    res = items.filter(it => { const s = it.lc + ' ' + norm(thumbs[it.no]?.[0] || ''); return toks.every(t => s.includes(t)); });
+    res = items.filter(it => { const s = it.lc + ' ' + norm(thumbs[it.no]?.[0] || '') + ' ' + norm(NAME_EN[it.no] || ''); return toks.every(t => s.includes(t)); });
   }
   return res.sort((a, b) => (!!b.bay - !!a.bay) || (b.lc.startsWith(q) - a.lc.startsWith(q)) || a.desc.length - b.desc.length);
 }
@@ -1050,37 +2018,41 @@ function detailsHtml(it) {
   if (!d) return '';
   const [brand, pack, url, facts] = d;
   const rows = [['ยี่ห้อ', brand], ['ขนาดบรรจุ', pack], ...facts].filter(r => r[1]);
-  return `${rows.length ? `<div class="facts">${rows.map(([k, v]) => `<span>${esc(k)}</span><b>${esc(v)}</b>`).join('')}</div>` : ''}
+  return `${rows.length ? `<div class="facts">${rows.map(([k, v]) => `<span>${esc(k)}</span><b translate="no">${esc(v)}</b>`).join('')}</div>` : ''}
     ${url ? `<a class="src" href="${esc(url)}" target="_blank" rel="noopener">ดูสินค้านี้ใน Makro PRO ↗</a>` : ''}`;
 }
 const mapShown = () => document.body.classList.contains('show-map');
 
+// product names: Thai as in the branch data; in any other language the English name from Makro PRO where there is one
+let NAME_EN = {};
+const nameOf = (no, th) => (lang !== 'th' && NAME_EN[no]) || th;
+const pname = it => nameOf(it.no, it.desc);
 const thumbUrl = it => thumbs[it.no]?.[1];
 const img = it => { const u = thumbUrl(it); return u ? `<img class="thumb" loading="lazy" src="${esc(u)}" alt="">` : `<div class="thumb"></div>`; };
 const locHtml = it => it.bay
-  ? `<span class="loc"><b>${esc(it.loc)}</b> ช่อง ${esc(aisleOf(it.bay))} · ชั้น ${it.shelf}</span>`
+  ? `<span class="loc"><b>${esc(it.loc)}</b> ${esc(placeLabel(it.bay))} · ชั้น ${it.shelf}</span>`
   : `<span class="loc none"><b>${esc(it.loc || '—')}</b> ยังไม่มีพิกัดบนผัง</span>`;
 const plocHtml = it => it.bay
-  ? `<div class="ploc"><b><small>ตำแหน่ง · ช่อง ${esc(aisleOf(it.bay))}</small>${esc(it.loc)}</b><span>ชั้น ${it.shelf}</span></div>`
+  ? `<div class="ploc"><b><small>ตำแหน่ง · ${esc(placeLabel(it.bay))}</small>${esc(it.loc)}</b><span>ชั้น ${it.shelf}</span></div>`
   : `<div class="ploc none"><b>ยังไม่มีพิกัดบนผัง</b></div>`;
 function pcard(it) {
   const k = esc(keyOf(it)), u = thumbUrl(it), on = inList(it);
   return `<div class="pcard ${state.sel === it ? 'sel' : ''}" data-k="${k}">
     <div class="pimg">${u ? `<img loading="lazy" src="${esc(u)}" alt="">` : '<div class="ph">🛒</div>'}
       <button class="padd ${on ? 'in' : ''}" data-add="${k}" title="รายการซื้อ">${on ? '✓' : '+'}</button></div>
-    <div class="pname">${esc(it.desc)}</div>${plocHtml(it)}</div>`;
+    <div class="pname" translate="no">${esc(pname(it))}</div>${plocHtml(it)}</div>`;
 }
 function itemRow(it, extra = '') {
   const on = inList(it);
   return `<div class="item ${state.sel === it ? 'sel' : ''}" data-k="${esc(keyOf(it))}">${extra}${img(it)}
-    <div class="t"><div class="n">${esc(it.desc)}</div>${locHtml(it)}</div>
+    <div class="t"><div class="n" translate="no">${esc(pname(it))}</div>${locHtml(it)}</div>
     <button class="add ${on ? 'in' : ''}" data-add="${esc(keyOf(it))}" title="รายการซื้อ">${on ? '✓' : '+'}</button></div>`;
 }
 function detailCard(it) {
   const t = thumbs[it.no], u = thumbUrl(it), on = inList(it);
   return `<div class="detail">
     <div class="big">${u ? `<img src="${esc(u)}" alt="">` : '<span style="font-size:48px;opacity:.3">🛒</span>'}</div>
-    <h4>${esc(t?.[0] || it.desc)}</h4>${plocHtml(it)}
+    <h4 translate="no">${esc(nameOf(it.no, t?.[0] || it.desc))}</h4>${plocHtml(it)}
     <div style="display:flex;gap:14px;align-items:flex-end;justify-content:space-between">
       <div class="kv"><span>หมวดหมู่</span><b><a class="catlink" data-cat="${it.cat}">${esc(CATS[it.cat].name)}</a></b><span>รหัสสินค้า</span><b>${esc(it.no)}</b><span>บาร์โค้ด</span><b>${esc(it.bc)}</b></div>
       ${it.bay ? `<div class="shelf-viz" title="ชั้น ${it.shelf} นับจากล่าง">${Array.from({ length: LEVELS }, (_, i) => `<i class="${i + 1 === it.shelf ? 'on' : ''}"></i>`).join('')}</div>` : ''}</div>
@@ -1177,7 +2149,7 @@ function render() {
     const list = bayItems.get(state.bay) || [];
     const groups = {}; list.forEach(it => (groups[it.shelf] ||= []).push(it));
     body.innerHTML = `<button class="back" data-act="back">← กลับ</button>
-      <div class="res-head"><h3>ช่อง ${esc(state.bay)}</h3><span>${list.length} สินค้า</span></div>
+      <div class="res-head"><h3>${esc(bayLabel(state.bay))}</h3><span>${list.length} สินค้า</span></div>
       <div class="btns" style="margin:0 0 6px"><button class="btn primary wide" data-act="routeBay">นำทางมาที่ช่องนี้</button></div>
       ${list.length ? Object.keys(groups).sort((a, b) => b - a).map(s => `<div class="bay-group"><h5>ชั้น ${s}</h5><div class="grid">${groups[s].map(pcard).join('')}</div></div>`).join('')
         : '<p class="hint">ไม่มีข้อมูลสินค้าในช่องนี้</p>'}`;
@@ -1220,7 +2192,7 @@ function render() {
 function renderList(body) {
   const its = state.list.map(k => byNo.get(k)).filter(Boolean);
   if (!its.length) {
-    body.innerHTML = `<h2 class="sec">รายการซื้อ</h2><div class="ai-box plain">ยังไม่มีสินค้าในรายการ กด <b style="color:var(--red)">+</b> ที่สินค้าเพื่อเพิ่ม
+    body.innerHTML = `<h2 class="sec">รายการซื้อ</h2><div class="ai-box plain">ยังไม่มีสินค้าในรายการ กด + ที่สินค้าเพื่อเพิ่ม
       หรือให้ระบบจัดของเปิดร้านให้ แล้วระบบจะวางเส้นทางเดินให้</div>
       <div class="btns"><button class="btn primary" data-nav="ai">✦ จัดของเปิดร้าน</button><button class="btn" data-nav="search">เลือกจากหมวดหมู่</button></div>`;
     return;
@@ -1254,12 +2226,12 @@ function needCard(n, i) {
   return `<div class="need ${n.off ? 'off' : ''}">
     <div class="need-top"><b>${esc(n.what)}</b><span class="qty">${esc(n.quantity)}</span>
       <button class="need-x" data-need-off="${i}">${n.off ? '+ เอากลับ' : 'ไม่เอา'}</button></div>
-    ${n.off ? '' : `<div class="need-pick">${it ? img(it) : ''}<div class="t"><div class="n">${o.own ? '<span class="own">Own Brand</span>' : ''}${esc(o.name)}</div>
+    ${n.off ? '' : `<div class="need-pick">${it ? img(it) : ''}<div class="t"><div class="n" translate="no">${o.own ? '<span class="own">Own Brand</span>' : ''}${esc(nameOf(o.item_no, o.name))}</div>
         ${it ? locHtml(it) : ''}</div></div>
       <div class="need-why">${esc(n.reason)}</div>
       ${others ? `<button class="need-more" data-need-open="${i}">${open ? 'ซ่อนตัวเลือก ▴' : `ตัวเลือกอื่น ${others} ▾`}</button>` : ''}
       ${open ? `<div class="need-opts">${n.options.map((x, j) => `<button class="opt ${j === n.sel ? 'on' : ''}" data-need="${i}" data-opt="${j}">
-          <i></i><span>${x.own ? '<span class="own">Own Brand</span>' : ''}${esc(x.name)}<small>${esc(x.location)}${x.bay ? '' : ' · ยังไม่มีพิกัด'}</small></span></button>`).join('')}</div>` : ''}`}
+          <i></i><span>${x.own ? '<span class="own">Own Brand</span>' : ''}<span translate="no">${esc(nameOf(x.item_no, x.name))}</span><small>${esc(x.location)}${x.bay ? '' : ' · ยังไม่มีพิกัด'}</small></span></button>`).join('')}</div>` : ''}`}
   </div>`;
 }
 function renderAI(body) {
@@ -1268,7 +2240,7 @@ function renderAI(body) {
     <div class="shopmode">
       <button class="${ai.shop === 'new' ? 'on' : ''}" data-shop="new"><b>🏪 เปิดร้านใหม่</b><small>วัตถุดิบ + ของใช้ + อุปกรณ์</small></button>
       <button class="${ai.shop === 'restock' ? 'on' : ''}" data-shop="restock"><b>🔄 ร้านเดิม · เติมของ</b><small>เฉพาะของที่ใช้หมดไป</small></button></div>
-    <p class="hint" style="margin:10px 0 8px">เลือกประเภทร้าน ระบบจะจัดรายการให้ โดยเลือกสินค้า <b style="color:var(--red)">Own Brand ARO / Savepak</b> ก่อน แล้ววางเส้นทางเดินให้</p>
+    <p class="hint" style="margin:10px 0 8px">เลือกประเภทร้าน ระบบจะจัดรายการให้ โดยเลือกสินค้า Own Brand ARO / Savepak ก่อน แล้ววางเส้นทางเดินให้</p>
     ${kitsHtml()}
     <h2 class="sec">หรือพิมพ์เอง</h2>
     <textarea id="aiText" class="ai-input" placeholder="เช่น เปิดร้านก๋วยเตี๋ยว 100 ที่นั่ง" ${ai.loading ? 'disabled' : ''}>${esc(ai.text)}</textarea>
@@ -1279,7 +2251,7 @@ function renderAI(body) {
   if (r) {
     const on = r.needs.filter(n => !n.off), own = on.filter(n => n.options[n.sel].own).length;
     html += `<div class="ai-box sum" id="aiResult"><b>${esc(r.summary.split(' (')[0])}</b><br>
-        เลือกไว้ <b>${on.length}</b> จาก ${r.needs.length} รายการ · Own Brand <b>${own}</b> รายการ
+        <span>เลือกไว้ ${on.length} จาก ${r.needs.length} รายการ · Own Brand ${own} รายการ</span>
         ${state.routeInfo ? `<br>เส้นทาง <b>${state.routeOrder.length} จุดแวะ</b> · ระยะเดินประมาณ <b>${Math.round(state.routeInfo.metres)} ม.</b>` : ''}
         ${state.routeInfo ? `<div class="btns"><button class="btn primary" data-walk="start">🚶 เริ่มเดินทีละจุด</button>${isPhone() ? `<button class="btn" data-act="showmap">ดูเส้นทาง</button>` : ''}</div>` : ''}</div>`;
     for (const kind of ['food', 'supply', 'equip']) {
@@ -1325,7 +2297,7 @@ function routeList() {
   const { order, till } = orderStops(its.map(it => it.bay), k => bayGroup.get(k));
   clearGroup(markGroup);
   order.forEach((k, i) => pin(k, `${i + 1} · ${k}`, its.find(it => it.bay === k).shelf));
-  if (till && order[order.length - 1] !== till) pin(till, 'ชำระเงิน', 0);
+  if (till && order[order.length - 1] !== till) pin(till, tr('ชำระเงิน'), 0);
   state.routeOrder = order; routeTo(order, true, till);
 }
 
@@ -1359,10 +2331,10 @@ function renderWalk() {
       <button class="btn primary wide" data-walk="close">เสร็จสิ้น</button></div>`;
   else {
     const its = state.list.map(k => byNo.get(k)).filter(it => it?.bay === order[i]);
-    html = `<div class="walk-top"><b>จุดที่ ${i + 1} <small>จาก ${n}</small></b><span>ช่อง ${esc(order[i])}</span>
+    html = `<div class="walk-top"><b>จุดที่ ${i + 1} <small>จาก ${n}</small></b><span>${esc(bayLabel(order[i]))}</span>
         <button class="walk-x" data-walk="close" aria-label="ปิด">✕</button></div>
       <div class="walk-bar"><i style="width:${i / n * 100}%"></i></div>
-      ${its.map(it => `<div class="witem">${img(it)}<div><b>${esc(it.desc)}</b><span><em>${esc(it.loc)}</em> ชั้น ${it.shelf} นับจากล่าง</span></div></div>`).join('')}
+      ${its.map(it => `<div class="witem">${img(it)}<div><b translate="no">${esc(pname(it))}</b><span><em>${esc(it.loc)}</em> ชั้น ${it.shelf} นับจากล่าง</span></div></div>`).join('')}
       <div class="btns"><button class="btn" data-walk="prev" ${i ? '' : 'disabled'}>‹ ก่อนหน้า</button>
         <button class="btn primary wide" data-walk="next">หยิบแล้ว ✓ ${i === n - 1 ? 'เสร็จ' : 'ถัดไป ›'}</button></div>`;
   }
@@ -1380,9 +2352,9 @@ function updateMapCard() {
   const c = $('#mapCard');
   if (state.walk) { c.classList.remove('on'); return; }
   let html = '';
-  if (state.bay && !state.sel) html = `<div class="t"><b>ช่อง ${esc(state.bay)}</b>${(bayItems.get(state.bay) || []).length} สินค้า</div>
+  if (state.bay && !state.sel) html = `<div class="t"><b>${esc(bayLabel(state.bay))}</b>${(bayItems.get(state.bay) || []).length} สินค้า</div>
     <button class="btn primary" data-nav="back">ดูสินค้า</button>`;
-  else if (state.sel) html = `${img(state.sel)}<div class="t"><b>${esc(state.sel.desc)}</b>${state.sel.bay ? `${esc(state.sel.loc)} · ชั้น ${state.sel.shelf}` : 'ไม่มีพิกัด'}</div>
+  else if (state.sel) html = `${img(state.sel)}<div class="t"><b translate="no">${esc(pname(state.sel))}</b>${state.sel.bay ? `${esc(state.sel.loc)} · ชั้น ${state.sel.shelf}` : 'ไม่มีพิกัด'}</div>
     <button class="btn" data-nav="back">รายละเอียด</button>`;
   else if (state.routeInfo) html = `<div class="t"><b>เส้นทาง ${state.routeOrder.length} จุดแวะ</b>ระยะเดินประมาณ ${Math.round(state.routeInfo.metres)} ม.</div>
     <button class="btn primary" data-walk="start">เดินทีละจุด</button>`;
@@ -1392,13 +2364,13 @@ function updateMapCard() {
 function select(it) {
   state.sel = it; state.bay = null; state.route = null; state.routeInfo = null;
   clearGroup(markGroup); clearGroup(routeGroup); ants = null;
-  if (it.bay) { pin(it.bay, `${it.loc} · ชั้น ${it.shelf}`, it.shelf); focusBay(it.bay); }
+  if (it.bay) { pin(it.bay, tr(`${it.loc} · ชั้น ${it.shelf}`), it.shelf); focusBay(it.bay); }
   else toast('สินค้านี้ยังไม่มีพิกัดบนผัง');
   state.tab = 'search'; render(); $('#body').scrollTop = 0;
 }
 function openBay(k) {
   state.bay = k; state.sel = null; state.tab = 'search';
-  clearGroup(markGroup); pin(k, `ช่อง ${k}`, 0); focusBay(k); render(); $('#body').scrollTop = 0;
+  clearGroup(markGroup); pin(k, tr(bayLabel(k)), 0); focusBay(k); render(); $('#body').scrollTop = 0;
 }
 function routeTo(keys, info, end) {            // end: optional last leg (the checkout) after the stops
   const r = drawRoute(end && keys[keys.length - 1] !== end ? [...keys, end] : keys);
@@ -1553,7 +2525,7 @@ $('#body').addEventListener('click', e => {
   if (act === 'eye') { setSeg('eye'); focusBay(state.sel.bay, 'eye'); if (isPhone()) showMap(true); return; }
   if (act === 'bay') return openBay(state.sel.bay);
   if (act === 'unsel') { state.sel = null; clearGroup(markGroup); clearGroup(routeGroup); ants = null; return render(); }
-  if (act === 'back') { state.bay = null; clearGroup(markGroup); if (state.sel?.bay) pin(state.sel.bay, `${state.sel.loc} · ชั้น ${state.sel.shelf}`, state.sel.shelf); return render(); }
+  if (act === 'back') { state.bay = null; clearGroup(markGroup); if (state.sel?.bay) pin(state.sel.bay, tr(`${state.sel.loc} · ชั้น ${state.sel.shelf}`), state.sel.shelf); return render(); }
   if (act === 'routeBay') { routeTo([state.bay]); if (isPhone()) showMap(true); return; }
   if (act === 'clearList') { state.walk = null; walkRing.visible = false; state.list = []; store.set('store3d-list', []); state.routeInfo = null; clearGroup(routeGroup); clearGroup(markGroup); ants = null; return render(); }
   if (act === 'routeAll') { if (!state.routeInfo) routeList(); if (isPhone()) return showMap(true); return render(); }
@@ -1677,6 +2649,7 @@ setLook(store.get('store3d-look', 'real') === 'real');
 
 // thumbnails & full titles load in the background
 fetch('data/thumbs.json').then(r => r.json()).then(t => { thumbs = t; render(); }).catch(() => {});
+fetch('data/names-en.json').then(r => r.json()).then(m => { NAME_EN = m; render(); }).catch(() => {});
 </script>
 </body>
 </html>
