@@ -51,6 +51,7 @@ test('Inline modules parse without syntax errors', () => {
 });
 
 import './barcode-scanner.test.mjs';
+import './usage-analytics.test.mjs';
 
 test('All six translation dictionaries and English product names ship with Pages', () => {
   for (const name of ['ui','cats','kits']) {

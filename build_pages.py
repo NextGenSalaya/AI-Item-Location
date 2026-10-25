@@ -45,11 +45,13 @@ def build():
     html = html.replace("} catch {\n    ai.error = 'ติดต่อเซิร์ฟเวอร์ไม่ได้ ตรวจว่าเปิดด้วย python store3d/serve.py';", "} catch (error) {\n    ai.error = error.message || 'โหลดชุดรายการไม่สำเร็จ กรุณาลองใหม่';")
     assert "fetch('/api/" not in html
     html = html.replace('<head>', '<head>\n<meta name="description" content="ค้นหาสินค้าและนำทางบนผัง 3D แม็คโคร สาขาศาลายา">', 1)
+    html = html.replace('</head>', '<script defer src="./usage-analytics.js"></script>\n</head>', 1)
     html = html.replace('เช่น เปิดร้านก๋วยเตี๋ยว 100 ที่นั่ง', 'เช่น ร้านก๋วยเตี๋ยว หรือ ร้านกาแฟ')
     html = html.replace('เลือกประเภทร้าน ระบบจะจัดรายการให้', 'เลือกประเภทร้าน ระบบจะจัดชุดรายการตั้งต้นให้ (ปรับปริมาณตามการใช้งานจริง)')
     (OUTPUT / 'index.html').write_text(html, encoding='utf-8')
     shutil.copy2(SOURCE / 'static-planner.mjs', OUTPUT / 'static-planner.mjs')
     shutil.copy2(SOURCE / 'barcode-scanner.mjs', OUTPUT / 'barcode-scanner.mjs')
+    shutil.copy2(SOURCE / 'usage-analytics.js', OUTPUT / 'usage-analytics.js')
     (OUTPUT / 'vendor').mkdir(exist_ok=True)
     for name in ('zxing-library-0.21.3.min.js', 'ZXING-LICENSE', 'README.md'):
         shutil.copy2(SOURCE / 'vendor' / name, OUTPUT / 'vendor' / name)
