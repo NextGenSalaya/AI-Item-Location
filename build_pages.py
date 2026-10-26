@@ -46,6 +46,16 @@ def build():
     assert "fetch('/api/" not in html
     html = html.replace('<head>', '<head>\n<meta name="description" content="ค้นหาสินค้าและนำทางบนผัง 3D แม็คโคร สาขาศาลายา">', 1)
     html = html.replace('</head>', '<script defer src="./usage-analytics.js"></script>\n</head>', 1)
+    analytics_hooks = {
+        'function applyLang() {': "function applyLang() {\n  window.makroUsage?.language(lang);",
+        'applyLang();\n\nconst [MW, MH]': "window.makroUsage?.catalog(data.items);\napplyLang();\n\nconst [MW, MH]",
+        'function select(it) {': "function select(it) {\n  if (state.q && search(state.q).includes(it)) window.makroUsage?.select(it.no, state.q);",
+        "  state.q = $('#q').value; state.sel": "  window.makroUsage?.search($('#q').value, search($('#q').value).map(it => it.no));\n  state.q = $('#q').value; state.sel",
+        'NAME_EN = m; render();': 'NAME_EN = m; window.makroUsage?.english(m); render();',
+    }
+    for old_hook, new_hook in analytics_hooks.items():
+        assert html.count(old_hook) == 1, f'Analytics integration changed: {old_hook}'
+        html = html.replace(old_hook, new_hook, 1)
     html = html.replace('เช่น เปิดร้านก๋วยเตี๋ยว 100 ที่นั่ง', 'เช่น ร้านก๋วยเตี๋ยว หรือ ร้านกาแฟ')
     html = html.replace('เลือกประเภทร้าน ระบบจะจัดรายการให้', 'เลือกประเภทร้าน ระบบจะจัดชุดรายการตั้งต้นให้ (ปรับปริมาณตามการใช้งานจริง)')
     (OUTPUT / 'index.html').write_text(html, encoding='utf-8')

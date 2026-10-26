@@ -28,6 +28,14 @@ header{background:#fff;position:relative;z-index:6;box-shadow:0 2px 8px rgba(0,0
 .search input{width:100%;height:44px;border-radius:22px;border:1px solid transparent;background:#f1f1f4;padding:0 118px 0 46px;font:inherit;font-size:15px;outline:none}
 .search input:focus{border-color:var(--red);background:#fff}
 .search > svg{position:absolute;left:16px;top:13px;color:var(--ink)}
+.suggest{position:absolute;left:0;right:0;top:50px;background:#fff;border-radius:14px;box-shadow:var(--shadow);z-index:40;padding:6px;max-height:60vh;overflow:auto}
+.suggest[hidden]{display:none}
+.sg{display:flex;gap:10px;align-items:center;width:100%;border:0;background:none;padding:8px 10px;border-radius:9px;text-align:left;font-size:14.5px;min-height:40px}
+.sg:hover,.sg.on{background:#f4f4f6}
+.sg svg{color:var(--muted);flex:none}
+.sg span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sg small{color:var(--muted);font-size:12px;flex:none}
+.sg .thumb{width:34px;height:34px;flex:none}
 .search .clear{width:28px;height:28px;border:0;border-radius:50%;background:transparent;color:var(--muted);display:none}
 .hicon{position:relative;width:44px;height:44px;border:0;background:none;display:grid;place-items:center;border-radius:50%;flex:none}
 .hicon:hover{background:#f4f4f6}
@@ -218,6 +226,30 @@ h2.sec .more{border:0;background:none;color:var(--red);font-size:13px;font-weigh
 .walk-done span{font-size:42px}.walk-done b{display:block;font-size:19px;margin:4px 0}
 .walk-done p{color:var(--muted);margin:0 0 12px}
 @media (max-width:760px){ .walk{bottom:12px} }
+/* turn-by-turn banner (GPS style) */
+.navban{position:absolute;top:calc(10px + env(safe-area-inset-top));left:10px;right:10px;margin:0 auto;max-width:540px;z-index:6;animation:rise .25s ease both;
+  border-radius:16px;overflow:hidden;box-shadow:0 10px 28px rgba(0,0,0,.3);color:#fff}
+.navban[hidden]{display:none}
+.nb-main{background:#0b7a4b;padding:12px 14px;display:flex;gap:12px;align-items:center}
+.nb-main svg{flex:none}
+.nb-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.nb-t b{font-size:30px;line-height:1.1;font-weight:700}
+.nb-t span{font-size:16px;opacity:.96;line-height:1.3}
+.nb-then{background:#095c39;padding:7px 16px;font-size:14px}
+.nb-v{flex:none;width:42px;height:42px;border-radius:50%;border:0;background:rgba(255,255,255,.16);font-size:19px}
+/* while navigating the map fills the screen, like a car GPS */
+body.navigating header,body.navigating aside,body.navigating .bottomnav{display:none!important}
+body.navigating .ctrl,body.navigating .maplabel,body.navigating .legend,body.navigating .mapcard{display:none!important}
+body.navigating .walk{bottom:calc(10px + env(safe-area-inset-bottom));width:min(540px,calc(100% - 20px));padding:10px 12px}
+.navbar2{display:flex;align-items:center;gap:10px}
+.nb-x{flex:none;width:44px;height:44px;border-radius:50%;border:1px solid #dadce0;background:#fff;font-size:18px}
+.nb-sum{flex:1;min-width:0;display:flex;flex-direction:column}
+.nb-sum b{color:#0b7a4b;font-size:24px;line-height:1.1}
+.nb-sum small{color:var(--muted);font-size:13.5px}
+.nb-b{flex:none;width:48px;height:48px;border-radius:50%;border:0;background:#1a73e8;color:#fff;font-size:19px}
+.nb-b.nb-sp{background:#e8f0fe;color:#1a73e8;font-weight:700;font-size:15px}
+.nb-sub{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;font-size:12.5px;color:var(--muted)}
+.nb-sub span{flex:1;min-width:120px}
 
 /* ---- shop starter page ---- */
 .secbar{border-left:4px solid var(--red);padding-left:8px}
@@ -338,6 +370,7 @@ h2.sec .more{border:0;background:none;color:var(--red);font-size:13px;font-weigh
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="q" placeholder="ค้นหาสินค้า ชื่อ รหัส บาร์โค้ด หรือช่อง" autocomplete="off" enterkeyhint="search">
       <div class="sacts"><button class="clear" id="qclear" aria-label="ล้าง">✕</button><button class="sbtn" id="micBtn" title="ค้นหาด้วยเสียง" aria-label="ค้นหาด้วยเสียง"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button class="sbtn" id="scanBtn" title="สแกนบาร์โค้ด" aria-label="สแกนบาร์โค้ด"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2"/><path d="M8 8v8M11 8v8M14 8v8M17 8v8"/></svg></button></div>
+      <div class="suggest" id="suggest" hidden></div>
     </div>
     <div class="store-chip" title="สาขาที่ใช้ข้อมูล"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></svg>สาขาศาลายา</div>
     <div class="langwrap"><button class="hicon langbtn" id="langBtn" title="ภาษา · Language" aria-label="ภาษา · Language"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3Z"/></svg><span id="langCode" translate="no">TH</span></button>
@@ -371,6 +404,7 @@ h2.sec .more{border:0;background:none;color:var(--red);font-size:13px;font-weigh
     <div class="maplabel"><i></i>แม็คโคร ศาลายา · ผังร้าน 3D</div>
     <div class="mapcard" id="mapCard"></div>
     <div class="walk" id="walkCard"></div>
+    <div class="navban" id="navBan" hidden></div>
     <div class="tip" id="tip"></div>
     <div class="toast" id="toast"></div>
     
@@ -497,7 +531,7 @@ applyLang();
 
 const [MW, MH] = data.size;
 const CX = 700, CY = 870;                       // centre of the sales floor (map units)
-const norm = s => s.toLowerCase().replace(/[็-์]/g, '').replace(/\s+/g, ' ');   // Thai tone-mark order varies in the data
+const norm = s => s.toLowerCase().replace(/[\u0E47-\u0E4C]/g, '').replace(/\s+/g, ' ');   // Thai tone-mark order varies in the data
 const W = (x, y) => new THREE.Vector3(x - CX, 0, y - CY);
 const items = data.items.map(([no, desc, bc, loc, bay, shelf, cat, sub, sub2], i) =>
   ({ i, no, desc, bc, loc, bay, shelf, cat, sub, sub2, lc: norm(desc) }));
@@ -548,6 +582,13 @@ controls.enableDamping = true;
 controls.maxPolarAngle = Math.PI * 0.47;
 controls.minDistance = 25; controls.maxDistance = 1600;
 controls.screenSpacePanning = false;
+// move it like a maps app: drag (one finger / left button) slides the map, two fingers pinch-zoom and turn it,
+// right button / ctrl-drag turns it, the wheel zooms towards the pointer
+controls.mouseButtons = { LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE };
+controls.touches = { ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.DOLLY_ROTATE };
+controls.zoomToCursor = true;
+controls.panSpeed = 1.2;
+controls.dampingFactor = 0.12;
 
 const hemi = new THREE.HemisphereLight('#ffffff', '#c9cdd6', 1.6);
 scene.add(hemi);
@@ -725,6 +766,7 @@ const EGG_PALLETS = /^550-3[4-9]$/;           // ... except the free-standing bl
 // fish preparation counter in the seafood department: staff area against the wall below the dairy row (map units, from the drawing)
 const FISH_PREP = { centre: [429, 864], len: 78, depth: 18 };
 const ROTISSERIE = /^550-4\d$/;               // the rotisserie chicken counter beside the dairy area
+const FISH_TANKS = { '530-10': 'tub', '530-12': 'grey', '530-13': 'red', '530-11': 'shrimp' };   // live fish: blue holding tub, tank 2 (tilapia), tank 1 (red tilapia), live shrimp table
 const BREAD_RACKS = /^540-[1-9]$/;            // the bakery wall: wooden bread racks in front of the bakery's glass wall
 const BREAD_ISLAND = /^540-1[3-6]$/;          // the free-standing bread island in front of it (built as one arranged unit)
 const inFreezerIsland = (x, y) => x > 418 && x < 512 && y > 748 && y < 822;
@@ -873,7 +915,7 @@ async function buildReal() {
   let seed = 7;
   const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647, pick = a => a[(rnd() * a.length) | 0];
   const CARTON = ['#c79d6b', '#b98d5c', '#d2ab7c', '#a97e50', '#cfa577'];
-  const L = { post: [], beam: [], deck: [], back: [], prod: [], white: [], glass: [], pallet: [], grey: [], frame: [], light: [], steel: [], warm: [], screen: [],
+  const L = { post: [], beam: [], deck: [], back: [], prod: [], white: [], glass: [], water: [], pallet: [], grey: [], frame: [], light: [], steel: [], warm: [], screen: [],
     stock: [], stockTop: [] };
   // what a bay sells -> which artwork its shelves show (top category of the items in that bay)
   const CAT_TILES = { 0: ['carton', 'boxes'], 1: ['boxes', 'jars', 'canSilver', 'noodle', 'jars'], 2: ['water', 'soda', 'canRed', 'canSilver', 'sixpack', 'soda'],
@@ -1032,7 +1074,7 @@ async function buildReal() {
       else multideck(mc, A, lm, D, s, well, kinds);
     }
   }
-  const lanes = [], bakeryPanels = [], headers = [], ovalSigns = [];
+  const lanes = [], bakeryPanels = [], headers = [], ovalSigns = [], liveSigns = [];
   // tidy dry-goods racks: the drawing traces every bay on its own (small gaps, slightly different lengths and
   // offsets), so each aisle is redrawn as continuous runs of equal bays on one straight line. A run breaks where
   // the drawing has a real gap (> 5 units). Only the look changes; clicking and routes use the traced pieces.
@@ -1208,6 +1250,76 @@ async function buildReal() {
           const yb = 1 + l * lh;
           add(L.white, c, ang, 0, yb, 0, len - 0.4, 0.2, dep - 0.4);
           for (const sv of sides) addRun(L.stock, c, ang, -len / 2 + 0.4, len - 0.8, yb + 0.1, sv * dep / 4, lh, Math.max(0.6, dep / 2 - 0.6), ['eggs']);
+        }
+      } else if (FISH_TANKS[k]) {           // live fish: glass aquarium on a stainless cabinet on castors, price sign on a pole
+        // tanks face south; the shrimp table faces the east walkway (eggs on its right, the fish counters behind it)
+        const [A, Ln, D, s] = orient(pc, FISH_TANKS[k] === 'shrimp' ? [1, 0] : [0, 1]), W2 = Ln - 0.4, D2 = Math.min(D, 8) - 0.4, back = -s * (D2 / 2);
+        const tank = (cc, u0, w) => {
+          for (const su of [-1, 1]) for (const sv of [-1, 1]) add(L.frame, cc, A, u0 + su * (w / 2 - 0.6), 0.35, sv * (D2 / 2 - 0.6), 0.6, 0.7, 0.6);   // castors
+          add(L.steel, cc, A, u0, 3.6, 0, w, 5.6, D2);                                         // cabinet
+          add(L.frame, cc, A, u0, 3.6, s * (D2 / 2 + 0.02), 0.12, 5, 0.06);                    // door split
+          for (const su of [-1, 1]) add(L.frame, cc, A, u0 + su * w / 4, 5.6, s * (D2 / 2 + 0.03), w / 2 - 0.8, 0.12, 0.06);   // door tops
+          add(L.steel, cc, A, u0, 6.5, 0, w + 0.2, 0.3, D2 + 0.2);                            // rim
+          add(L.glass, cc, A, u0, 9.2, 0, w - 0.3, 5.1, D2 - 0.3);                             // glass tank
+          add(L.water, cc, A, u0, 8.85, 0, w - 0.5, 4.4, D2 - 0.5);                            // water, a little below the rim
+          for (const su of [-1, 1]) for (const sv of [-1, 1]) add(L.steel, cc, A, u0 + su * (w / 2 - 0.2), 9.2, sv * (D2 / 2 - 0.2), 0.14, 5.1, 0.14);   // glass edges
+          add(L.white, cc, A, u0 + w / 2 - 0.9, 9.5, back + s * 0.6, 0.45, 5.6, 0.45);         // overflow pipe
+        };
+        if (FISH_TANKS[k] === 'shrimp') {      // live shrimp: shallow two-part stainless water table, raised trays of clams and crabs at the back
+          const T = 7.2, fv = s * (D2 / 2);                                                    // table top height, front edge
+          for (const su of [-1, 1]) for (const sv of [-1, 1]) {
+            add(L.steel, c, A, su * (W2 / 2 - 0.5), T / 2, sv * (D2 / 2 - 0.5), 0.35, T, 0.35);   // legs
+            add(L.steel, c, A, su * (W2 / 2 - 0.5), 0.15, sv * (D2 / 2 - 0.5), 0.9, 0.3, 0.9);    // round feet
+          }
+          for (const y of [1.4, 2.4]) add(L.steel, c, A, 0, y, 0, W2 - 1, 0.25, 0.25);           // lower rails
+          for (const y of [1.6, 3.2]) add(L.steel, c, A, 0, y, fv + s * 1.2, W2 - 0.6, 0.3, 0.3);   // foot rail in front
+          for (const su of [-1, 1]) add(L.steel, c, A, su * (W2 / 2 - 0.8), 2.4, fv + s * 0.6, 0.3, 2, 1.2);
+          add(L.steel, c, A, 0, T, 0, W2, 0.3, D2);                                            // tray floor
+          for (const sv of [-1, 1]) add(L.steel, c, A, 0, T + 0.6, sv * (D2 / 2 - 0.1), W2, 1.5, 0.2);   // tray walls
+          for (const su of [-1, 0, 1]) add(L.steel, c, A, su * (W2 / 2 - 0.1), T + 0.6, 0, 0.2, 1.5, D2);   // ends + divider
+          add(L.water, c, A, 0, T + 0.65, 0, W2 - 0.4, 0.9, D2 - 0.4);                        // bubbling water with the shrimp
+          for (let i = 0; i < 14; i++) add(L.prod, c, A + rnd() * 3, (rnd() - 0.5) * (W2 - 1.5), T + 0.45, (rnd() - 0.5) * (D2 - 1.5), 1.1, 0.2, 0.25, pick(['#5f6f78', '#7d8b8f']));
+          const bv = -s * (D2 / 2 - 2), bw = W2 * 0.42;                                         // raised trays along the back
+          for (const su of [-1, 1]) add(L.steel, c, A, su * (W2 / 2 - 0.6), T + 1.6, bv, 0.3, 3.2, 0.3);
+          add(L.steel, c, A, 0, T + 3.1, bv, W2 - 0.8, 0.25, 3.6);
+          for (const su of [-1, 1]) {
+            const u = su * (bw / 2 + 0.15);
+            add(L.steel, c, A, u, T + 3.6, bv, bw, 0.9, 3.4);                                  // tray
+            if (su < 0) for (let i = 0; i < 26; i++)                                            // clams
+              add(L.prod, c, A, u + (rnd() - 0.5) * (bw - 0.8), T + 4.15, bv + (rnd() - 0.5) * 2.6, 0.55, 0.3, 0.45, pick(['#5b4a3a', '#6e5c49', '#4a3d31']));
+            else {
+              add(L.prod, c, A, u, T + 4.1, bv, bw - 0.3, 0.1, 3.1, '#3f9a3a');                // green mat
+              for (let i = 0; i < 6; i++) add(L.prod, c, A, u + (rnd() - 0.5) * (bw - 1.2), T + 4.35, bv + (rnd() - 0.5) * 2.2, 1, 0.45, 0.8, '#5a2e22');   // crabs
+              add(L.prod, c, A, u + 0.3, T + 4.5, bv + s * 0.3, bw * 0.5, 0.2, 1.4, '#f1f1ee');  // white cloth
+            }
+          }
+          add(L.steel, c, A, 0, T + 7.3, bv - s * 1.6, W2 - 1, 0.2, 0.2);                       // sign bar
+          for (const su of [-1, 0, 1]) {                                                         // three price cards
+            add(L.prod, c, A, su * W2 * 0.3, T + 6.2, bv - s * 1.5, W2 * 0.27, 2.2, 0.1, '#1e7a3c');
+            add(L.prod, c, A, su * W2 * 0.3, T + 6.0, bv - s * 1.42, W2 * 0.22, 1.6, 0.05, su ? '#ffffff' : '#fdeaea');
+          }
+          liveSigns.push([c, A, 0, W2, s]);                                                     // hanging "กุ้งเป็น LIVE SHRIMP" board (built below)
+        } else if (FISH_TANKS[k] === 'tub') {  // blue plastic holding tub on a steel stand, a green net thrown over it
+          for (const su of [-1, 1]) for (const sv of [-1, 1]) add(L.steel, c, A, su * (W2 / 2 - 0.3), 3.4, sv * (D2 / 2 - 0.3), 0.35, 6.8, 0.35);   // stand legs
+          add(L.steel, c, A, 0, 1.1, 0, W2, 0.3, D2);                                          // bottom frame
+          add(L.prod, c, A, 0, 5.1, 0, W2 - 0.6, 5.4, D2 - 0.6, '#1d5fd6');                    // blue tub
+          add(L.prod, c, A, 0, 7.85, 0, W2 - 0.3, 0.3, D2 - 0.3, '#2a63d8');                   // tub lip
+          add(L.water, c, A, 0, 7.6, 0, W2 - 1.2, 0.2, D2 - 1.2);                              // water
+          add(L.prod, c, A, 0, 8.05, 0, W2 * 0.9, 0.1, D2 * 0.75, '#2d5a3c');                  // net over most of the top
+          add(L.prod, c, A, -W2 * 0.1, 6.4, s * (D2 / 2 - 0.15), W2 * 0.7, 3, 0.1, '#2d5a3c');  // net hanging down the front
+        } else {
+          tank(c, 0, W2);
+          const red = FISH_TANKS[k] === 'red';
+          for (let i = 0; i < (red ? 9 : 4); i++) {                                            // fish swimming at different depths
+            const u = (rnd() - 0.5) * (W2 - 2.4), v = (rnd() - 0.5) * (D2 - 2.4), y = 7.4 + rnd() * 3.4;
+            const col = red ? pick(['#f3a596', '#f7b8a8', '#ea8f7f']) : pick(['#7d8466', '#8d8f78']);
+            add(L.prod, c, A + (rnd() - 0.5) * 0.8, u, y, v, 1.9, 0.9, 0.4, col);               // body
+            add(L.prod, c, A, u + 1.1, y, v, 0.5, 0.7, 0.15, col);                             // tail
+          }
+          add(L.steel, c, A, -W2 / 2 + 0.3, 12.5, back, 0.18, 12, 0.18);                       // sign pole
+          add(L.steel, c, A, 0, 18.3, back, W2 * 0.8, 0.15, 0.15);                             // cross bar
+          add(L.prod, c, A, 0, 16.4, back + s * 0.1, 3.4, 3.6, 0.12, '#c8102e');               // red price sign
+          add(L.prod, c, A, 0, 16.1, back + s * 0.18, 2.8, 2.2, 0.05, '#ffffff');
         }
       } else if (UPRIGHT_FACE(k, x) || (open.length === 1 && dep < 9 && !['520', '530', '560'].includes(a) && !inFreezerIsland(x, y))) {
         // upright glass-door cooler, doors to the walkway (meat, seafood, frozen are chests, except where set in UPRIGHT_FACE)
@@ -1420,6 +1532,7 @@ async function buildReal() {
     warm: new THREE.MeshBasicMaterial({ color: '#ff9d45' }),                     // heated display / oven glow
     screen: new THREE.MeshBasicMaterial({ color: '#ffffff' }),                   // lit TV screens / LED strips (colour per instance)
     steel: new THREE.MeshStandardMaterial({ color: '#d3d7dc', metalness: 0.25, roughness: 0.35 }),   // no env map: low metalness keeps it bright
+    water: new THREE.MeshStandardMaterial({ color: '#8fd0c8', transparent: true, opacity: 0.42, roughness: 0.1, depthWrite: false }),   // fish tanks
   };
   const atlas = stockAtlas(), stockMat = stockMaterial(atlas), stockGeo = { stock: stockGeometry(false), stockTop: stockGeometry(true) };
   for (const [name, list] of Object.entries(L)) {
@@ -1435,8 +1548,8 @@ async function buildReal() {
       im = new THREE.InstancedMesh(box, mats[name], list.length);
       list.forEach(([mat, col], i) => { im.setMatrixAt(i, mat); if (col) im.setColorAt(i, new THREE.Color(col)); });
     }
-    im.castShadow = !['glass', 'light', 'warm', 'screen'].includes(name);
-    im.receiveShadow = !['glass', 'light', 'warm', 'screen'].includes(name);
+    im.castShadow = !['glass', 'water', 'light', 'warm', 'screen'].includes(name);
+    im.receiveShadow = !['glass', 'water', 'light', 'warm', 'screen'].includes(name);
     grp.add(im);
   }
   // bakery wall pictures (drawn here, no photos): donuts, cupcakes, croissants, muffins, a sandwich, sliced bread
@@ -1472,6 +1585,37 @@ async function buildReal() {
     const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace;
     const sign = new THREE.Mesh(new THREE.PlaneGeometry(4.6, 2.3), new THREE.MeshBasicMaterial({ map: t, transparent: true, side: THREE.DoubleSide }));
     sign.position.set(c.x, 11.4, c.z); sign.rotation.y = -ang; grp.add(sign);
+  }
+  // "live shrimp" board hanging over the shrimp table: drawn prawns on blue water, the name and a down arrow
+  for (const [c, A, v, Ln, s] of liveSigns) {
+    const cv = document.createElement('canvas'), g = cv.getContext('2d'); cv.width = 512; cv.height = 256;
+    const bg = g.createLinearGradient(0, 0, 512, 256); bg.addColorStop(0, '#1d4f8f'); bg.addColorStop(1, '#5c8fc7');
+    g.fillStyle = bg; g.fillRect(0, 0, 512, 256);
+    for (const [x, y] of [[150, 100], [170, 175]]) {                                      // two prawns
+      g.fillStyle = '#4f5e6a'; g.beginPath(); g.ellipse(x, y, 105, 22, -0.08, 0, 7); g.fill();
+      g.strokeStyle = '#26323b'; g.lineWidth = 3;
+      for (let i = -3; i <= 3; i++) { g.beginPath(); g.moveTo(x + i * 26, y - 20); g.lineTo(x + i * 26 + 6, y + 20); g.stroke(); }
+      g.lineWidth = 2; g.beginPath(); g.moveTo(x + 100, y - 6); g.quadraticCurveTo(x + 200, y - 70, x + 250, y - 40); g.stroke();
+      g.beginPath(); g.moveTo(x + 95, y + 6); g.quadraticCurveTo(x + 190, y + 60, x + 240, y + 30); g.stroke();
+      g.strokeStyle = '#1f4fa8'; g.lineWidth = 7; g.beginPath(); g.moveTo(x + 90, y + 10); g.lineTo(x + 150, y + 40); g.stroke();   // blue claw
+      g.fillStyle = '#26323b'; g.beginPath(); g.moveTo(x - 105, y); g.lineTo(x - 140, y - 22); g.lineTo(x - 140, y + 22); g.fill();   // tail
+    }
+    g.fillStyle = '#ffffff'; g.textAlign = 'center';
+    g.font = '700 46px "IBM Plex Sans Thai"'; g.fillText('กุ้งเป็น', 400, 62);
+    g.font = '700 30px Arial'; g.fillText('LIVE SHRIMP', 400, 100);
+    g.fillStyle = '#1b1f24'; g.beginPath(); g.arc(410, 175, 52, 0, 7); g.fill();
+    g.fillStyle = '#ffffff'; g.beginPath(); g.moveTo(398, 140); g.lineTo(422, 140); g.lineTo(422, 178); g.lineTo(440, 178);
+    g.lineTo(410, 212); g.lineTo(380, 178); g.lineTo(398, 178); g.fill();
+    const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+    const bw = Math.min(14, Math.max(11, Ln * 0.75)), panel = new THREE.Mesh(new THREE.PlaneGeometry(bw, bw / 2), new THREE.MeshBasicMaterial({ map: t, side: THREE.DoubleSide }));
+    const ca = Math.cos(A), sa = Math.sin(A);
+    panel.position.set(c.x - sa * v, 23, c.z + ca * v);
+    panel.rotation.y = -A + (s > 0 ? 0 : Math.PI);                                         // faces the walkway
+    grp.add(panel);
+    for (const su of [-1, 1]) {                                                             // hanging wires
+      const w = new THREE.Mesh(new THREE.BoxGeometry(0.08, 6, 0.08), new THREE.MeshBasicMaterial({ color: '#555b62' }));
+      w.position.set(c.x + ca * su * bw * 0.4, 23 + bw / 4 + 3, c.z + sa * su * bw * 0.4); grp.add(w);
+    }
   }
   // spice headers: a picture of spice bowls over a coloured band with the name (Thai / English)
   for (const [c, A, Ln, v, s, [th, en, band]] of spiceHeads) {
@@ -1979,18 +2123,91 @@ const byNo = new Map(); items.forEach(it => { if (!byNo.has(it.no + '|' + it.loc
 const keyOf = it => it.no + '|' + it.loc;
 const inList = it => state.list.includes(keyOf(it));
 let toastT;
-function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 1800); }
+function toast(m, ms = 1800) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), ms); }
 
+// forgiving search: spaces / dots / Thai digits / tone marks don't matter, sizes match either way ("1 ลิตร" = "1ล."),
+// common other names find the same thing ("ทิชชู่" = "กระดาษชำระ"), and a slightly wrong spelling still finds
+// the closest products
+const UNIT_RULES = [[/(\d)\s*(มิลลิลิตร|มล|ml|cc)/g, '$1มล'], [/(\d)\s*(กิโลกรัม|กิโล|กก|kg)/g, '$1กก'],
+  [/(\d)\s*(ลิตร|ltr|l)(?![a-z])/g, '$1ล'], [/(\d)\s*(กรัม|gm|g)(?![a-z])/g, '$1ก']];
+const squash = s => {
+  s = norm(s).replace(/[\u0E50-\u0E59]/g, d => d.charCodeAt(0) - 0x0E50);   // Thai digits
+  for (const [re, to] of UNIT_RULES) s = s.replace(re, to);
+  return s.replace(/[\s.\-_/,()'"+*#]/g, '');
+};
+const SYN = [['ทิชชู่', 'กระดาษชำระ', 'กระดาษเช็ดหน้า', 'tissue'], ['ผงซักฟอก', 'ซักผ้า', 'แฟ้บ', 'detergent'], ['ปรับผ้านุ่ม', 'softener'],
+  ['ล้างจาน', 'dishwash'], ['โค้ก', 'โคคาโคล่า', 'coke', 'cocacola'], ['เป๊ปซี่', 'pepsi'], ['มาม่า', 'บะหมี่กึ่งสำเร็จรูป', 'mama'],
+  ['แพมเพิส', 'ผ้าอ้อม', 'diaper'], ['ไข่', 'egg'], ['หมู', 'pork'], ['ไก่', 'chicken'], ['เนื้อวัว', 'beef'], ['นมสด', 'milk'],
+  ['น้ำปลา', 'fishsauce'], ['ซีอิ๊ว', 'ซอสถั่วเหลือง', 'soysauce'], ['น้ำมันพืช', 'น้ำมันปาล์ม', 'น้ำมันถั่วเหลือง', 'cookingoil'],
+  ['ข้าวสาร', 'ข้าวหอมมะลิ', 'rice'], ['ยาสีฟัน', 'toothpaste'], ['แชมพู', 'shampoo'], ['สบู่', 'soap'], ['เบียร์', 'beer'],
+  ['กาแฟ', 'coffee'], ['น้ำตาล', 'sugar'], ['น้ำแข็ง', 'ice'], ['ถุงขยะ', 'garbagebag'], ['ตะเกียบ', 'chopsticks']]
+  .map(g => g.map(squash));
+const alts = t => SYN.find(g => g.includes(t)) || [t];
+const sqKey = it => {                          // what a product is searched by (cached; rebuilt when photos / English names arrive)
+  if (it._sq && it._t === thumbs && it._e === NAME_EN) return it._sq;
+  it._t = thumbs; it._e = NAME_EN;
+  return it._sq = squash(it.desc + ' ' + (thumbs[it.no]?.[0] || '') + ' ' + (NAME_EN[it.no] || ''));
+};
+const grams = s => { const g = new Set(); for (let i = 0; i + 3 <= s.length; i++) g.add(s.slice(i, i + 3)); return g; };
 function search(q) {
   q = norm(q.trim()); if (!q) return [];
   let res;
   if (/^\d{3}-\d*$/.test(q)) res = items.filter(it => it.loc.startsWith(q));
   else if (/^\d+$/.test(q)) res = items.filter(it => it.no.startsWith(q) || it.bc.includes(q) || it.loc.replace('-', '').startsWith(q));
   else {
-    const toks = q.split(/\s+/);
-    res = items.filter(it => { const s = it.lc + ' ' + norm(thumbs[it.no]?.[0] || '') + ' ' + norm(NAME_EN[it.no] || ''); return toks.every(t => s.includes(t)); });
+    const toks = q.split(/\s+/).map(squash).filter(Boolean).map(alts);
+    res = items.filter(it => { const s = sqKey(it); return toks.every(a => a.some(t => s.includes(t))); });
+    if (!res.length) {                         // nothing has every word: products sharing most of the letters, best first
+      const g = grams(squash(q));
+      if (g.size >= 2) {
+        const scored = [];
+        for (const it of items) { const s = sqKey(it); let n = 0; for (const x of g) if (s.includes(x)) n++; if (n / g.size >= 0.6) scored.push([n / g.size, it]); }
+        res = scored.sort((a, b) => b[0] - a[0] || (!!b[1].bay - !!a[1].bay)).slice(0, 60).map(x => x[1]);
+        res.fuzzy = true;
+        return res;
+      }
+    }
   }
-  return res.sort((a, b) => (!!b.bay - !!a.bay) || (b.lc.startsWith(q) - a.lc.startsWith(q)) || a.desc.length - b.desc.length);
+  // best first: name starts with the first word typed, then a word of the name does, then on the map, then shorter names
+  const q0 = squash(q.split(/\s+/)[0]);
+  const rank = it => { const ws = it.desc.split(/\s+/).map(squash); return ws[0].startsWith(q0) ? 0 : ws.some(w => w.startsWith(q0)) ? 1 : 2; };
+  const rk = new Map(res.map(it => [it, rank(it)]));
+  return res.sort((a, b) => rk.get(a) - rk.get(b) || (!!b.bay - !!a.bay) || a.desc.length - b.desc.length);
+}
+// suggestions while typing: words from the product names (brands, kinds of product) and category names that start with
+// (or contain) what has been typed, plus the best few products - one tap fills in the rest
+let TERMS = null;
+function terms() {
+  if (TERMS) return TERMS;
+  const n = new Map(), addT = (t, w) => { t = t.trim(); const k = squash(t); if (k.length < 2 || k.length > 18 || /^\d/.test(k)) return; const e = n.get(k) || [t, 0]; e[1] += w; n.set(k, e); };
+  for (const it of items) for (const w of it.desc.split(/\s+/)) addT(w.replace(/[\d.,xX*×/()+-]+.*$/, ''), 1);
+  for (const c of CATS) addT(c.name, 50);
+  for (const subs of Object.values(SUBS)) for (const [nm] of subs) addT(nm, 30);
+  for (const v of Object.values(SUBSUB)) for (const [nm] of v.groups) addT(nm, 20);
+  for (const p of POPULAR) addT(p, 40);
+  TERMS = [...n.entries()].filter(([, [, c]]) => c >= 3).map(([k, [t, c]]) => [k, t, c]);
+  return TERMS;
+}
+let sgSel = -1;
+function showSuggest() {
+  const box = $('#suggest'), raw = $('#q').value.trim(), qs = squash(raw);
+  if (!qs || /^\d/.test(qs)) { box.hidden = true; return; }
+  const ts = terms().filter(([k]) => k.includes(qs) && k !== qs)
+    .sort((a, b) => (b[0].startsWith(qs) - a[0].startsWith(qs)) || b[2] - a[2]).slice(0, 5);
+  // products: a word of the name starting with what was typed beats a match in the middle of a word
+  const rank = it => { const ws = it.desc.split(/\s+/).map(squash); return ws[0].startsWith(qs) ? 0 : ws.some(w => w.startsWith(qs)) ? 1 : 2; };
+  const ps = search(raw).slice(0, 40).map((it, i) => [rank(it), i, it]).sort((a, b) => a[0] - b[0] || a[1] - b[1]).slice(0, 4).map(x => x[2]);
+  if (!ts.length && !ps.length) { box.hidden = true; return; }
+  sgSel = -1;
+  box.innerHTML = ts.map(([, t]) => `<button class="sg" data-term="${esc(t)}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>${esc(t)}</button>`).join('')
+    + ps.map(it => `<button class="sg" data-pk="${esc(keyOf(it))}">${img(it)}<span>${esc(pname(it))}</span><small>${esc(it.loc || '')}</small></button>`).join('');
+  box.hidden = false;
+}
+function pickSuggest(b) {
+  $('#suggest').hidden = true;
+  if (b.dataset.term) { $('#q').value = b.dataset.term; onQuery(); }
+  else { const it = byNo.get(b.dataset.pk); if (it) { $('#q').value = it.desc; onQuery(); select(it); } }
+  $('#q').blur();
 }
 const KITS = [['ร้านก๋วยเตี๋ยว', '🍜', '#fff3e6'], ['ร้านหมูกระทะ', '🥓', '#ffeef0'], ['ร้านชาบู สุกี้', '🍲', '#fff1ec'],
   ['ร้านส้มตำ', '🌶', '#f1f8ea'], ['ร้านข้าวมันไก่', '🍗', '#fff8e1'], ['ร้านอาหารตามสั่ง', '🍳', '#eef7ee'],
@@ -2179,6 +2396,7 @@ function render() {
     body.innerHTML = `${csHit ? `<div class="place"><div><b>จุดบริการลูกค้า</b><small>Customer Service · สมัครสมาชิก · คืน/เปลี่ยนสินค้า · ข้างทางเข้า</small></div>
         <button class="btn primary" data-act="gocs">นำทาง</button></div>` : ''}
       <div class="res-head"><h3>ผลการค้นหา “${esc(state.q)}”</h3><span>${res.length.toLocaleString()} รายการ</span></div>
+      ${found.fuzzy && found.length ? '<p class="hint">ไม่พบคำนี้ตรงทั้งหมด แสดงสินค้าที่ใกล้เคียงที่สุด</p>' : ''}
       ${catChips(state.qcat, counts)}
       <div class="filter"><button class="chip ${state.onlyMapped ? '' : 'on'}" data-filter="0">ทั้งหมด ${all.length}</button><button class="chip ${state.onlyMapped ? 'on' : ''}" data-filter="1">มีตำแหน่งบนผัง ${all.filter(it => it.bay).length}</button></div>
       ${shown.length ? `<div class="grid">${shown.map(pcard).join('')}</div>` : '<p class="hint">ไม่พบสินค้า ลองคำค้นอื่น หรือพิมพ์รหัสช่อง เช่น 014-</p>'}
@@ -2298,49 +2516,410 @@ function routeList() {
   clearGroup(markGroup);
   order.forEach((k, i) => pin(k, `${i + 1} · ${k}`, its.find(it => it.bay === k).shelf));
   if (till && order[order.length - 1] !== till) pin(till, tr('ชำระเงิน'), 0);
-  state.routeOrder = order; routeTo(order, true, till);
+  state.routeOrder = order; state.routeTill = till; routeTo(order, true, till);
 }
 
 // ---------- walk mode: one stop at a time ----------
-const walkRing = new THREE.Mesh(new THREE.RingGeometry(10, 13.5, 48), new THREE.MeshBasicMaterial({ color: '#e60012', transparent: true, opacity: .9 }));
+const walkRing = new THREE.Mesh(new THREE.RingGeometry(10, 13.5, 48), new THREE.MeshBasicMaterial({ color: '#1a73e8', transparent: true, opacity: .9 }));
 walkRing.rotation.x = -Math.PI / 2; walkRing.visible = false; scene.add(walkRing);
+// GPS-style navigation. Each leg (to the next stop, finally to the checkout) is a polyline with its turns. A blue
+// "you" arrow moves along it continuously: by itself at walking speed ("จำลอง"), or by the shopper's real steps
+// counted from the phone's motion sensor ("เดินจริง"; needs a page opened over https / as a file, and a phone).
+// The camera rides behind the arrow, the map turns with it, a Google-Maps-like banner counts down to the next turn
+// and a voice announces it. (Phone GPS is not used: inside the building it is off by many aisles.)
+const NAV = { group: new THREE.Group(), follow: true, last: 0, head: null };
+scene.add(NAV.group);
+{
+  const g = new THREE.Group();
+  const disc = new THREE.Mesh(new THREE.CircleGeometry(4.2, 32).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#ffffff' }));
+  const dot = new THREE.Mesh(new THREE.CircleGeometry(3.4, 32).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#1a73e8' }));
+  const halo = new THREE.Mesh(new THREE.CircleGeometry(9, 40).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#1a73e8', transparent: true, opacity: 0.18, depthWrite: false }));
+  const tri = new THREE.Shape(); tri.moveTo(0, 6.2); tri.lineTo(3.2, -1.2); tri.lineTo(0, 0.6); tri.lineTo(-3.2, -1.2); tri.closePath();
+  const arrow = new THREE.Mesh(new THREE.ShapeGeometry(tri).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#ffffff' }));
+  disc.position.y = 0.5; dot.position.y = 0.6; halo.position.y = 0.4; arrow.position.y = 0.7;
+  g.add(halo, disc, dot, arrow); g.visible = false;
+  NAV.marker = g; NAV.halo = halo; scene.add(g);
+}
+const WALK_SPEED = 1.2 * PX_PER_M;              // map units per second at 1x (1.2 m/s)
+const STEP_LEN = 0.72 * PX_PER_M;               // one counted step
+const LANG_VOICE = { th: 'th-TH', en: 'en-US', zh: 'zh-CN', my: 'my-MM', ko: 'ko-KR', ja: 'ja-JP', ru: 'ru-RU' };
+let voiceOn = store.get('store3d-voice', true);
+// pick a voice that really speaks the language (iPhone: Kanya, Android: Google TTS, Edge: Premwadee / Niwat);
+// many PCs only have English voices, which read Thai as gibberish - then stay quiet and say so once
+let voiceWarned = '';
+function voiceFor(l) {
+  const code = LANG_VOICE[l] || 'th-TH', vs = speechSynthesis.getVoices();
+  const ok = vs.filter(v => v.lang.replace('_', '-').toLowerCase().startsWith(code.slice(0, 2)));
+  return ok.find(v => /natural|google|premwadee|kanya/i.test(v.name)) || ok.find(v => v.lang.replace('_', '-') === code) || ok[0] || null;
+}
+if ('speechSynthesis' in window) speechSynthesis.getVoices();   // voices load lazily on some browsers
+function speak(text) {
+  if (!voiceOn || !('speechSynthesis' in window)) return;
+  const v = voiceFor(lang);
+  if (!v) {
+    if (speechSynthesis.getVoices().length && voiceWarned !== lang) { voiceWarned = lang; toast('เครื่องนี้ยังไม่มีเสียงพูดภาษานี้ · Android: ติดตั้งภาษาใน Google Text-to-speech · คอมพิวเตอร์: เปิดด้วย Microsoft Edge', 7000); }
+    return;
+  }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text); u.voice = v; u.lang = v.lang; u.rate = 1.02;
+  speechSynthesis.speak(u);
+}
+const landmark = (x, y) => {                   // the aisle / department a turn is at
+  let best = null, bd = 34;
+  for (const k of bayKeys) { const [bx, by] = data.bays[k]; const d = Math.hypot(bx - x, by - y); if (d < bd) { bd = d; best = k; } }
+  return best ? placeLabel(best) : '';
+};
+const metres = u => Math.max(0, Math.round(u / PX_PER_M));
+function buildLeg(from, to) {
+  const raw = astar(from, to); if (!raw) return null;
+  let P = corners(raw).map(c => cellXY(...c));
+  for (let k = 1; k < P.length - 1;) {          // drop tiny jogs (< ~1 m) so every turn is a real turn
+    if (Math.hypot(P[k + 1][0] - P[k][0], P[k + 1][1] - P[k][1]) < 8 && k + 1 < P.length - 1) P.splice(k, 2); else k++;
+  }
+  while (P.length > 2 && Math.hypot(P[1][0] - P[0][0], P[1][1] - P[0][1]) < 16) P.splice(1, 1);   // stepping out of an aisle
+  while (P.length > 2 && Math.hypot(P.at(-1)[0] - P.at(-2)[0], P.at(-1)[1] - P.at(-2)[1]) < 16) P.splice(P.length - 2, 1);   // stepping in
+  if (P.length === 1) P.push([P[0][0], P[0][1] - 1]);
+  const cum = [0];
+  for (let k = 1; k < P.length; k++) cum.push(cum[k - 1] + Math.hypot(P[k][0] - P[k - 1][0], P[k][1] - P[k - 1][1]));
+  const turns = [];
+  for (let k = 1; k < P.length - 1; k++) {
+    const a = [P[k][0] - P[k - 1][0], P[k][1] - P[k - 1][1]], b = [P[k + 1][0] - P[k][0], P[k + 1][1] - P[k][1]];
+    turns.push({ at: cum[k], type: a[0] * b[1] - a[1] * b[0] > 0 ? 'right' : 'left', where: landmark(...P[k]) });   // y points south
+  }
+  const line = new THREE.CatmullRomCurve3(P.map(([x, y]) => W(x, y).setY(2.2)), false, 'catmullrom', 0);
+  return { P, cum, len: cum.at(-1), turns, line };
+}
+function legPoint(leg, s) {                    // position and walking direction at distance s along the leg
+  s = Math.max(0, Math.min(leg.len, s));
+  let k = 1; while (k < leg.cum.length - 1 && leg.cum[k] < s) k++;
+  const a = leg.P[k - 1], b = leg.P[k], t = (s - leg.cum[k - 1]) / ((leg.cum[k] - leg.cum[k - 1]) || 1);
+  const dir = (j) => { const p = leg.P[j - 1], q = leg.P[j]; const l = Math.hypot(q[0] - p[0], q[1] - p[1]) || 1; return [(q[0] - p[0]) / l, (q[1] - p[1]) / l]; };
+  let d = dir(k);
+  const toEnd = leg.cum[k] - s;                  // ease round the corner over the last ~2 m of a segment
+  if (k < leg.P.length - 1 && toEnd < 15) { const n = dir(k + 1), f = 1 - toEnd / 15; d = [d[0] * (1 - f) + n[0] * f, d[1] * (1 - f) + n[1] * f]; }
+  return { x: a[0] + (b[0] - a[0]) * t, y: a[1] + (b[1] - a[1]) * t, d };
+}
+const turnWord = t => t.type === 'right' ? 'เลี้ยวขวา' : 'เลี้ยวซ้าย';
+const NAV_ICON = {
+  straight: '<path d="M12 21V5M5 11l7-7 7 7"/>',
+  right: '<path d="M6 21v-8a4 4 0 0 1 4-4h9M14 4l5 5-5 5"/>',
+  left: '<path d="M18 21v-8a4 4 0 0 0-4-4H5M10 4 5 9l5 5"/>',
+  arrive: '<path d="M12 22s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/>',
+};
+const goalKeyOf = i => i < state.routeOrder.length ? state.routeOrder[i] : state.routeTill;
+const goalNameOf = i => i < state.routeOrder.length ? bayLabel(state.routeOrder[i]) : 'แคชเชียร์';
+function legOf(i) {
+  const w = state.walk;
+  if (w.legs[i] !== undefined) return w.legs[i];
+  const from = i === 0 ? nearestFree(...data.entrance) : bayGoal(state.routeOrder[i - 1]);
+  const k = goalKeyOf(i);
+  return w.legs[i] = k ? buildLeg(from, bayGoal(k)) : null;
+}
+function drawLeg(leg) {
+  clearGroup(NAV.group);
+  NAV.group.add(new THREE.Mesh(new THREE.TubeGeometry(leg.line, Math.max(8, leg.P.length * 14), 2.1, 8, false),
+    new THREE.MeshBasicMaterial({ color: '#1a73e8', transparent: true, opacity: 0.9 })));
+}
+function startLeg(i) {
+  const w = state.walk, n = state.routeOrder.length;
+  w.i = Math.min(i, n); w.s = w.sT = 0; w.arrived = false; w.said = {}; w.playing = w.mode === 'sim';
+  const k = goalKeyOf(w.i), leg = legOf(w.i);
+  if (k) { const p = W(...bayCenter(k)); walkRing.position.set(p.x, 0.5, p.z); walkRing.visible = true; } else walkRing.visible = false;
+  clearGroup(NAV.group);
+  if (!leg) { w.arrived = true; NAV.marker.visible = false; return render(); }
+  drawLeg(leg);
+  NAV.marker.visible = true; NAV.head = null; NAV.follow = true;
+  const first = leg.turns[0];
+  speak(first ? `${tr('เดินตรงไป {0} ม.'.replace('{0}', metres(first.at)))} ${tr(turnWord(first) + 'ที่ ' + (first.where || 'ทางแยก'))}`
+    : tr(`เดินตรงไป ${metres(leg.len)} ม.`));
+  navTick(0, true); render();
+}
 function startWalk() {
   if (!state.routeInfo) routeList();
   if (!state.routeOrder?.length || !state.routeInfo) return toast('ยังไม่มีสินค้าที่มีพิกัดในรายการ');
-  state.walk = { i: 0 };
+  state.walk = { i: 0, legs: [], s: 0, sT: 0, speed: 1, mode: 'sim' };
+  document.body.classList.add('navigating');
   if (isPhone()) document.body.classList.add('show-map');
-  goStep(0);
+  requestAnimationFrame(resize);
+  startLeg(0);
+  if (matchMedia('(pointer:coarse)').matches) walkAction('mode');   // on a phone: real position straight away
 }
 function goStep(i) {
-  state.walk.i = i;
-  const k = state.routeOrder[i];
-  if (k) {
-    const [x, y] = bayCenter(k), p = W(x, y);
-    walkRing.position.set(p.x, 0.5, p.z); walkRing.visible = true;
-    focusBay(k);
-  } else { walkRing.visible = false; home(); }
-  render();
+  const w = state.walk, f = SENS.fix;
+  if (w.mode === 'gps' && i > w.i && f && performance.now() - f.t < 15000 && f.acc < 40) {
+    // the shopper is standing at this shelf: learn how far this phone's GPS is off here
+    const k = goalKeyOf(w.i);
+    if (k) {
+      const [gx, gy] = cellXY(...bayGoal(k)), lim = 40 * GEO.scale;
+      gpsBias = [gpsBias[0] * 0.6 + (gx - f.rx) * 0.4, gpsBias[1] * 0.6 + (gy - f.ry) * 0.4].map(v => Math.max(-lim, Math.min(lim, v)));
+      store.set('store3d-gpsbias', gpsBias);
+    }
+  }
+  startLeg(i);
 }
-function endWalk() { state.walk = null; walkRing.visible = false; render(); }
+function endWalk() {
+  state.walk = null; walkRing.visible = false; NAV.marker.visible = false; clearGroup(NAV.group);
+  $('#navBan').hidden = true; document.body.classList.remove('navigating'); stopSensors();
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  requestAnimationFrame(resize); render();
+}
+// every frame while navigating: move the arrow, keep the camera behind it, update the banner
+let banKey = '';
+function navTick(dt, force) {
+  const w = state.walk; if (!w || w.arrived) return;
+  const leg = legOf(w.i); if (!leg) return;
+  if (w.mode === 'sim' && w.playing) w.s += dt * WALK_SPEED * w.speed;
+  if (w.mode === 'gps') {                        // glide towards where steps + GPS put the shopper (max ~3 m/s)
+    const mx = dt * 3 * PX_PER_M; w.s += Math.max(-mx, Math.min(mx, w.sT - w.s));
+  }
+  if (w.s >= leg.len - 1) {                      // arrived at the shelf (or the checkout)
+    w.s = leg.len; w.arrived = true; w.playing = false;
+    speak(tr('ถึงแล้ว'));
+    const k = goalKeyOf(w.i); if (k) focusBay(k);
+    NAV.follow = false; banKey = ''; render();
+  }
+  const p = legPoint(leg, w.s);
+  let dir = p.d;
+  if (w.mode === 'gps' && SENS.fix && performance.now() - SENS.fix.t < 15000) {   // the dot sits where the GPS says (car park too)
+    const f = SENS.fix, k = Math.min(1, (dt || 1) * 2.5);
+    NAV.at = NAV.at ? [NAV.at[0] + (f.x - NAV.at[0]) * k, NAV.at[1] + (f.y - NAV.at[1]) * k] : [f.x, f.y];
+    p.x = NAV.at[0]; p.y = NAV.at[1];
+    dir = SENS.compass && performance.now() - SENS.compassT < 3000 ? SENS.compass : SENS.moveDir || p.d;
+  } else NAV.at = null;
+  const pos = W(p.x, p.y);
+  NAV.marker.position.set(pos.x, 0.2, pos.z);
+  const h = Math.atan2(dir[0], dir[1]);
+  NAV.head = NAV.head == null ? h : NAV.head + Math.atan2(Math.sin(h - NAV.head), Math.cos(h - NAV.head)) * Math.min(1, dt * 4 || 1);
+  NAV.marker.rotation.y = NAV.head + Math.PI;   // the arrow mesh points -z
+  if (NAV.follow && !w.arrived) {                // camera low behind the arrow, looking ahead: the map turns with you
+    const fx = Math.sin(NAV.head), fz = Math.cos(NAV.head);
+    const tgt = new THREE.Vector3(pos.x + fx * 18, 0, pos.z + fz * 18), cam = new THREE.Vector3(pos.x - fx * 75, 115, pos.z - fz * 75);
+    fly = null;
+    if (force) { controls.target.copy(tgt); camera.position.copy(cam); }
+    else { controls.target.lerp(tgt, Math.min(1, dt * 5)); camera.position.lerp(cam, Math.min(1, dt * 4)); }
+  }
+  // the next turn and the voice prompts ahead of it
+  const ti = leg.turns.findIndex(t => t.at > w.s + 0.5), t = leg.turns[ti];
+  if (t) {
+    const d = metres(t.at - w.s);
+    if (d <= 12 && !w.said['f' + ti]) { w.said['f' + ti] = 1; speak(tr(`อีก ${d} ม. ${turnWord(t)}ที่ ${t.where || 'ทางแยก'}`)); }
+    if (d <= 2 && !w.said['n' + ti]) { w.said['n' + ti] = 1; speak(tr(turnWord(t))); }
+  }
+  // banner
+  const left = leg.len - w.s, mins = Math.max(1, Math.round(left / PX_PER_M / 1.2 / 60));
+  const icon = t ? t.type : 'arrive', dist = metres((t ? t.at : leg.len) - w.s);
+  const what = t ? `${turnWord(t)}ที่ ${t.where || 'ทางแยก'}` : `ถึง ${goalNameOf(w.i)}`;
+  const then = t ? (leg.turns[ti + 1] ? turnWord(leg.turns[ti + 1]) : `ถึง ${goalNameOf(w.i)}`) : '';
+  const key = [icon, dist, what, then, w.arrived].join('|');
+  if (key !== banKey) {
+    banKey = key;
+    const ban = $('#navBan');
+    ban.innerHTML = `<div class="nb-main"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">${NAV_ICON[icon]}</svg>
+        <div class="nb-t"><b>${w.arrived ? 'ถึงแล้ว' : dist + ' ม.'}</b><span>${esc(what)}</span></div>
+        <button class="nb-v" data-walk="voice" aria-label="เปิด/ปิดเสียงนำทาง">${voiceOn ? '🔊' : '🔇'}</button></div>
+      ${then ? `<div class="nb-then">จากนั้น ${esc(then)}</div>` : ''}`;
+    ban.hidden = false;
+    const eta = new Date(Date.now() + left / WALK_SPEED * 1000);
+    const sum = $('#navSum');
+    if (sum) sum.innerHTML = `<b>${mins} นาที</b><small><span>${metres(left)} ม.</span> · <span>ถึงประมาณ ${eta.toTimeString().slice(0, 5)}</span></small>`;
+  }
+  const g = $('#navGps');                         // GPS status, like the accuracy note in a maps app
+  if (g) {
+    const f = SENS.fix, txt = w.gpsNote === 'out' ? '📡 ยังไม่อยู่ในร้าน'
+      : f && performance.now() - f.t < 20000 ? `📡 GPS ±${Math.round(f.acc)} ม.`
+      : SENS.geo != null ? '📡 กำลังหาสัญญาณ GPS…' : '👣 นับก้าว (ไม่มี GPS)';
+    if (g.dataset.k !== txt) { g.dataset.k = txt; g.textContent = txt; }
+  }
+}
+// ---------- real position: phone GPS + step counter ----------
+// The store's corners from OpenStreetMap (building way 384813222, car park on the west side) tie the drawing to
+// latitude / longitude. Indoors GPS wanders 5-30 m, so it never moves the arrow directly: the fix is matched onto
+// the blue route (as a car GPS snaps to the road), steps from the motion sensor move the arrow between fixes,
+// walking well away from the route plans a new one, and each "picked ✓" at a shelf teaches this phone its offset.
+const GEO_REF = [[368, 1524, 13.8019102, 100.3049836], [1072, 1524, 13.8011404, 100.3049595], [1072, 420, 13.8010660, 100.3061416]];   // map x, y ↔ lat, lon
+const GEO = (() => {
+  const la0 = GEO_REF[0][2], lo0 = GEO_REF[0][3], mE = 111320 * Math.cos(la0 * Math.PI / 180), mN = 110574;
+  const en = (la, lo) => [(lo - lo0) * mE, (la - la0) * mN];
+  const P = GEO_REF.map(([x, y, la, lo]) => [...en(la, lo), x, y]), M = P.map(p => [p[0], p[1], 1]);
+  const det = m => m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+  const D = det(M), solve = col => [0, 1, 2].map(j => det(M.map((r, i) => r.map((v, k) => k === j ? P[i][col] : v))) / D);
+  const X = solve(2), Y = solve(3);              // map x = X·[E, N, 1], map y = Y·[E, N, 1]
+  return { toMap: (la, lo) => { const [e, n] = en(la, lo); return [X[0] * e + X[1] * n + X[2], Y[0] * e + Y[1] * n + Y[2]]; },
+           scale: Math.sqrt(Math.abs(X[0] * Y[1] - X[1] * Y[0])),   // map units per metre
+           north: [X[1], Y[1]], east: [X[0], Y[0]] };   // one metre north / east on the map
+})();
+const STORE_BOX = (() => {
+  const pts = data.outline[0], m = 15 * PX_PER_M;
+  return [Math.min(...pts.map(p => p[0])) - m, Math.min(...pts.map(p => p[1])) - m, Math.max(...pts.map(p => p[0])) + m, Math.max(...pts.map(p => p[1])) + m];
+})();
+const inStore = (x, y) => x > STORE_BOX[0] && y > STORE_BOX[1] && x < STORE_BOX[2] && y < STORE_BOX[3];
+let gpsBias = store.get('store3d-gpsbias', [0, 0]);
+const SENS = { geo: null, fix: null, off: 0, rerouteT: 0 };
+function projectOnLeg(leg, x, y, s0, s1) {      // nearest point of the route between distances s0..s1
+  let best = { d: Infinity, s: 0 };
+  for (let k = 1; k < leg.P.length; k++) {
+    if (leg.cum[k] < s0 || leg.cum[k - 1] > s1) continue;
+    const [ax, ay] = leg.P[k - 1], [bx, by] = leg.P[k], vx = bx - ax, vy = by - ay, L2 = vx * vx + vy * vy || 1;
+    const t = Math.max(0, Math.min(1, ((x - ax) * vx + (y - ay) * vy) / L2)), s = leg.cum[k - 1] + t * Math.sqrt(L2);
+    if (s < s0 || s > s1) continue;
+    const d = Math.hypot(ax + vx * t - x, ay + vy * t - y);
+    if (d < best.d) best = { d, s };
+  }
+  return best;
+}
+function reroute(x, y) {                         // "recalculating": a new route from where the shopper really is
+  const w = state.walk, k = goalKeyOf(w.i); if (!k) return;
+  const leg = buildLeg(nearestFree(x, y), bayGoal(k)); if (!leg) return;
+  SENS.rerouteT = performance.now(); SENS.off = 0;
+  w.legs[w.i] = leg; w.s = w.sT = 0; w.said = {}; NAV.head = null; drawLeg(leg); banKey = '';
+  speak(tr('กำลังคำนวณเส้นทางใหม่'));
+}
+function onFix(pos) {
+  SENS.pos = pos;
+  const { latitude, longitude, accuracy } = pos.coords, [rx, ry] = GEO.toMap(latitude, longitude);
+  const prev = SENS.fix, f = SENS.fix = { rx, ry, x: rx + gpsBias[0], y: ry + gpsBias[1], acc: accuracy, t: performance.now() };
+  if (prev && Math.hypot(f.x - prev.x, f.y - prev.y) > 3 * GEO.scale) SENS.moveDir = [f.x - prev.x, f.y - prev.y];   // walking direction
+  else if (prev) f.x = prev.x * 0.5 + f.x * 0.5, f.y = prev.y * 0.5 + f.y * 0.5;   // standing still: calm the jitter
+  const w = state.walk; if (!w || w.arrived || w.mode !== 'gps') return;
+  const leg = legOf(w.i); if (!leg) return;
+  w.gpsNote = inStore(f.x, f.y) ? '' : 'out';
+  if (w.gpsNote) return;
+  // the dot is drawn exactly at the GPS position; the route only tells how far is left and which turn is next
+  const far = Math.max(10 * GEO.scale, Math.min(accuracy, 25) * GEO.scale);
+  const [gx, gy] = cellXY(...bayGoal(goalKeyOf(w.i) ?? state.routeTill));
+  if (Math.hypot(f.x - gx, f.y - gy) < Math.max(3, Math.min(accuracy, 5)) * GEO.scale) { w.sT = leg.len; return; }   // at the shelf
+  if (!w.placed && accuracy < 30) {               // first good fix: start the route from where the shopper stands
+    w.placed = true;
+    if (projectOnLeg(leg, f.x, f.y, 0, leg.len).d > far) return reroute(f.x, f.y);
+  }
+  let pr = projectOnLeg(leg, f.x, f.y, w.sT - 30 * PX_PER_M, w.sT + 60 * PX_PER_M);
+  if (pr.d > far) pr = projectOnLeg(leg, f.x, f.y, 0, leg.len);
+  if (pr.d > far) {                               // off the blue line for a while: plan again from here
+    if (accuracy < 20 && ++SENS.off >= 2 && performance.now() - SENS.rerouteT > 8000) reroute(f.x, f.y);
+    return;
+  }
+  SENS.off = 0; w.sT = pr.s;
+}
+// compass: which way the phone points (like the beam on the Google Maps dot)
+function onCompass(e) {
+  const h = e.webkitCompassHeading ?? (e.absolute && e.alpha != null ? 360 - e.alpha : null);
+  if (h == null) return;
+  const r = h * Math.PI / 180, n = GEO.north, ea = GEO.east;
+  SENS.compass = [n[0] * Math.cos(r) + ea[0] * Math.sin(r), n[1] * Math.cos(r) + ea[1] * Math.sin(r)];
+  SENS.compassT = performance.now();
+}
+function startCompass() {
+  const go = () => { window.addEventListener('deviceorientationabsolute', onCompass); window.addEventListener('deviceorientation', onCompass); };
+  if (typeof DeviceOrientationEvent?.requestPermission === 'function')
+    DeviceOrientationEvent.requestPermission().then(s => s === 'granted' && go()).catch(() => {});
+  else if ('DeviceOrientationEvent' in window) go();
+}
+function stopCompass() {
+  window.removeEventListener('deviceorientationabsolute', onCompass); window.removeEventListener('deviceorientation', onCompass);
+  SENS.compass = null;
+}
+// real steps: the phone's motion sensor, one step = ~0.72 m along the route
+let stepState = null;
+function onMotion(e) {
+  const a = e.accelerationIncludingGravity; if (!a || a.x == null) return;
+  const g = Math.hypot(a.x, a.y, a.z), st = stepState; st.got = true;
+  st.f = st.f == null ? g : st.f * 0.8 + g * 0.2;   // smoothed magnitude
+  const now = performance.now();
+  if (!st.up && st.f > 10.9) st.up = true;
+  else if (st.up && st.f < 9.6) {
+    st.up = false;
+    if (now - st.t > 280) { st.t = now; const w = state.walk; if (w && !w.arrived && w.mode === 'gps' && !gpsFresh()) w.sT =Math.min(legOf(w.i)?.len ?? 0, w.sT + STEP_LEN); }
+  }
+}
+async function startSteps() {
+  try { if (typeof DeviceMotionEvent?.requestPermission === 'function' && await DeviceMotionEvent.requestPermission() !== 'granted') throw 0; }
+  catch { return false; }
+  if (!('DeviceMotionEvent' in window) || !window.isSecureContext) return false;
+  stepState = { t: 0, up: false, f: null, got: false };
+  window.addEventListener('devicemotion', onMotion);
+  await new Promise(r => setTimeout(r, 1500));
+  if (!stepState.got) { stopSteps(); return false; }
+  return true;
+}
+function stopSteps() { window.removeEventListener('devicemotion', onMotion); stepState = null; }
+function startGeo() {                            // resolves false when GPS is refused or unavailable; SENS.why says why
+  SENS.why = '';
+  if (!('geolocation' in navigator)) { SENS.why = 'เบราว์เซอร์นี้ไม่มี GPS'; return Promise.resolve(false); }
+  if (!window.isSecureContext) { SENS.why = 'หน้านี้ไม่ได้เปิดผ่าน https โทรศัพท์จึงไม่ให้ใช้ GPS'; return Promise.resolve(false); }
+  const t0 = performance.now();
+  return new Promise(res => {
+    let done = false; const fin = v => { if (!done) { done = true; res(v); } };
+    SENS.geo = navigator.geolocation.watchPosition(p => { onFix(p); fin(true); },
+      err => {
+        if (err.code !== 1) return;                // other errors: keep searching for satellites
+        SENS.why = window.self !== window.top && performance.now() - t0 < 300 ? 'ลิงก์นี้ไม่อนุญาตให้หน้าเว็บใช้ GPS'
+          : 'ยังไม่ได้อนุญาตตำแหน่ง: เปิดตำแหน่งในตั้งค่าโทรศัพท์ และอนุญาตให้เบราว์เซอร์ใช้ตำแหน่ง';
+        stopGeo(); if (!done) fin(false); else if (state.walk?.mode === 'gps') toast(SENS.why, 6000);
+      },
+      { enableHighAccuracy: true, maximumAge: 1000, timeout: 20000 });
+    setTimeout(() => fin(SENS.geo != null), 4000);   // still searching for satellites is fine
+  });
+}
+function stopGeo() { if (SENS.geo != null) navigator.geolocation.clearWatch(SENS.geo); SENS.geo = null; SENS.fix = SENS.pos = null; }
+async function startSensors() {
+  const motion = startSteps();                   // asked first, while the tap still counts (iPhone)
+  startCompass();
+  const [m, g] = await Promise.all([motion, startGeo()]);
+  return { m, g };
+}
+function stopSensors() { stopSteps(); stopGeo(); stopCompass(); }
+const gpsFresh = () => SENS.fix && performance.now() - SENS.fix.t < 15000 && state.walk?.gpsNote !== 'out';
+controls.addEventListener('start', () => { if (state.walk && !state.walk.arrived) { NAV.follow = false; render(); } });   // the shopper looks around: stop following
 function renderWalk() {
   const c = $('#walkCard'), w = state.walk;
   if (!w) { c.classList.remove('on'); c.innerHTML = ''; return; }
   const order = state.routeOrder, n = order.length, i = w.i;
+  const where = i < n ? `จุดที่ ${i + 1}/${n} · ${bayLabel(order[i])}` : 'ไปชำระเงินที่แคชเชียร์';
   let html;
-  if (i >= n) html = `<div class="walk-done"><span>🎉</span><b>หยิบครบ ${n} จุดแล้ว</b><p>เดินไปชำระเงินที่แคชเชียร์ด้านหน้าร้านได้เลย</p>
+  if (!w.arrived) {                               // driving bar: exit · time / distance / ETA · play · speed
+    html = `<div class="navbar2"><button class="nb-x" data-walk="close" aria-label="ปิด">✕</button>
+        <div class="nb-sum" id="navSum"></div>
+        ${w.mode === 'sim' ? `<button class="nb-b" data-walk="play" aria-label="หยุด/เดินต่อ">${w.playing ? '⏸' : '▶'}</button>
+          <button class="nb-b nb-sp" data-walk="speed">${w.speed}x</button>` : ''}</div>
+      <div class="nb-sub"><span>${esc(where)}</span>
+        ${w.mode === 'gps' ? '<span class="chip on" id="navGps"></span><button class="chip" data-walk="mode">▶ จำลอง</button>'
+          : `<button class="chip" data-walk="mode">${w.starting ? '📡 กำลังเปิด GPS…' : '📡 ใช้ GPS นำทาง'}</button>`}
+        ${NAV.follow ? '' : '<button class="chip" data-walk="recenter">◎ กลับมาที่ตำแหน่ง</button>'}</div>`;
+  } else if (i >= n) {
+    html = `<div class="walk-done"><span>🎉</span><b>หยิบครบ ${n} จุดแล้ว</b><p>ถึงแคชเชียร์แล้ว ชำระเงินได้เลย</p>
       <button class="btn primary wide" data-walk="close">เสร็จสิ้น</button></div>`;
-  else {
+  } else {                                        // at the shelf: what to pick
     const its = state.list.map(k => byNo.get(k)).filter(it => it?.bay === order[i]);
-    html = `<div class="walk-top"><b>จุดที่ ${i + 1} <small>จาก ${n}</small></b><span>${esc(bayLabel(order[i]))}</span>
+    html = `<div class="walk-top"><b>ถึงแล้ว <small>จุดที่ ${i + 1} จาก ${n}</small></b><span>${esc(bayLabel(order[i]))}</span>
         <button class="walk-x" data-walk="close" aria-label="ปิด">✕</button></div>
-      <div class="walk-bar"><i style="width:${i / n * 100}%"></i></div>
       ${its.map(it => `<div class="witem">${img(it)}<div><b translate="no">${esc(pname(it))}</b><span><em>${esc(it.loc)}</em> ชั้น ${it.shelf} นับจากล่าง</span></div></div>`).join('')}
       <div class="btns"><button class="btn" data-walk="prev" ${i ? '' : 'disabled'}>‹ ก่อนหน้า</button>
-        <button class="btn primary wide" data-walk="next">หยิบแล้ว ✓ ${i === n - 1 ? 'เสร็จ' : 'ถัดไป ›'}</button></div>`;
+        <button class="btn primary wide" data-walk="next">หยิบแล้ว ✓ ${i === n - 1 ? 'ไปจ่ายเงิน ›' : 'ถัดไป ›'}</button></div>`;
   }
   c.innerHTML = html; c.classList.add('on');
+  if (!w.arrived) { banKey = ''; navTick(0); }
 }
-
+async function walkAction(wk) {
+  const w = state.walk; if (!w) return;
+  if (wk === 'play') { if (w.mode === 'sim') w.playing = !w.playing; return render(); }
+  if (wk === 'speed') { w.speed = w.speed === 1 ? 2 : w.speed === 2 ? 4 : 1; return render(); }
+  if (wk === 'recenter') { NAV.follow = true; return render(); }
+  if (wk === 'voice') { voiceOn = !voiceOn; store.set('store3d-voice', voiceOn); if (!voiceOn && 'speechSynthesis' in window) speechSynthesis.cancel(); if (voiceOn) { voiceWarned = ''; speak(tr('เปิดเสียงนำทางแล้ว')); } banKey = ''; return render(); }
+  if (wk === 'mode') {
+    if (w.mode === 'gps') { stopSensors(); w.mode = 'sim'; w.playing = true; return render(); }
+    if (w.starting) return;
+    w.starting = true; w.playing = false; render();
+    const { m, g } = await startSensors();
+    w.starting = false;
+    if (state.walk !== w) return stopSensors();
+    if (m || g) {
+      w.mode = 'gps'; w.sT = w.s; w.placed = false;
+      if (SENS.pos) onFix(SENS.pos);               // the fix that arrived while starting up
+      toast(g ? 'เปิด GPS แล้ว เดินได้เลย' : `ใช้ GPS ไม่ได้ (${SENS.why}) ใช้การนับก้าวแทน`, g ? 2600 : 7000);
+    } else { w.playing = true; toast(`ใช้ GPS ไม่ได้: ${SENS.why || 'ไม่ทราบสาเหตุ'} · ใช้โหมดจำลองแทน`, 7000); }
+    return render();
+  }
+}
 // ---------- phone: the map is its own page ----------
 function showMap(on) {
   document.body.classList.toggle('show-map', on);
@@ -2479,6 +3058,7 @@ document.addEventListener('click', e => {
   if (wk === 'close') return endWalk();
   if (wk === 'prev') return goStep(Math.max(0, state.walk.i - 1));
   if (wk === 'next') return goStep(state.walk.i + 1);
+  if (wk) return walkAction(wk);
   const sm = e.target.closest('[data-shop]')?.dataset.shop;
   if (sm) { ai.shop = sm; if (ai.result && ai.text) return runAI(); return render(); }
   const opt = e.target.closest('[data-opt]');
@@ -2542,8 +3122,23 @@ function onQuery() {
   if (mapShown()) document.body.classList.remove('show-map');
   render(); $('#body').scrollTop = 0;
 }
-$('#q').addEventListener('input', () => { clearTimeout(qT); qT = setTimeout(onQuery, 160); });
-$('#q').addEventListener('keydown', e => { if (e.key === 'Enter') { clearTimeout(qT); onQuery(); e.target.blur(); } });
+$('#q').addEventListener('input', () => { clearTimeout(qT); qT = setTimeout(onQuery, 160); showSuggest(); });
+$('#q').addEventListener('keydown', e => {
+  const bs = [...document.querySelectorAll('#suggest .sg')], open = !$('#suggest').hidden && bs.length;
+  if (open && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+    e.preventDefault(); sgSel = (sgSel + (e.key === 'ArrowDown' ? 1 : -1) + bs.length) % bs.length;
+    bs.forEach((b, i) => b.classList.toggle('on', i === sgSel)); return;
+  }
+  if (e.key === 'Escape') { $('#suggest').hidden = true; return; }
+  if (e.key === 'Enter') {
+    if (open && sgSel >= 0) { e.preventDefault(); return pickSuggest(bs[sgSel]); }
+    $('#suggest').hidden = true; clearTimeout(qT); onQuery(); e.target.blur();
+  }
+});
+$('#q').addEventListener('focus', showSuggest);
+$('#q').addEventListener('blur', () => setTimeout(() => { $('#suggest').hidden = true; }, 180));
+$('#suggest').addEventListener('mousedown', e => e.preventDefault());   // keep focus so the tap lands
+$('#suggest').addEventListener('click', e => { const b = e.target.closest('.sg'); if (b) pickSuggest(b); });
 $('#qclear').onclick = () => { $('#q').value = ''; onQuery(); $('#q').focus(); };
 
 // voice search (Chrome / Edge, Thai)
@@ -2625,6 +3220,10 @@ renderer.setAnimationLoop(now => {
     if (t === 1) fly = null;
   }
   controls.update();
+  {                                              // keep the store in reach: the map can't be slid off into nowhere
+    const t = controls.target, cx = Math.max(-480, Math.min(410, t.x)), cz = Math.max(-490, Math.min(700, t.z));
+    if (cx !== t.x || cz !== t.z) { const d = new THREE.Vector3(cx - t.x, 0, cz - t.z); t.add(d); camera.position.add(d); }
+  }
   markGroup.children.forEach(o => {
     if (o.userData.pulse) o.material.opacity = 0.55 + 0.35 * Math.sin(now / 220);
     if (o.userData.bob !== undefined) {
@@ -2640,7 +3239,13 @@ renderer.setAnimationLoop(now => {
     }
     ants.instanceMatrix.needsUpdate = true;
   }
+  routeGroup.visible = !state.walk;               // blue = navigating, red = the planned route
   if (walkRing.visible) { const s = 1 + 0.12 * Math.sin(now / 250); walkRing.scale.set(s, s, s); }
+  navTick(Math.min(0.1, (now - (NAV.last || now)) / 1000)); NAV.last = now;   // "you" arrow walking the route
+  if (NAV.marker.visible) {                      // pulse; with GPS the light circle shows how sure the fix is
+    const f = state.walk?.mode === 'gps' && SENS.fix, base = f ? Math.max(1, Math.min(6, f.acc * GEO.scale / 9)) : 1;
+    const s = base * (1 + 0.25 * (0.5 + 0.5 * Math.sin(now / 300))); NAV.halo.scale.set(s, 1, s);
+  }
   renderer.render(scene, camera);
 });
 $('#loading').classList.add('hide'); setTimeout(() => $('#loading').remove(), 500);

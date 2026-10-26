@@ -21,7 +21,64 @@
     cookie_path: '/AI-Item-Location/',
     cookie_flags: 'SameSite=Lax;Secure'
   });
-  // No product searches, barcode values, shopping lists or user IDs are sent.
+  const languages = new Set(['th', 'en', 'zh', 'my', 'ko', 'ja', 'ru']);
+  let catalog = new Map(), english = {}, currentLanguage = '', pending, timer;
+  const sent = new Map();
+  const normalize = value => String(value || '').normalize('NFC').trim().replace(/\s+/g, ' ').toLowerCase();
+  const limited = value => Array.from(value).slice(0, 100).join('');
+  function emit(name, values, dedupeKey) {
+    const now = Date.now();
+    if (dedupeKey && now - (sent.get(dedupeKey) || 0) < 30000) return;
+    if (dedupeKey) sent.set(dedupeKey, now);
+    if (sent.size > 100) sent.delete(sent.keys().next().value);
+    gtag('event', name, { ui_language: currentLanguage || 'th', ...values });
+  }
+  function flush() {
+    clearTimeout(timer);
+    if (!pending) return;
+    const p = pending; pending = undefined;
+    emit('product_search', p.values, 'search:' + p.key);
+  }
+  window.makroUsage = {
+    catalog(rows) {
+      catalog = new Map(rows.map(r => [String(r[0]), { id: String(r[0]), name: String(r[1]), barcode: String(r[2]) }]));
+    },
+    english(names) { english = names; },
+    language(value) {
+      if (!languages.has(value) || currentLanguage === value) return;
+      currentLanguage = value;
+      emit('app_language', {});
+    },
+    search(query, resultIds) {
+      clearTimeout(timer); pending = undefined;
+      const q = normalize(query);
+      if (q.length < 2) return;
+      const results = [...new Set(resultIds.map(String))].map(id => catalog.get(id)).filter(Boolean);
+      let term = '';
+      // Only transmit phrases found verbatim in the public catalog. Never send
+      // arbitrary free text, emails, phone numbers or unmatched barcode values.
+      const exact = /^\d+$/.test(q) && results.find(p => p.id === q || p.barcode === q);
+      if (exact) term = limited(exact.name);
+      else if (q.length <= 80 && !/[\d@\r\n]/.test(q)) {
+        for (const p of results) {
+          const name = [p.name, english[p.id] || ''].map(normalize).find(n => n.includes(q));
+          if (name) { term = name.slice(name.indexOf(q), name.indexOf(q) + q.length); break; }
+        }
+      }
+      const status = !results.length ? 'no_results' : term ? 'matched' : 'withheld';
+      pending = { key: q + ':' + currentLanguage, query: q, ids: new Set(results.map(p => p.id)), values: {
+        safe_search_term: term || '(' + status + ')', result_count: results.length, search_status: status, ui_language: currentLanguage || 'th'
+      } };
+      timer = setTimeout(flush, 1200);
+    },
+    select(id, query) {
+      const p = catalog.get(String(id)), q = normalize(query);
+      if (!p || q.length < 2) return;
+      if (pending && pending.query === q) flush();
+      emit('product_search_select', { product_id: p.id, product_name: limited(p.name) }, 'select:' + q + ':' + p.id);
+    }
+  };
+  // No shopping lists, favourites, user IDs or raw search strings are sent.
   // Enhanced measurement is disabled for this stream in the Analytics console.
   const script = document.createElement('script');
   script.async = true;
