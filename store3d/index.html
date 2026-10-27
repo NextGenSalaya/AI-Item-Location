@@ -1254,6 +1254,7 @@ async function buildReal() {
       } else if (FISH_TANKS[k]) {           // live fish: glass aquarium on a stainless cabinet on castors, price sign on a pole
         // tanks face south; the shrimp table faces the east walkway (eggs on its right, the fish counters behind it)
         const [A, Ln, D, s] = orient(pc, FISH_TANKS[k] === 'shrimp' ? [1, 0] : [0, 1]), W2 = Ln - 0.4, D2 = Math.min(D, 8) - 0.4, back = -s * (D2 / 2);
+        const at = (u, v) => new THREE.Vector3(c.x + Math.cos(A) * u - Math.sin(A) * v, 0, c.z + Math.sin(A) * u + Math.cos(A) * v);   // a spot on this fixture
         const tank = (cc, u0, w) => {
           for (const su of [-1, 1]) for (const sv of [-1, 1]) add(L.frame, cc, A, u0 + su * (w / 2 - 0.6), 0.35, sv * (D2 / 2 - 0.6), 0.6, 0.7, 0.6);   // castors
           add(L.steel, cc, A, u0, 3.6, 0, w, 5.6, D2);                                         // cabinet
@@ -1278,7 +1279,8 @@ async function buildReal() {
           for (const sv of [-1, 1]) add(L.steel, c, A, 0, T + 0.6, sv * (D2 / 2 - 0.1), W2, 1.5, 0.2);   // tray walls
           for (const su of [-1, 0, 1]) add(L.steel, c, A, su * (W2 / 2 - 0.1), T + 0.6, 0, 0.2, 1.5, D2);   // ends + divider
           add(L.water, c, A, 0, T + 0.65, 0, W2 - 0.4, 0.9, D2 - 0.4);                        // bubbling water with the shrimp
-          for (let i = 0; i < 14; i++) add(L.prod, c, A + rnd() * 3, (rnd() - 0.5) * (W2 - 1.5), T + 0.45, (rnd() - 0.5) * (D2 - 1.5), 1.1, 0.2, 0.25, pick(['#5f6f78', '#7d8b8f']));
+          for (let i = 0; i < 14; i++)                                                           // shrimp: each turned its own way, in place
+            add(L.prod, at((rnd() - 0.5) * (W2 - 1.5), (rnd() - 0.5) * (D2 - 1.5)), A + rnd() * 3, 0, T + 0.45, 0, 1.1, 0.2, 0.25, pick(['#5f6f78', '#7d8b8f']));
           const bv = -s * (D2 / 2 - 2), bw = W2 * 0.42;                                         // raised trays along the back
           for (const su of [-1, 1]) add(L.steel, c, A, su * (W2 / 2 - 0.6), T + 1.6, bv, 0.3, 3.2, 0.3);
           add(L.steel, c, A, 0, T + 3.1, bv, W2 - 0.8, 0.25, 3.6);
@@ -1313,7 +1315,7 @@ async function buildReal() {
           for (let i = 0; i < (red ? 9 : 4); i++) {                                            // fish swimming at different depths
             const u = (rnd() - 0.5) * (W2 - 2.4), v = (rnd() - 0.5) * (D2 - 2.4), y = 7.4 + rnd() * 3.4;
             const col = red ? pick(['#f3a596', '#f7b8a8', '#ea8f7f']) : pick(['#7d8466', '#8d8f78']);
-            add(L.prod, c, A + (rnd() - 0.5) * 0.8, u, y, v, 1.9, 0.9, 0.4, col);               // body
+            add(L.prod, at(u, v), A + (rnd() - 0.5) * 0.8, 0, y, 0, 1.9, 0.9, 0.4, col);        // body
             add(L.prod, c, A, u + 1.1, y, v, 0.5, 0.7, 0.15, col);                             // tail
           }
           add(L.steel, c, A, -W2 / 2 + 0.3, 12.5, back, 0.18, 12, 0.18);                       // sign pole
@@ -2114,6 +2116,7 @@ canvas.addEventListener('pointerleave', () => { setHover(-1); $('#tip').style.di
 canvas.addEventListener('pointerdown', ev => downAt = [ev.clientX, ev.clientY]);
 canvas.addEventListener('pointerup', ev => {
   if (!downAt || Math.hypot(ev.clientX - downAt[0], ev.clientY - downAt[1]) > 6) return;
+  if (CAL.armed) return calibrateAt(ev);
   const id = pick(ev); if (id >= 0 && pieces[id][5]) openBay(pieces[id][5]);
 });
 
@@ -2540,7 +2543,8 @@ scene.add(NAV.group);
   g.add(halo, disc, dot, arrow); g.visible = false;
   NAV.marker = g; NAV.halo = halo; scene.add(g);
 }
-const WALK_SPEED = 1.2 * PX_PER_M;              // map units per second at 1x (1.2 m/s)
+const USE_GPS = false;                          // real phone position: off until the store is calibrated (the code stays ready)
+const WALK_SPEED = 1.2 * PX_PER_M;             // map units per second at 1x (1.2 m/s)
 const STEP_LEN = 0.72 * PX_PER_M;               // one counted step
 const LANG_VOICE = { th: 'th-TH', en: 'en-US', zh: 'zh-CN', my: 'my-MM', ko: 'ko-KR', ja: 'ja-JP', ru: 'ru-RU' };
 let voiceOn = store.get('store3d-voice', true);
@@ -2642,18 +2646,14 @@ function startWalk() {
   if (isPhone()) document.body.classList.add('show-map');
   requestAnimationFrame(resize);
   startLeg(0);
-  if (matchMedia('(pointer:coarse)').matches) walkAction('mode');   // on a phone: real position straight away
+  if (USE_GPS && matchMedia('(pointer:coarse)').matches) walkAction('mode');   // on a phone: real position straight away
 }
 function goStep(i) {
   const w = state.walk, f = SENS.fix;
-  if (w.mode === 'gps' && i > w.i && f && performance.now() - f.t < 15000 && f.acc < 40) {
-    // the shopper is standing at this shelf: learn how far this phone's GPS is off here
+  if (w.mode === 'gps' && i > w.i && f && performance.now() - f.t < 15000 && f.acc < 12) {
+    // the shopper is standing at this shelf: one more calibration pair for this phone
     const k = goalKeyOf(w.i);
-    if (k) {
-      const [gx, gy] = cellXY(...bayGoal(k)), lim = 40 * GEO.scale;
-      gpsBias = [gpsBias[0] * 0.6 + (gx - f.rx) * 0.4, gpsBias[1] * 0.6 + (gy - f.ry) * 0.4].map(v => Math.max(-lim, Math.min(lim, v)));
-      store.set('store3d-gpsbias', gpsBias);
-    }
+    if (k) addCalPoint(f.la, f.lo, ...cellXY(...bayGoal(k)));
   }
   startLeg(i);
 }
@@ -2753,7 +2753,52 @@ const STORE_BOX = (() => {
   return [Math.min(...pts.map(p => p[0])) - m, Math.min(...pts.map(p => p[1])) - m, Math.max(...pts.map(p => p[0])) + m, Math.max(...pts.map(p => p[1])) + m];
 })();
 const inStore = (x, y) => x > STORE_BOX[0] && y > STORE_BOX[1] && x < STORE_BOX[2] && y < STORE_BOX[3];
-let gpsBias = store.get('store3d-gpsbias', [0, 0]);
+// on-site calibration: tap "📍 ปักตำแหน่งจริง", then the spot on the map where you really stand. Each pair (GPS
+// reading ↔ true spot) is kept on this phone and the GPS picture is shifted (1 pair), then also turned and scaled
+// (pairs spread out) to fit them. "คัดลอกค่า" copies the pairs so they can be built in below for every phone.
+const CAL_BUILTIN = [];                          // [lat, lon, map x, map y] measured in the store
+const CAL = { armed: false, pts: store.get('store3d-gpscal', []), fit: null };
+function fitCal() {                              // least-squares shift + turn + scale (complex numbers: q = a·p)
+  const P = [...CAL_BUILTIN, ...CAL.pts].map(([la, lo, x, y]) => [GEO.toMap(la, lo), [x, y]]), n = P.length;
+  if (!n) return CAL.fit = null;
+  const pm = [0, 0], qm = [0, 0];
+  for (const [p, q] of P) { pm[0] += p[0] / n; pm[1] += p[1] / n; qm[0] += q[0] / n; qm[1] += q[1] / n; }
+  let re = 0, im = 0, ss = 0;
+  for (const [p, q] of P) {
+    const px = p[0] - pm[0], py = p[1] - pm[1], qx = q[0] - qm[0], qy = q[1] - qm[1];
+    re += qx * px + qy * py; im += qy * px - qx * py; ss += px * px + py * py;
+  }
+  let a = [1, 0];
+  if (n >= 2 && ss / n > (8 * GEO.scale) ** 2) {  // points far enough apart to trust a turn / scale
+    a = [re / ss, im / ss]; const k = Math.hypot(...a);
+    if (k < 0.6 || k > 1.6) a = [1, 0];
+  }
+  CAL.fit = { a, pm, qm };
+}
+const calMap = (rx, ry) => {
+  const f = CAL.fit; if (!f) return [rx, ry];
+  const px = rx - f.pm[0], py = ry - f.pm[1];
+  return [f.a[0] * px - f.a[1] * py + f.qm[0], f.a[1] * px + f.a[0] * py + f.qm[1]];
+};
+function addCalPoint(la, lo, x, y) {
+  CAL.pts.push([+la.toFixed(7), +lo.toFixed(7), Math.round(x), Math.round(y)]);
+  if (CAL.pts.length > 40) CAL.pts.shift();
+  store.set('store3d-gpscal', CAL.pts); fitCal();
+}
+fitCal();
+function calibrateAt(ev) {                       // the tap after "ปักตำแหน่งจริง": that floor spot is where the phone is
+  CAL.armed = false;
+  const f = SENS.fix;
+  if (!f || performance.now() - f.t > 20000) { render(); return toast('ยังไม่มีสัญญาณ GPS ลองใหม่อีกครั้ง'); }
+  const r = canvas.getBoundingClientRect(), hit = new THREE.Vector3();
+  ndc.set((ev.clientX - r.left) / r.width * 2 - 1, -(ev.clientY - r.top) / r.height * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  if (!ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), hit)) return render();
+  addCalPoint(f.la, f.lo, hit.x + CX, hit.z + CY);
+  NAV.at = null; if (SENS.pos) onFix(SENS.pos);
+  toast(`บันทึกจุดปรับ GPS แล้ว (${CAL.pts.length} จุด) ยิ่งหลายจุดและอยู่ห่างกัน ยิ่งแม่น`, 4000);
+  render();
+}
 const SENS = { geo: null, fix: null, off: 0, rerouteT: 0 };
 function projectOnLeg(leg, x, y, s0, s1) {      // nearest point of the route between distances s0..s1
   let best = { d: Infinity, s: 0 };
@@ -2776,8 +2821,8 @@ function reroute(x, y) {                         // "recalculating": a new route
 }
 function onFix(pos) {
   SENS.pos = pos;
-  const { latitude, longitude, accuracy } = pos.coords, [rx, ry] = GEO.toMap(latitude, longitude);
-  const prev = SENS.fix, f = SENS.fix = { rx, ry, x: rx + gpsBias[0], y: ry + gpsBias[1], acc: accuracy, t: performance.now() };
+  const { latitude, longitude, accuracy } = pos.coords, [rx, ry] = GEO.toMap(latitude, longitude), [cx, cy] = calMap(rx, ry);
+  const prev = SENS.fix, f = SENS.fix = { la: latitude, lo: longitude, rx, ry, x: cx, y: cy, acc: accuracy, t: performance.now() };
   if (prev && Math.hypot(f.x - prev.x, f.y - prev.y) > 3 * GEO.scale) SENS.moveDir = [f.x - prev.x, f.y - prev.y];   // walking direction
   else if (prev) f.x = prev.x * 0.5 + f.x * 0.5, f.y = prev.y * 0.5 + f.y * 0.5;   // standing still: calm the jitter
   const w = state.walk; if (!w || w.arrived || w.mode !== 'gps') return;
@@ -2805,7 +2850,8 @@ function onCompass(e) {
   const h = e.webkitCompassHeading ?? (e.absolute && e.alpha != null ? 360 - e.alpha : null);
   if (h == null) return;
   const r = h * Math.PI / 180, n = GEO.north, ea = GEO.east;
-  SENS.compass = [n[0] * Math.cos(r) + ea[0] * Math.sin(r), n[1] * Math.cos(r) + ea[1] * Math.sin(r)];
+  const v = [n[0] * Math.cos(r) + ea[0] * Math.sin(r), n[1] * Math.cos(r) + ea[1] * Math.sin(r)], a = CAL.fit?.a || [1, 0];
+  SENS.compass = [a[0] * v[0] - a[1] * v[1], a[1] * v[0] + a[0] * v[1]];   // turned like the calibrated GPS picture
   SENS.compassT = performance.now();
 }
 function startCompass() {
@@ -2882,8 +2928,10 @@ function renderWalk() {
         ${w.mode === 'sim' ? `<button class="nb-b" data-walk="play" aria-label="หยุด/เดินต่อ">${w.playing ? '⏸' : '▶'}</button>
           <button class="nb-b nb-sp" data-walk="speed">${w.speed}x</button>` : ''}</div>
       <div class="nb-sub"><span>${esc(where)}</span>
-        ${w.mode === 'gps' ? '<span class="chip on" id="navGps"></span><button class="chip" data-walk="mode">▶ จำลอง</button>'
-          : `<button class="chip" data-walk="mode">${w.starting ? '📡 กำลังเปิด GPS…' : '📡 ใช้ GPS นำทาง'}</button>`}
+        ${w.mode === 'gps' ? `<span class="chip on" id="navGps"></span><button class="chip" data-walk="mode">▶ จำลอง</button>
+          <button class="chip ${CAL.armed ? 'on' : ''}" data-walk="cal">${CAL.armed ? '👆 แตะจุดที่ยืนอยู่จริง' : '📍 ปักตำแหน่งจริง'}</button>
+          ${CAL.pts.length ? `<button class="chip" data-walk="calcopy">📋 คัดลอกค่า (${CAL.pts.length})</button><button class="chip" data-walk="calreset">↺ ล้างค่า</button>` : ''}`
+          : USE_GPS ? `<button class="chip" data-walk="mode">${w.starting ? '📡 กำลังเปิด GPS…' : '📡 ใช้ GPS นำทาง'}</button>` : ''}
         ${NAV.follow ? '' : '<button class="chip" data-walk="recenter">◎ กลับมาที่ตำแหน่ง</button>'}</div>`;
   } else if (i >= n) {
     html = `<div class="walk-done"><span>🎉</span><b>หยิบครบ ${n} จุดแล้ว</b><p>ถึงแคชเชียร์แล้ว ชำระเงินได้เลย</p>
@@ -2904,6 +2952,18 @@ async function walkAction(wk) {
   if (wk === 'play') { if (w.mode === 'sim') w.playing = !w.playing; return render(); }
   if (wk === 'speed') { w.speed = w.speed === 1 ? 2 : w.speed === 2 ? 4 : 1; return render(); }
   if (wk === 'recenter') { NAV.follow = true; return render(); }
+  if (wk === 'cal') {
+    CAL.armed = !CAL.armed;
+    if (CAL.armed) { NAV.follow = false; toast('แตะบนแผนที่ ตรงจุดที่คุณยืนอยู่จริงตอนนี้', 6000); }
+    return render();
+  }
+  if (wk === 'calcopy') {
+    const txt = JSON.stringify(CAL.pts);
+    try { await navigator.clipboard.writeText(txt); toast('คัดลอกค่าปรับ GPS แล้ว ส่งให้ผู้พัฒนาได้เลย', 4000); }
+    catch { window.prompt('คัดลอกค่านี้ส่งให้ผู้พัฒนา', txt); }
+    return;
+  }
+  if (wk === 'calreset') { CAL.pts = []; store.set('store3d-gpscal', []); fitCal(); NAV.at = null; if (SENS.pos) onFix(SENS.pos); toast('ล้างค่าปรับ GPS แล้ว'); return render(); }
   if (wk === 'voice') { voiceOn = !voiceOn; store.set('store3d-voice', voiceOn); if (!voiceOn && 'speechSynthesis' in window) speechSynthesis.cancel(); if (voiceOn) { voiceWarned = ''; speak(tr('เปิดเสียงนำทางแล้ว')); } banKey = ''; return render(); }
   if (wk === 'mode') {
     if (w.mode === 'gps') { stopSensors(); w.mode = 'sim'; w.playing = true; return render(); }
