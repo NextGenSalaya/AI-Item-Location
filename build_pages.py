@@ -52,6 +52,11 @@ def build():
         'function select(it) {': "function select(it) {\n  if (state.q && search(state.q).includes(it)) window.makroUsage?.select(it.no, state.q);",
         "  state.q = $('#q').value; state.sel": "  window.makroUsage?.search($('#q').value, search($('#q').value).map(it => it.no));\n  state.q = $('#q').value; state.sel",
         'NAME_EN = m; render();': 'NAME_EN = m; window.makroUsage?.english(m); render();',
+        'function routeTo(keys, info, end) {': 'function routeTo(keys, info, end, usageKind) {',
+        "  if (!r) return toast('หาเส้นทางไม่พบ');": "  if (!r) return toast('หาเส้นทางไม่พบ');\n  window.makroUsage?.navigation(usageKind);",
+        'routeTo([state.sel.bay]);': "routeTo([state.sel.bay], undefined, undefined, 'product');",
+        'routeTo([state.bay]);': "routeTo([state.bay], undefined, undefined, 'bay');",
+        '  startLeg(0);': "  startLeg(0);\n  if (legOf(0)) window.makroUsage?.navigation('guided');",
     }
     for old_hook, new_hook in analytics_hooks.items():
         assert html.count(old_hook) == 1, f'Analytics integration changed: {old_hook}'

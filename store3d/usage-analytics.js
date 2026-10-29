@@ -3,6 +3,14 @@
   'use strict';
   const canonical = 'https://nextgensalaya.github.io/AI-Item-Location/';
   const page = new URL(window.location.href);
+  // Staff testing is opt-in per browser tab and survives refreshes in that tab.
+  let testing = page.searchParams.get('usage_test') === '1';
+  try {
+    if (page.searchParams.get('usage_test') === '0') window.sessionStorage.removeItem('makro-usage-test');
+    if (testing) window.sessionStorage.setItem('makro-usage-test', '1');
+    testing ||= window.sessionStorage.getItem('makro-usage-test') === '1';
+  } catch { /* The explicit test URL still works when browser storage is blocked. */ }
+  if (testing) return;
   if (page.origin !== 'https://nextgensalaya.github.io' ||
       !['/AI-Item-Location/', '/AI-Item-Location/index.html'].includes(page.pathname) ||
       window.__makroUsageStarted) return;
@@ -44,6 +52,10 @@
       catalog = new Map(rows.map(r => [String(r[0]), { id: String(r[0]), name: String(r[1]), barcode: String(r[2]) }]));
     },
     english(names) { english = names; },
+    navigation(kind) {
+      if (!['product', 'bay', 'guided'].includes(kind)) return;
+      emit('navigation_start', { navigation_type: kind }, 'navigation:' + kind);
+    },
     language(value) {
       if (!languages.has(value) || currentLanguage === value) return;
       currentLanguage = value;

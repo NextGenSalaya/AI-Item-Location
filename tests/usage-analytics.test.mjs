@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 
 const source = readFileSync(new URL('../dist/usage-analytics.js', import.meta.url), 'utf8');
-const html = readFileSync(new URL('../dist/index.html', import.meta.url), 'utf8');
+const html = readFileSync(new URL('../dist/index.html', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 function browser(href) {
   const scripts = [];
   const timers = new Map(); let tid = 0;
@@ -101,4 +101,33 @@ test('Production reports one page load with canonical URL and no search/referrer
     assert.equal(config.allow_ad_personalization_signals, false);
     assert.ok(!JSON.stringify(calls).includes('private-search'));
   }
+});
+
+test('Navigation counts valid successful actions, deduplicates rapid repeats and sends no location or list', () => {
+  const b = browser('https://nextgensalaya.github.io/AI-Item-Location/'); b.run();
+  const a = b.context.window.makroUsage;
+  a.language('th');
+  for (const kind of ['product', 'product', 'bay', 'guided', undefined, '550-12', 'private text']) a.navigation(kind);
+  const events = b.context.window.dataLayer.filter(e => e[1] === 'navigation_start');
+  assert.deepEqual(Array.from(events, e => e[2].navigation_type), ['product', 'bay', 'guided']);
+  assert.ok(events.every(e => Object.keys(e[2]).sort().join(',') === 'navigation_type,ui_language'));
+  assert.ok(html.includes("if (!r) return toast('หาเส้นทางไม่พบ');\n  window.makroUsage?.navigation(usageKind);"));
+  assert.ok(html.includes("routeTo([state.sel.bay], undefined, undefined, 'product')"));
+  assert.ok(html.includes("routeTo([state.bay], undefined, undefined, 'bay')"));
+  assert.ok(html.includes("if (legOf(0)) window.makroUsage?.navigation('guided')"));
+  assert.ok(!html.includes("function drawRoute(stops) {\n  window.makroUsage"));
+});
+
+test('Explicit team testing skips all Analytics including page views, and persists for the tab', () => {
+  const data = new Map();
+  const storage = {getItem: k => data.get(k), setItem: (k,v) => data.set(k,v), removeItem: k => data.delete(k)};
+  for (const suffix of ['?usage_test=1', '']) {
+    const b = browser('https://nextgensalaya.github.io/AI-Item-Location/' + suffix);
+    b.context.window.sessionStorage = storage; b.run();
+    assert.equal(b.scripts.length, 0); assert.equal(b.context.window.dataLayer, undefined);
+  }
+  const b = browser('https://nextgensalaya.github.io/AI-Item-Location/?usage_test=0');
+  b.context.window.sessionStorage = storage; b.run(); assert.equal(b.scripts.length, 1);
+  const blocked = browser('https://nextgensalaya.github.io/AI-Item-Location/?usage_test=1');
+  blocked.run(); assert.equal(blocked.scripts.length, 0);
 });
